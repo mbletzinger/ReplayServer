@@ -11,10 +11,14 @@
   </welcome-file-list>
   <servlet>
   	<servlet-name>ReplayServerWebApp</servlet-name>
-  	<servlet-class>com.gullele.web.ReplayServerWebApp</servlet-class>
+  	<servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
+  	<init-param>
+  		<param-name>org.restlet.application</param-name>
+  		<param-value>org.nees.mustsim.replay.ReplayServerApplication</param-value>
+  	</init-param>
   </servlet>
   <servlet-mapping>
   	<servlet-name>ReplayServerWebApp</servlet-name>
-  	<url-pattern>/ReplayServerWebApp/</url-pattern>
+  	<url-pattern>/*</url-pattern>
   </servlet-mapping>
 </web-app>
