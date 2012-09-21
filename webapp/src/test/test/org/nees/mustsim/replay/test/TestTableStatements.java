@@ -7,6 +7,7 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nees.mustsim.replay.DataQuery;
 import org.nees.mustsim.replay.DbTableCreation;
 import org.nees.mustsim.replay.DbTableUpdate;
 import org.nees.mustsim.replay.RateType;
@@ -69,44 +70,79 @@ public class TestTableStatements {
 						+ " _DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 double NOT NULL,"
 						+ " PRIMARY KEY (Step));", result);
 	}
-	
+
 	@Test
 	public void testUpdateTableStatement() {
 		DbTableUpdate update = new DbTableUpdate(dbT);
 		double contData = 1234563.234;
-		double [] stepData = { 1234563.234,2.0,3.0,123.0};
-		double [] almostStepData = { 1234563.234,1.999,2.9934,122.699};
-		double [] omData = { 1.2, 2.3,3.4,4.5 };
-		double [] daqData = {.012, .023, .034};
+		double[] stepData = { 1234563.234, 2.0, 3.0, 123.0 };
+		double[] almostStepData = { 1234563.234, 1.999, 2.9934, 122.699 };
+		double[] omData = { 1.2, 2.3, 3.4, 4.5 };
+		double[] daqData = { .012, .023, .034 };
 
-		
-		double [] result  = new double [omData.length + 1];
+		double[] result = new double[omData.length + 1];
 		System.arraycopy(omData, 0, result, 1, omData.length);
 		result[0] = contData;
 		String sresult = update.update(TableType.OM, RateType.CONT, result);
-		Assert.assertEquals("insert into TESTDB.OM_CONT values(1234563.234, 1.2, 2.3, 3.4, 4.5);", sresult);
+		Assert.assertEquals(
+				"insert into TESTDB.OM_CONT values(1234563.234, 1.2, 2.3, 3.4, 4.5);",
+				sresult);
 
-		result  = new double [omData.length + stepData.length];
+		result = new double[omData.length + stepData.length];
 		System.arraycopy(omData, 0, result, stepData.length, omData.length);
 		System.arraycopy(stepData, 0, result, 0, stepData.length);
 		sresult = update.update(TableType.OM, RateType.STEP, result);
-		Assert.assertEquals("insert into TESTDB.OM_STEP values(1234563.234, 2, 3, 123, 1.2, 2.3, 3.4, 4.5);", sresult);
+		Assert.assertEquals(
+				"insert into TESTDB.OM_STEP values(1234563.234, 2, 3, 123, 1.2, 2.3, 3.4, 4.5);",
+				sresult);
 
-		result  = new double [daqData.length + 1];
+		result = new double[daqData.length + 1];
 		System.arraycopy(daqData, 0, result, 1, daqData.length);
 		result[0] = contData;
 		sresult = update.update(TableType.DAQ, RateType.CONT, result);
-		Assert.assertEquals("insert into TESTDB.DAQ_CONT values(1234563.234, 0.012, 0.023, 0.034);", sresult);
+		Assert.assertEquals(
+				"insert into TESTDB.DAQ_CONT values(1234563.234, 0.012, 0.023, 0.034);",
+				sresult);
 
-		result  = new double [daqData.length + stepData.length];
+		result = new double[daqData.length + stepData.length];
 		System.arraycopy(daqData, 0, result, stepData.length, daqData.length);
 		System.arraycopy(stepData, 0, result, 0, stepData.length);
 		sresult = update.update(TableType.DAQ, RateType.STEP, result);
-		Assert.assertEquals("insert into TESTDB.DAQ_STEP values(1234563.234, 2, 3, 123, 0.012, 0.023, 0.034);", sresult);
+		Assert.assertEquals(
+				"insert into TESTDB.DAQ_STEP values(1234563.234, 2, 3, 123, 0.012, 0.023, 0.034);",
+				sresult);
 
 		System.arraycopy(almostStepData, 0, result, 0, almostStepData.length);
 		sresult = update.update(TableType.DAQ, RateType.STEP, result);
-		Assert.assertEquals("insert into TESTDB.DAQ_STEP values(1234563.234, 2, 3, 123, 0.012, 0.023, 0.034);", sresult);
-}
+		Assert.assertEquals(
+				"insert into TESTDB.DAQ_STEP values(1234563.234, 2, 3, 123, 0.012, 0.023, 0.034);",
+				sresult);
+	}
 
+	@Test
+	public void testQueryStatements() {
+		List<String> channels = new ArrayList<String>();
+		channels.add("_OM_Cmd_LBCB1_Actuator_C__LBCB1__X1");
+		channels.add("_OM_Load_LBCB1_Actuator_L__LBCB2__Z1");
+		channels.add("_OM_CntrlSensor_D__West__X");
+		DataQuery query = new DataQuery(channels, "Query1", dbT);
+		String[] expected = {
+				"SELECT Time _OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, _OM_Load_LBCB1_Actuator_L__LBCB2__Z1, _OM_CntrlSensor_D__West__X FROM OM_CONT;",
+				"SELECT Step _OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, _OM_Load_LBCB1_Actuator_L__LBCB2__Z1, _OM_CntrlSensor_D__West__X FROM OM_STEP;" };
+		for (RateType r : RateType.values()) {
+			Assert.assertEquals(expected[r.ordinal()], query.getSelect(r));
+		}
+		channels.add("_DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5");
+		channels.add("_DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3");
+		query = new DataQuery(channels, "Query2", dbT);
+		String[] expected2 = {
+				"SELECT Time _OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, _OM_Load_LBCB1_Actuator_L__LBCB2__Z1, _OM_CntrlSensor_D__West__X FROM OM_CONT"
+				+ " UNION SELECT Time _DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5, _DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 FROM DAQ_CONT;",
+				"SELECT Step _OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, _OM_Load_LBCB1_Actuator_L__LBCB2__Z1, _OM_CntrlSensor_D__West__X FROM OM_STEP"
+				+ " UNION SELECT Step _DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5, _DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 FROM DAQ_STEP;" };
+		for (RateType r : RateType.values()) {
+			Assert.assertEquals(expected2[r.ordinal()], query.getSelect(r));
+		}
+
+	}
 }

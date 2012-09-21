@@ -6,6 +6,11 @@ public class DbTableUpdate {
 	private final DbTableCreation creation;
 	private final Logger log = Logger.getLogger(DbTableUpdate.class);
 
+	public DbTableUpdate(DbTableCreation creation) {
+		super();
+		this.creation = creation;
+	}
+
 	public String update(TableType table, RateType rate, double[] data) {
 		int actual = data.length;
 		int expected = creation.recordLength(table, rate);
@@ -20,11 +25,6 @@ public class DbTableUpdate {
 			return updateStep(table, data);
 		}
 
-	}
-
-	public DbTableUpdate(DbTableCreation creation) {
-		super();
-		this.creation = creation;
 	}
 
 	private String updateCont(TableType table, double[] data) {
