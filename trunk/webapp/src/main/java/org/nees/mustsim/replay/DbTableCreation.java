@@ -14,6 +14,16 @@ public class DbTableCreation {
 		this.dbname = dbname;
 	}
 
+	private String[] addHeaders(RateType rate) {
+		if (rate.equals(RateType.CONT)) {
+			return new String[] { "Time double NOT NULL", "PRIMARY KEY (Time)" };
+		} else {
+			return new String[] {
+					"Time double NOT NULL, Step int NOT NULL, Substep int NOT NULL, CorrectionStep int NOT NULL",
+					"PRIMARY KEY (Step)" };
+		}
+	}
+
 	public void addTable(TableType table, List<String> channels) {
 		List<String> list = new ArrayList<String>();
 		list.addAll(channels);
@@ -35,26 +45,26 @@ public class DbTableCreation {
 		return result;
 	}
 
-	public String tableName(TableType table, RateType rate) {
-		return dbname + "." + table + "_" + rate;
+	public List<String> getColumns(TableType table) {
+		List<String> result = new ArrayList<String>();
+		List<String> cols = columns.get(table);
+		if (cols != null) {
+			result.addAll(cols);
+		}
+		return result;
 	}
 
-	private String[] addHeaders(RateType rate) {
-		if (rate.equals(RateType.CONT)) {
-			return new String[] { "Time double NOT NULL", "PRIMARY KEY (Time)" };
-		} else {
-			return new String[] {
-					"Time double NOT NULL, Step int NOT NULL, Substep int NOT NULL, CorrectionStep int NOT NULL",
-					"PRIMARY KEY (Step)" };
-		}
-	}
 	public int recordLength(TableType table, RateType rate) {
 		int result = columns.get(table).size();
-		if(rate.equals(RateType.CONT)) {
+		if (rate.equals(RateType.CONT)) {
 			result++;
-		}  else {
+		} else {
 			result += 4;
 		}
 		return result;
+	}
+
+	public String tableName(TableType table, RateType rate) {
+		return dbname + "." + table + "_" + rate;
 	}
 }
