@@ -1,12 +1,14 @@
-package org.nees.mustsim.replay;
+package org.nees.mustsim.replay.db.table;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class DbTableCreation {
 	private final Map<TableType, List<String>> columns = new HashMap<TableType, List<String>>();
+
 	private final String dbname;
 
 	public DbTableCreation(String dbname) {
@@ -41,7 +43,7 @@ public class DbTableCreation {
 											// underlines
 			result += ", " + channel + " double NOT NULL";
 		}
-		result += ", " + headers[1] + ");";
+		result += ", " + headers[1] + ")";
 		return result;
 	}
 
@@ -52,6 +54,13 @@ public class DbTableCreation {
 			result.addAll(cols);
 		}
 		return result;
+	}
+
+	/**
+	 * @return the dbname
+	 */
+	public String getDbname() {
+		return dbname;
 	}
 
 	public int recordLength(TableType table, RateType rate) {

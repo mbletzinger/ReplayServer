@@ -1,19 +1,24 @@
-package org.nees.mustsim.replay;
+package org.nees.mustsim.replay.db.query;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DataQuery {
+import org.nees.mustsim.replay.db.table.DbTableCreation;
+import org.nees.mustsim.replay.db.table.RateType;
+import org.nees.mustsim.replay.db.table.TableType;
+
+public class DbSelect {
 	private final List<String> channelOrder;
+	private final List<String> tableOrder = new ArrayList<String>();
 	private final DbTableCreation creation;
 	private final String name;
 	private final String rateToken = "xRATEx";
 	private final String rateColumn = "yRATECOLUMNy";
 	private final Map<RateType, String> selects = new HashMap<RateType, String>();
 
-	public DataQuery(List<String> channelOrder, String name,
+	public DbSelect(List<String> channelOrder, String name,
 			DbTableCreation creation) {
 		super();
 		this.channelOrder = channelOrder;
@@ -24,6 +29,7 @@ public class DataQuery {
 
 	private void createSelects() {
 		Map<TableType, String> lists = new HashMap<TableType, String>();
+		tableOrder.clear();
 		for (TableType t : TableType.values()) {
 			String s = selectString(t);
 			if (s != null) {
@@ -39,7 +45,7 @@ public class DataQuery {
 				first = false;
 			}
 		}
-		raw += ";";
+		raw += "";
 		for (RateType r : RateType.values()) {
 			String s = raw.replaceAll(rateToken, r.toString());
 			s = s.replaceAll(rateColumn, (r.equals(RateType.CONT) ? "Time"

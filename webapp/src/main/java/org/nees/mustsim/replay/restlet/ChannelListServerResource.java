@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay;
+package org.nees.mustsim.replay.restlet;
 
 import java.io.InputStream;
 import java.io.OutputStream;

@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay;
+package org.nees.mustsim.replay.db.table;
 
 import org.apache.log4j.Logger;
 
@@ -33,7 +33,7 @@ public class DbTableUpdate {
 		for (int i = 0; i < data.length; i++) {
 			result += (i == 0 ? "" : ", ") + Double.toString(data[i]);
 		}
-		result += ");";
+		result += ")";
 		return result;
 	}
 
@@ -47,7 +47,7 @@ public class DbTableUpdate {
 		for (int i = 4; i < data.length; i++) {
 			result += ", " + Double.toString(data[i]);
 		}
-		result += ");";
+		result += ")";
 		return result;
 	}
 

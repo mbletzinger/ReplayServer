@@ -7,11 +7,11 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.nees.mustsim.replay.DataQuery;
-import org.nees.mustsim.replay.DbTableCreation;
-import org.nees.mustsim.replay.DbTableUpdate;
-import org.nees.mustsim.replay.RateType;
-import org.nees.mustsim.replay.TableType;
+import org.nees.mustsim.replay.db.query.DbSelect;
+import org.nees.mustsim.replay.db.table.DbTableCreation;
+import org.nees.mustsim.replay.db.table.DbTableUpdate;
+import org.nees.mustsim.replay.db.table.RateType;
+import org.nees.mustsim.replay.db.table.TableType;
 
 public class TestTableStatements {
 	private DbTableCreation dbT = new DbTableCreation("TESTDB");
@@ -19,15 +19,15 @@ public class TestTableStatements {
 	@Before
 	public void setUp() throws Exception {
 		List<String> channels = new ArrayList<String>();
-		channels.add("_OM_Cmd_LBCB1_Actuator_C__LBCB1__X1");
-		channels.add("_OM_Disp_LBCB1_Cartesian_D__LBCB1__RY");
-		channels.add("_OM_Load_LBCB1_Actuator_L__LBCB2__Z1");
-		channels.add("_OM_CntrlSensor_D__West__X");
+		channels.add("OM_Cmd_LBCB1_Actuator_C__LBCB1__X1");
+		channels.add("OM_Disp_LBCB1_Cartesian_D__LBCB1__RY");
+		channels.add("OM_Load_LBCB1_Actuator_L__LBCB2__Z1");
+		channels.add("OM_CntrlSensor_D__West__X");
 		dbT.addTable(TableType.OM, channels);
 		channels.clear();
-		channels.add("_DAQ_DisplacementSensor_WestFlange_FirstFloor_DTV02F1A__W7__LinPot05");
-		channels.add("_DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5");
-		channels.add("_DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3");
+		channels.add("DAQ_DisplacementSensor_WestFlange_FirstFloor_DTV02F1A__W7__LinPot05");
+		channels.add("DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5");
+		channels.add("DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3");
 		dbT.addTable(TableType.DAQ, channels);
 	}
 
@@ -36,27 +36,27 @@ public class TestTableStatements {
 		String result = dbT.createTableStatement(TableType.OM, RateType.CONT);
 		Assert.assertEquals("CREATE TABLE TESTDB.OM_CONT("
 				+ "Time double NOT NULL,"
-				+ " _OM_Cmd_LBCB1_Actuator_C__LBCB1__X1 double NOT NULL,"
-				+ " _OM_Disp_LBCB1_Cartesian_D__LBCB1__RY double NOT NULL,"
-				+ " _OM_Load_LBCB1_Actuator_L__LBCB2__Z1 double NOT NULL,"
-				+ " _OM_CntrlSensor_D__West__X double NOT NULL,"
+				+ " OM_Cmd_LBCB1_Actuator_C__LBCB1__X1 double NOT NULL,"
+				+ " OM_Disp_LBCB1_Cartesian_D__LBCB1__RY double NOT NULL,"
+				+ " OM_Load_LBCB1_Actuator_L__LBCB2__Z1 double NOT NULL,"
+				+ " OM_CntrlSensor_D__West__X double NOT NULL,"
 				+ " PRIMARY KEY (Time));", result);
 		result = dbT.createTableStatement(TableType.OM, RateType.STEP);
 		Assert.assertEquals("CREATE TABLE TESTDB.OM_STEP(" + ""
 				+ "Time double NOT NULL," + " Step int NOT NULL,"
 				+ " Substep int NOT NULL," + " CorrectionStep int NOT NULL,"
-				+ " _OM_Cmd_LBCB1_Actuator_C__LBCB1__X1 double NOT NULL,"
-				+ " _OM_Disp_LBCB1_Cartesian_D__LBCB1__RY double NOT NULL,"
-				+ " _OM_Load_LBCB1_Actuator_L__LBCB2__Z1 double NOT NULL,"
-				+ " _OM_CntrlSensor_D__West__X double NOT NULL,"
+				+ " OM_Cmd_LBCB1_Actuator_C__LBCB1__X1 double NOT NULL,"
+				+ " OM_Disp_LBCB1_Cartesian_D__LBCB1__RY double NOT NULL,"
+				+ " OM_Load_LBCB1_Actuator_L__LBCB2__Z1 double NOT NULL,"
+				+ " OM_CntrlSensor_D__West__X double NOT NULL,"
 				+ " PRIMARY KEY (Step));", result);
 		result = dbT.createTableStatement(TableType.DAQ, RateType.CONT);
 		Assert.assertEquals(
 				"CREATE TABLE TESTDB.DAQ_CONT("
 						+ "Time double NOT NULL,"
-						+ " _DAQ_DisplacementSensor_WestFlange_FirstFloor_DTV02F1A__W7__LinPot05 double NOT NULL,"
-						+ " _DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5 double NOT NULL,"
-						+ " _DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 double NOT NULL,"
+						+ " DAQ_DisplacementSensor_WestFlange_FirstFloor_DTV02F1A__W7__LinPot05 double NOT NULL,"
+						+ " DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5 double NOT NULL,"
+						+ " DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 double NOT NULL,"
 						+ " PRIMARY KEY (Time));", result);
 		result = dbT.createTableStatement(TableType.DAQ, RateType.STEP);
 		Assert.assertEquals(
@@ -65,9 +65,9 @@ public class TestTableStatements {
 						+ " Step int NOT NULL,"
 						+ " Substep int NOT NULL,"
 						+ " CorrectionStep int NOT NULL,"
-						+ " _DAQ_DisplacementSensor_WestFlange_FirstFloor_DTV02F1A__W7__LinPot05 double NOT NULL,"
-						+ " _DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5 double NOT NULL,"
-						+ " _DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 double NOT NULL,"
+						+ " DAQ_DisplacementSensor_WestFlange_FirstFloor_DTV02F1A__W7__LinPot05 double NOT NULL,"
+						+ " DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5 double NOT NULL,"
+						+ " DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 double NOT NULL,"
 						+ " PRIMARY KEY (Step));", result);
 	}
 
@@ -122,24 +122,24 @@ public class TestTableStatements {
 	@Test
 	public void testQueryStatements() {
 		List<String> channels = new ArrayList<String>();
-		channels.add("_OM_Cmd_LBCB1_Actuator_C__LBCB1__X1");
-		channels.add("_OM_Load_LBCB1_Actuator_L__LBCB2__Z1");
-		channels.add("_OM_CntrlSensor_D__West__X");
-		DataQuery query = new DataQuery(channels, "Query1", dbT);
+		channels.add("OM_Cmd_LBCB1_Actuator_C__LBCB1__X1");
+		channels.add("OM_Load_LBCB1_Actuator_L__LBCB2__Z1");
+		channels.add("OM_CntrlSensor_D__West__X");
+		DbSelect query = new DbSelect(channels, "Query1", dbT);
 		String[] expected = {
-				"SELECT Time _OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, _OM_Load_LBCB1_Actuator_L__LBCB2__Z1, _OM_CntrlSensor_D__West__X FROM OM_CONT;",
-				"SELECT Step _OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, _OM_Load_LBCB1_Actuator_L__LBCB2__Z1, _OM_CntrlSensor_D__West__X FROM OM_STEP;" };
+				"SELECT Time OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, OM_Load_LBCB1_Actuator_L__LBCB2__Z1, OM_CntrlSensor_D__West__X FROM OM_CONT;",
+				"SELECT Step OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, OM_Load_LBCB1_Actuator_L__LBCB2__Z1, OM_CntrlSensor_D__West__X FROM OM_STEP;" };
 		for (RateType r : RateType.values()) {
 			Assert.assertEquals(expected[r.ordinal()], query.getSelect(r));
 		}
-		channels.add("_DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5");
-		channels.add("_DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3");
-		query = new DataQuery(channels, "Query2", dbT);
+		channels.add("DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5");
+		channels.add("DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3");
+		query = new DbSelect(channels, "Query2", dbT);
 		String[] expected2 = {
-				"SELECT Time _OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, _OM_Load_LBCB1_Actuator_L__LBCB2__Z1, _OM_CntrlSensor_D__West__X FROM OM_CONT"
-				+ " UNION SELECT Time _DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5, _DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 FROM DAQ_CONT;",
-				"SELECT Step _OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, _OM_Load_LBCB1_Actuator_L__LBCB2__Z1, _OM_CntrlSensor_D__West__X FROM OM_STEP"
-				+ " UNION SELECT Step _DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5, _DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 FROM DAQ_STEP;" };
+				"SELECT Time OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, OM_Load_LBCB1_Actuator_L__LBCB2__Z1, OM_CntrlSensor_D__West__X FROM OM_CONT"
+				+ " UNION SELECT Time DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5, DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 FROM DAQ_CONT;",
+				"SELECT Step OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, OM_Load_LBCB1_Actuator_L__LBCB2__Z1, OM_CntrlSensor_D__West__X FROM OM_STEP"
+				+ " UNION SELECT Step DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5, DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 FROM DAQ_STEP;" };
 		for (RateType r : RateType.values()) {
 			Assert.assertEquals(expected2[r.ordinal()], query.getSelect(r));
 		}
