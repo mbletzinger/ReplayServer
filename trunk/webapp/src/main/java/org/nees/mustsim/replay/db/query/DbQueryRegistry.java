@@ -5,10 +5,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
-public class DbQueryTables {
+public class DbQueryRegistry {
 
 	private final Map<String, DbSelect> queries = new ConcurrentHashMap<String, DbSelect>();
-	private final Logger log = Logger.getLogger(DbQueryTables.class);
+	private final Logger log = Logger.getLogger(DbQueryRegistry.class);
 	public DbSelect getQuery(String name) {
 		return queries.get(name);
 	}
