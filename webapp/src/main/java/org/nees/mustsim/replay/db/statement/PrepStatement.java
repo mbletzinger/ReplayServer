@@ -10,21 +10,22 @@ public abstract class PrepStatement {
 	protected PreparedStatement statement;
 	protected final Logger log;
 	private final String prepped;
-	public boolean execute() {
+	public int[] execute() {
+		int [] result = null;
 		try {
-			statement.executeUpdate();
+			result = statement.executeBatch();
 		} catch (SQLException e) {
 			log.error("Execute prep statement \"" + prepped + "\" failed because",e);
-			return false;
+			return result;
 		}
 		try {
 			statement.close();
 		} catch (SQLException e) {
 			log.error("Closing prep statement \"" + prepped + "\" failed because",e);
-			return false;
+			return result;
 		}
 		
-		return true;
+		return result;
 	}
 	public PrepStatement(String prepped, Logger log) {
 		super();

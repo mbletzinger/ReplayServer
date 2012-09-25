@@ -7,72 +7,63 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.nees.mustsim.replay.db.statement.ChannelInsertStatement;
-import org.nees.mustsim.replay.db.statement.ChannelUpdateStatement;
-import org.nees.mustsim.replay.db.statement.DbStatements;
+import org.nees.mustsim.replay.db.statement.DbStatement;
 
 public class DbChannelNameSynch {
-	private final ChannelNameRegistry registry;
 	private final String channelTable = "CHANNEL_NAMES";
+	private final DbStatement db;
 	private final Logger log = Logger.getLogger(DbChannelNameSynch.class);
-	private final DbStatements db;
-	
-	
-	public DbChannelNameSynch(ChannelNameRegistry registry, DbStatements db) {
+	private final ChannelNameRegistry registry;
+
+	public DbChannelNameSynch(ChannelNameRegistry registry, DbStatement db) {
 		super();
 		this.registry = registry;
 		this.db = db;
 	}
-	public void synchronize() {
-		Map<String, String> names = getValues();
-		Map<String,String> reg = registry.getClone();
-		ChannelUpdateStatement prep = new ChannelUpdateStatement(channelTable);
-		db.createPrepStatement(prep);
-		for (String n : names.keySet()) {
-			String id = names.get(n);
-			if(id.equals(reg.get(n)) == false) {
-				prep.add(n, id);
-			}
-		}
-		if (prep.execute() == false) {
-			log.error("Channel name synchronize failed");
-			return;
-		}
-		ChannelInsertStatement prep2 = new ChannelInsertStatement(channelTable);
-		db.createPrepStatement(prep2);
-		for (String n : reg.keySet()) {
-			if (names.containsKey(n) == false) {
-				prep2.add(n, reg.get(n));
-			}
-		}
-		if (prep.execute() == false) {
-			log.error("Channel name synchronize failed");
-			return;
-		}
-	}
-	public void initialize() {
-		Map<String, String> names = getValues();
-		if(names.isEmpty() == false) {
-			registry.init(names);
-		}
-	}
+
 	public void createTable() {
 		db.execute("CREATE TABLE " + channelTable + "(name, id)");
 	}
-	public void removeTable() {
-		db.execute("DROP TABLE " + channelTable);		
-	}
+
 	private Map<String, String> getValues() {
 		ResultSet rs = db.query("SELECT name, id FROM " + channelTable);
 		Map<String, String> names = new HashMap<String, String>();
 		try {
-			while(rs.next()) {
+			while (rs.next()) {
 				String name = rs.getString("name");
 				String id = rs.getString("id");
 				names.put(name, id);
 			}
 		} catch (SQLException e) {
-			log.error("Query to table " + channelTable + " failed because ",e);
+			log.error("Query to table " + channelTable + " failed because ", e);
 		}
 		return names;
+	}
+
+	public void initialize() {
+		Map<String, String> names = getValues();
+		if (names.isEmpty() == false) {
+			registry.init(names);
+		}
+	}
+
+	public void removeTable() {
+		db.execute("DROP TABLE " + channelTable);
+	}
+
+	public void synchronize() {
+		Map<String, String> names = getValues();
+		Map<String, String> reg = registry.getClone();
+		ChannelInsertStatement prep = new ChannelInsertStatement(channelTable);
+		db.createPrepStatement(prep);
+		for (String n : reg.keySet()) {
+			if (names.containsKey(n) == false) {
+				prep.add(n, reg.get(n));
+			}
+		}
+		if (prep.execute() == null) {
+			log.error("Channel name synchronize failed");
+			return;
+		}
 	}
 }
