@@ -40,7 +40,7 @@ public class TestTableStatements {
 				+ " OM_Disp_LBCB1_Cartesian_D__LBCB1__RY double NOT NULL,"
 				+ " OM_Load_LBCB1_Actuator_L__LBCB2__Z1 double NOT NULL,"
 				+ " OM_CntrlSensor_D__West__X double NOT NULL,"
-				+ " PRIMARY KEY (Time));", result);
+				+ " PRIMARY KEY (Time))", result);
 		result = dbT.createTableStatement(TableType.OM, RateType.STEP);
 		Assert.assertEquals("CREATE TABLE TESTDB.OM_STEP(" + ""
 				+ "Time double NOT NULL," + " Step int NOT NULL,"
@@ -49,7 +49,7 @@ public class TestTableStatements {
 				+ " OM_Disp_LBCB1_Cartesian_D__LBCB1__RY double NOT NULL,"
 				+ " OM_Load_LBCB1_Actuator_L__LBCB2__Z1 double NOT NULL,"
 				+ " OM_CntrlSensor_D__West__X double NOT NULL,"
-				+ " PRIMARY KEY (Step));", result);
+				+ " PRIMARY KEY (Step))", result);
 		result = dbT.createTableStatement(TableType.DAQ, RateType.CONT);
 		Assert.assertEquals(
 				"CREATE TABLE TESTDB.DAQ_CONT("
@@ -57,7 +57,7 @@ public class TestTableStatements {
 						+ " DAQ_DisplacementSensor_WestFlange_FirstFloor_DTV02F1A__W7__LinPot05 double NOT NULL,"
 						+ " DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5 double NOT NULL,"
 						+ " DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 double NOT NULL,"
-						+ " PRIMARY KEY (Time));", result);
+						+ " PRIMARY KEY (Time))", result);
 		result = dbT.createTableStatement(TableType.DAQ, RateType.STEP);
 		Assert.assertEquals(
 				"CREATE TABLE TESTDB.DAQ_STEP("
@@ -68,7 +68,7 @@ public class TestTableStatements {
 						+ " DAQ_DisplacementSensor_WestFlange_FirstFloor_DTV02F1A__W7__LinPot05 double NOT NULL,"
 						+ " DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5 double NOT NULL,"
 						+ " DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 double NOT NULL,"
-						+ " PRIMARY KEY (Step));", result);
+						+ " PRIMARY KEY (Step))", result);
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class TestTableStatements {
 		result[0] = contData;
 		String sresult = update.update(TableType.OM, RateType.CONT, result);
 		Assert.assertEquals(
-				"insert into TESTDB.OM_CONT values(1234563.234, 1.2, 2.3, 3.4, 4.5);",
+				"insert into TESTDB.OM_CONT values(1234563.234, 1.2, 2.3, 3.4, 4.5)",
 				sresult);
 
 		result = new double[omData.length + stepData.length];
@@ -93,7 +93,7 @@ public class TestTableStatements {
 		System.arraycopy(stepData, 0, result, 0, stepData.length);
 		sresult = update.update(TableType.OM, RateType.STEP, result);
 		Assert.assertEquals(
-				"insert into TESTDB.OM_STEP values(1234563.234, 2, 3, 123, 1.2, 2.3, 3.4, 4.5);",
+				"insert into TESTDB.OM_STEP values(1234563.234, 2, 3, 123, 1.2, 2.3, 3.4, 4.5)",
 				sresult);
 
 		result = new double[daqData.length + 1];
@@ -101,7 +101,7 @@ public class TestTableStatements {
 		result[0] = contData;
 		sresult = update.update(TableType.DAQ, RateType.CONT, result);
 		Assert.assertEquals(
-				"insert into TESTDB.DAQ_CONT values(1234563.234, 0.012, 0.023, 0.034);",
+				"insert into TESTDB.DAQ_CONT values(1234563.234, 0.012, 0.023, 0.034)",
 				sresult);
 
 		result = new double[daqData.length + stepData.length];
@@ -109,13 +109,13 @@ public class TestTableStatements {
 		System.arraycopy(stepData, 0, result, 0, stepData.length);
 		sresult = update.update(TableType.DAQ, RateType.STEP, result);
 		Assert.assertEquals(
-				"insert into TESTDB.DAQ_STEP values(1234563.234, 2, 3, 123, 0.012, 0.023, 0.034);",
+				"insert into TESTDB.DAQ_STEP values(1234563.234, 2, 3, 123, 0.012, 0.023, 0.034)",
 				sresult);
 
 		System.arraycopy(almostStepData, 0, result, 0, almostStepData.length);
 		sresult = update.update(TableType.DAQ, RateType.STEP, result);
 		Assert.assertEquals(
-				"insert into TESTDB.DAQ_STEP values(1234563.234, 2, 3, 123, 0.012, 0.023, 0.034);",
+				"insert into TESTDB.DAQ_STEP values(1234563.234, 2, 3, 123, 0.012, 0.023, 0.034)",
 				sresult);
 	}
 
@@ -127,8 +127,8 @@ public class TestTableStatements {
 		channels.add("OM_CntrlSensor_D__West__X");
 		DbSelect query = new DbSelect(channels, "Query1", dbT);
 		String[] expected = {
-				"SELECT Time OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, OM_Load_LBCB1_Actuator_L__LBCB2__Z1, OM_CntrlSensor_D__West__X FROM OM_CONT;",
-				"SELECT Step OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, OM_Load_LBCB1_Actuator_L__LBCB2__Z1, OM_CntrlSensor_D__West__X FROM OM_STEP;" };
+				"SELECT Time OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, OM_Load_LBCB1_Actuator_L__LBCB2__Z1, OM_CntrlSensor_D__West__X FROM OM_CONT",
+				"SELECT Step OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, OM_Load_LBCB1_Actuator_L__LBCB2__Z1, OM_CntrlSensor_D__West__X FROM OM_STEP" };
 		for (RateType r : RateType.values()) {
 			Assert.assertEquals(expected[r.ordinal()], query.getSelect(r));
 		}
@@ -137,9 +137,9 @@ public class TestTableStatements {
 		query = new DbSelect(channels, "Query2", dbT);
 		String[] expected2 = {
 				"SELECT Time OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, OM_Load_LBCB1_Actuator_L__LBCB2__Z1, OM_CntrlSensor_D__West__X FROM OM_CONT"
-				+ " UNION SELECT Time DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5, DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 FROM DAQ_CONT;",
+				+ " UNION SELECT Time DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5, DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 FROM DAQ_CONT",
 				"SELECT Step OM_Cmd_LBCB1_Actuator_C__LBCB1__X1, OM_Load_LBCB1_Actuator_L__LBCB2__Z1, OM_CntrlSensor_D__West__X FROM OM_STEP"
-				+ " UNION SELECT Step DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5, DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 FROM DAQ_STEP;" };
+				+ " UNION SELECT Step DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5, DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3 FROM DAQ_STEP" };
 		for (RateType r : RateType.values()) {
 			Assert.assertEquals(expected2[r.ordinal()], query.getSelect(r));
 		}

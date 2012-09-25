@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nees.mustsim.replay.db.query.DbSelect;
 import org.nees.mustsim.replay.db.table.DbTableCreation;
 import org.nees.mustsim.replay.db.table.DbTableUpdate;
 import org.nees.mustsim.replay.db.table.RateType;
