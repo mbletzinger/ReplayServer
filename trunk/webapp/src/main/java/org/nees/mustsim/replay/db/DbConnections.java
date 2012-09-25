@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.nees.mustsim.replay.db.statement.DbStatements;
+import org.nees.mustsim.replay.db.statement.DbStatement;
 import org.nees.mustsim.replay.db.table.DbTableCreation;
 import org.nees.mustsim.replay.db.table.RateType;
 import org.nees.mustsim.replay.db.table.TableType;
@@ -28,9 +28,9 @@ public class DbConnections {
 		} // fetch a connection
 		return connection;
 	}
-	public DbStatements createDbStatements() {
+	public DbStatement createDbStatement() {
 		try {
-			return new DbStatements(connectionPool.getConnection());
+			return new DbStatement(connectionPool.getConnection());
 		} catch (SQLException e) {
 			log.error("Connection fetch failed ", e);
 			return null;
@@ -40,7 +40,7 @@ public class DbConnections {
 	public boolean createTables(TableType table, List<String> channels) {
 		boolean result = true;
 		if(resetTables) {
-			DbStatements dbSt = createDbStatements();
+			DbStatement dbSt = createDbStatement();
 			if(dbSt == null) {
 				return false;
 			}

@@ -9,11 +9,11 @@ import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
 
-public class DbStatements {
+public class DbStatement {
 	private final Connection connection;
-	private final Logger log = Logger.getLogger(DbStatements.class);
+	private final Logger log = Logger.getLogger(DbStatement.class);
 
-	public DbStatements(Connection connection) {
+	public DbStatement(Connection connection) {
 		super();
 		this.connection = connection;
 	}
@@ -52,6 +52,29 @@ public class DbStatements {
 
 	}
 
+	public void noComplaints(String statement) {
+		Statement stmt = null;
+		try {
+			stmt = connection.createStatement();
+		} catch (SQLException e) {
+			return;
+		}
+		try {
+			stmt.execute(statement);
+		} catch (SQLException e) {
+			return;
+		} finally {
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					return;
+				}
+			}
+		}
+		log.info("executed \"" + statement + "\"");
+	}
+
 	public ResultSet query(String statement) {
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -68,7 +91,7 @@ public class DbStatements {
 			log.error("\"" + statement + "\" failed because ", e);
 			return null;
 		} finally {
-			if (stmt != null) {
+			if (rs == null && stmt != null) {
 				try {
 					stmt.close();
 				} catch (SQLException e) {
@@ -79,6 +102,13 @@ public class DbStatements {
 		}
 		log.info("executed \"" + statement + "\"");
 		return rs;
+	}
+	public void closeQuery(ResultSet rs) {
+		try {
+			rs.getStatement().close();
+		} catch (SQLException e) {
+			log.error("Statement close failed because ", e);
+		}
 	}
 	public void close() {
 		try {
