@@ -14,6 +14,7 @@ public class DbChannelNameSynch {
 	private final DbStatement db;
 	private final Logger log = Logger.getLogger(DbChannelNameSynch.class);
 	private final ChannelNameRegistry registry;
+	private final String afterLastChannel = "AfterLastChannel";
 
 	public DbChannelNameSynch(ChannelNameRegistry registry, DbStatement db) {
 		super();
@@ -22,7 +23,7 @@ public class DbChannelNameSynch {
 	}
 
 	public void createTable() {
-		db.execute("CREATE TABLE " + channelTable + "(name, id)");
+		db.execute("CREATE TABLE " + channelTable + "(name varchar(100), id varchar(50))");
 	}
 
 	private Map<String, String> getValues() {
@@ -37,30 +38,34 @@ public class DbChannelNameSynch {
 		} catch (SQLException e) {
 			log.error("Query to table " + channelTable + " failed because ", e);
 		}
+		db.closeQuery(rs);
 		return names;
 	}
 
 	public void initialize() {
 		Map<String, String> names = getValues();
 		if (names.isEmpty() == false) {
-			registry.init(names);
+			long alastChannel = Long.parseLong(names.get(afterLastChannel));
+			names.remove(afterLastChannel);
+			registry.init(names, alastChannel);
 		}
 	}
 
 	public void removeTable() {
-		db.execute("DROP TABLE " + channelTable);
+		db.noComplaints("DROP TABLE " + channelTable);
 	}
 
 	public void synchronize() {
-		Map<String, String> names = getValues();
+		removeTable();
+		createTable();
 		Map<String, String> reg = registry.getClone();
 		ChannelInsertStatement prep = new ChannelInsertStatement(channelTable);
 		db.createPrepStatement(prep);
 		for (String n : reg.keySet()) {
-			if (names.containsKey(n) == false) {
-				prep.add(n, reg.get(n));
-			}
+			prep.add(n, reg.get(n));
 		}
+		prep.add(afterLastChannel,
+				Long.toString(registry.getAfterLastChannel()));
 		if (prep.execute() == null) {
 			log.error("Channel name synchronize failed");
 			return;

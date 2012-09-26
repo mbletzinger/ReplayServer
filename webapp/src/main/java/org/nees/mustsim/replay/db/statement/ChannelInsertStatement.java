@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 public class ChannelInsertStatement extends PrepStatement {
 
 	public ChannelInsertStatement(String channelTableName) {
-		super("INSERT INTO " + channelTableName + "values (?, ?)", Logger.getLogger(ChannelInsertStatement.class));
+		super("INSERT INTO " + channelTableName + " VALUES (?, ?)", Logger.getLogger(ChannelInsertStatement.class));
 	}
 	public boolean add(String name, String id) {
 		try {

@@ -6,6 +6,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ChannelNameRegistry {
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return names.toString() + "last" + afterLastChannel;
+	}
+
 	private long afterLastChannel = 1;
 
 	private final Map<String, String> names = new ConcurrentHashMap<String, String>();
@@ -30,13 +38,14 @@ public class ChannelNameRegistry {
 		return names.get(channel);
 	}
 
-	public void init(Map<String, String> values) {
+	public void init(Map<String, String> values, long alc) {
 		names.clear();
 		names.putAll(values);
+		afterLastChannel = alc;
 	}
 
 	private synchronized String newChannel(TableType table) {
-		String result = table.toString().toLowerCase(null) + "_channel";
+		String result = table.toString().toLowerCase() + "_channel";
 		result += afterLastChannel;
 		afterLastChannel++;
 		return result;
