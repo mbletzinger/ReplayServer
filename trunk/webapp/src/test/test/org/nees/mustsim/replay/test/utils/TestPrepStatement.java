@@ -8,7 +8,7 @@ import org.nees.mustsim.replay.db.statement.PrepStatement;
 public class TestPrepStatement extends PrepStatement {
 
 	public TestPrepStatement(String dbTableName) {
-		super("INSERT INTO " + dbTableName + " VALUES(?,?)", Logger.getLogger(TestPrepStatement.class));
+		super("INSERT INTO " + dbTableName + "  VALUES(?,?)", Logger.getLogger(TestPrepStatement.class));
 	}
 	public boolean add(double x1, double x2) {
 		try {
