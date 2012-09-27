@@ -6,9 +6,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nees.mustsim.replay.db.DbConnections;
+import org.nees.mustsim.replay.db.data.ChannelNameRegistry;
+import org.nees.mustsim.replay.db.data.DbChannelNameSynch;
 import org.nees.mustsim.replay.db.statement.DbStatement;
-import org.nees.mustsim.replay.db.table.ChannelNameRegistry;
-import org.nees.mustsim.replay.db.table.DbChannelNameSynch;
 import org.nees.mustsim.replay.db.table.TableType;
 import org.nees.mustsim.replay.test.utils.ChannelLists;
 

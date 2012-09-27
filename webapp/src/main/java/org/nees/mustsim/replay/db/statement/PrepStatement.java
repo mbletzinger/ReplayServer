@@ -31,6 +31,7 @@ public abstract class PrepStatement {
 		super();
 		this.prepped = prepped;
 		this.log = log;
+		log.debug("Prep statement is " + prepped);
 	}
 	public boolean create(Connection connection) {
 		try {

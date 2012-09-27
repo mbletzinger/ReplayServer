@@ -1,6 +1,5 @@
 package org.nees.mustsim.replay.test;
 
-import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -117,6 +116,7 @@ public class TestDbStatement {
 		prep.execute();
 		ResultSet rs = dbSt.query("SELECT * FROM " + tblName);
 		double[][] result = new double[5][2];
+		log.info("result size is [" + result.length + "][" + result[0].length + "]");
 		int r = 0;
 		try {
 			while (rs.next()) {

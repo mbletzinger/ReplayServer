@@ -1,8 +1,10 @@
-package org.nees.mustsim.replay.db.table;
+package org.nees.mustsim.replay.db.data;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.nees.mustsim.replay.db.table.TableType;
 
 public class ChannelNameRegistry {
 
