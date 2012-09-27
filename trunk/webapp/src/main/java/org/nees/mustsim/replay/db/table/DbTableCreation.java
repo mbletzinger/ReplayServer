@@ -5,37 +5,55 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nees.mustsim.replay.db.data.ChannelNameRegistry;
+
 
 public class DbTableCreation {
-	private final Map<TableType, List<String>> columns = new HashMap<TableType, List<String>>();
+	/**
+	 * @return the cnr
+	 */
+	public ChannelNameRegistry getCnr() {
+		return cnr;
+	}
 
+	private final Map<TableType, List<String>> columns = new HashMap<TableType, List<String>>();
+	private final ChannelNameRegistry cnr;
 	private final String dbname;
 
-	public DbTableCreation(String dbname) {
+
+	public DbTableCreation(ChannelNameRegistry cnr, String dbname) {
 		super();
+		this.cnr = cnr;
 		this.dbname = dbname;
 	}
 
-	private String[] addHeaders(RateType rate) {
+	private String addHeaders(RateType rate) {
 		if (rate.equals(RateType.CONT)) {
-			return new String[] { "Time double NOT NULL", "PRIMARY KEY (Time)" };
+			return "Time double NOT NULL";
 		} else {
-			return new String[] {
-					"Time double NOT NULL, Step int NOT NULL, Substep int NOT NULL, CorrectionStep int NOT NULL",
-					"PRIMARY KEY (Step)" };
+			return "Time double NOT NULL, Step double NOT NULL, Substep double NOT NULL, CorrectionStep double NOT NULL";
 		}
 	}
 
 	public void addTable(TableType table, List<String> channels) {
 		List<String> list = new ArrayList<String>();
-		list.addAll(channels);
+		list.addAll(lookupChannels(table, channels));
 		columns.put(table, list);
 	}
 
+	private List<String> lookupChannels(TableType table, List<String> channels) {
+		List<String> result = new ArrayList<String>();
+		for (String c : channels) {
+			String dc = cnr.addChannel(table, c);
+			result.add(dc);
+		}
+		return result;
+	}
+	
 	public String createTableStatement(TableType table, RateType rate) {
 		String result = "CREATE TABLE " + tableName(table, rate) + "(";
-		String[] headers = addHeaders(rate);
-		result += headers[0];
+		String header = addHeaders(rate);
+		result += header;
 		List<String> channels = columns.get(table);
 		for (String channel : channels) { // we are assuming that the slashes
 											// have been converted to underlines
@@ -43,7 +61,7 @@ public class DbTableCreation {
 											// underlines
 			result += ", " + channel + " double NOT NULL";
 		}
-		result += ", " + headers[1] + ")";
+		result +=  ")";
 		return result;
 	}
 

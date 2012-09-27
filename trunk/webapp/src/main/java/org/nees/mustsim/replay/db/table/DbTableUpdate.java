@@ -29,7 +29,7 @@ public class DbTableUpdate {
 
 	private String updateCont(TableType table, double[] data) {
 		String result = "insert into "
-				+ creation.tableName(table, RateType.CONT) + " values(";
+				+ creation.tableName(table, RateType.CONT) + " VALUES(";
 		for (int i = 0; i < data.length; i++) {
 			result += (i == 0 ? "" : ", ") + Double.toString(data[i]);
 		}
@@ -39,7 +39,7 @@ public class DbTableUpdate {
 
 	private String updateStep(TableType table, double[] data) {
 		String result = "insert into "
-				+ creation.tableName(table, RateType.STEP) + " values(";
+				+ creation.tableName(table, RateType.STEP) + " VALUES(";
 		result += Double.toString(data[0]);
 		for (int i = 1; i < 4; i++) {
 			result += ", " + Integer.toString((int) Math.round(data[i]));

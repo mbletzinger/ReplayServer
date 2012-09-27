@@ -5,8 +5,12 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ TestCreateRemoveDatabase.class,
-		TestTableStatements.class, TestTableUpdates.class, TestQueries.class })
+@SuiteClasses({ 
+	TestCreateRemoveDatabase.class,
+		TestTableUpdates.class,
+		TestDbStatement.class,
+		TestChannelLists.class
+		})
 public class AllTests {
 
 }

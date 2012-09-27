@@ -1,0 +1,146 @@
+package org.nees.mustsim.replay.test;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import junit.framework.Assert;
+
+import org.apache.log4j.Logger;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.nees.mustsim.replay.db.DbConnections;
+import org.nees.mustsim.replay.db.data.ChannelNameRegistry;
+import org.nees.mustsim.replay.db.data.DbDataUpdates;
+import org.nees.mustsim.replay.db.data.Mtx2Str;
+import org.nees.mustsim.replay.db.statement.DbStatement;
+import org.nees.mustsim.replay.db.table.DbTableCreation;
+import org.nees.mustsim.replay.db.table.RateType;
+import org.nees.mustsim.replay.db.table.TableType;
+import org.nees.mustsim.replay.test.utils.ChannelLists;
+import org.nees.mustsim.replay.test.utils.DataGenerator;
+
+public class TestDataStatements {
+	private DbConnections dbc;
+	private double[][] omContData = new double[10][5];
+	private double[][] daqContData = new double[15][4];
+	private double[][] omStepData = new double[10][8];
+	private double[][] daqStepData = new double[15][7];
+	private DbTableCreation create;
+	private final Logger log = Logger.getLogger(TestDataStatements.class);
+
+	@Before
+	public void setUp() throws Exception {
+		String dbName = "TESTDB";
+		dbc = new DbConnections("org.apache.derby.jdbc.ClientDriver", dbName,
+				"jdbc:derby://localhost:1527/", true);
+		omContData = initData(RateType.CONT, 10, 4);
+		daqContData = initData(RateType.CONT, 15, 3);
+		omStepData = initData(RateType.STEP, 10, 4);
+		daqStepData = initData(RateType.STEP, 15, 3);
+		create = new DbTableCreation(new ChannelNameRegistry(), dbName);
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		DbStatement dbSt = dbc.createDbStatement();
+		DbDataUpdates dbu = new DbDataUpdates(dbSt, create);
+		dbu.removeTable(TableType.OM);
+		dbu.removeTable(TableType.DAQ);
+		dbSt.close();
+		dbc.close();
+	}
+
+	@Test
+	public void testContDataUpdate() {
+		ChannelLists cl = new ChannelLists();
+		DbStatement dbSt = dbc.createDbStatement();
+		DbDataUpdates dbu = new DbDataUpdates(dbSt, create);
+		dbu.createTable(TableType.OM, cl.getChannels(TableType.OM, false));
+		// log.debug("Adding data " +
+		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
+		dbu.update(TableType.OM, RateType.CONT, omContData);
+
+		String tblName = create.tableName(TableType.OM, RateType.CONT);
+		queryData(tblName, omContData);
+
+		dbu.createTable(TableType.DAQ, cl.getChannels(TableType.DAQ, false));
+		// log.debug("Adding data " +
+		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
+		dbu.update(TableType.DAQ, RateType.CONT, daqContData);
+
+		tblName = create.tableName(TableType.DAQ, RateType.CONT);
+		queryData(tblName, daqContData);
+	}
+
+	private void compareData(double[][] expected, double[][] actual) {
+		log.info("Comparing " + Mtx2Str.matrix2String(expected) + "\nwith\n"
+				+ Mtx2Str.matrix2String(actual));
+		Assert.assertEquals(expected.length, actual.length);
+		Assert.assertEquals(expected[0].length, actual[0].length);
+		for (int i = 0; i < expected.length; i++) {
+			for (int j = 0; j < expected[0].length; j++) {
+				Assert.assertEquals(expected[i][j], actual[i][j], 0.001);
+			}
+		}
+	}
+
+	@Test
+	public void testStepDataUpdate() {
+		ChannelLists cl = new ChannelLists();
+		DbStatement dbSt = dbc.createDbStatement();
+		DbDataUpdates dbu = new DbDataUpdates(dbSt, create);
+		dbu.createTable(TableType.OM, cl.getChannels(TableType.OM, false));
+		// log.debug("Adding data " +
+		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
+		dbu.update(TableType.OM, RateType.STEP, omStepData);
+
+		String tblName = create.tableName(TableType.OM, RateType.STEP);
+		queryData(tblName, omStepData);
+
+		dbu.createTable(TableType.DAQ, cl.getChannels(TableType.DAQ, false));
+		// log.debug("Adding data " +
+		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omStepData)));
+		dbu.update(TableType.DAQ, RateType.STEP, daqStepData);
+
+		tblName = create.tableName(TableType.DAQ, RateType.STEP);
+		queryData(tblName, daqStepData);
+	}
+
+	private double[][] initData(RateType rate, int row, int col) {
+		double[][] data = new double[row][col];
+		DataGenerator dg = new DataGenerator(col);
+		for (int r = 0; r < row; r++) {
+			data[r] = dg.genRecord(rate);
+		}
+		return data;
+	}
+
+	private void queryData(String tblName, double[][] expected) {
+		DbStatement dbSt = dbc.createDbStatement();
+		ResultSet rs = dbSt.query("SELECT * FROM " + tblName);
+		int columns = 0;
+		try {
+			columns = rs.getMetaData().getColumnCount();
+		} catch (SQLException e) {
+			log.error("ResultSet has no metadata because ", e);
+			Assert.fail();
+		}
+		Assert.assertEquals(expected[0].length, columns);
+		double[][] rsData = new double[expected.length][columns];
+		int r = 0;
+		try {
+			while (rs.next()) {
+				log.debug("Processing rs row " + r);
+				for (int i = 0; i < columns; i++) {
+					rsData[r][i] = rs.getDouble(i + 1);
+				}
+				r++;
+			}
+		} catch (SQLException e) {
+			log.error("Result Set fetch failed because ", e);
+			Assert.fail();
+		}
+		compareData(expected, rsData);
+	}
+}
