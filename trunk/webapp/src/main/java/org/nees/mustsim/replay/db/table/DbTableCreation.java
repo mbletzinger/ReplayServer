@@ -29,9 +29,9 @@ public class DbTableCreation {
 
 	private String addHeaders(RateType rate) {
 		if (rate.equals(RateType.CONT)) {
-			return "Time double NOT NULL";
+			return "time double NOT NULL";
 		} else {
-			return "Time double NOT NULL, Step double NOT NULL, Substep double NOT NULL, CorrectionStep double NOT NULL";
+			return "time double NOT NULL, step double NOT NULL, substep double NOT NULL, correctionstep double NOT NULL";
 		}
 	}
 

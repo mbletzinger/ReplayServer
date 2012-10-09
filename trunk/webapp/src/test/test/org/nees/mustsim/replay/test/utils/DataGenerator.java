@@ -1,13 +1,16 @@
 package org.nees.mustsim.replay.test.utils;
 
-import java.util.Date;
+import junit.framework.Assert;
 
+import org.apache.log4j.Logger;
+import org.nees.mustsim.replay.db.data.Mtx2Str;
 import org.nees.mustsim.replay.db.table.RateType;
 
 public class DataGenerator {
 	private int recordNumber = 1;
 	private final int numberOfColumns;
 	private int[] stepNumber = new int[3];
+//	private final Logger log = Logger.getLogger(DataGenerator.class);
 
 	public DataGenerator(int numberOfColumns) {
 		super();
@@ -56,5 +59,50 @@ public class DataGenerator {
 
 	public void reset() {
 		recordNumber = 0;
+	}
+	public static void compareData(double[][] expected, double[][] actual) {
+		Logger.getLogger(DataGenerator.class).info("Comparing " + Mtx2Str.matrix2String(expected) + "\nwith\n"
+				+ Mtx2Str.matrix2String(actual));
+		Assert.assertEquals(expected.length, actual.length);
+		Assert.assertEquals(expected[0].length, actual[0].length);
+		for (int i = 0; i < expected.length; i++) {
+			for (int j = 0; j < expected[0].length; j++) {
+				Assert.assertEquals(expected[i][j], actual[i][j], 0.001);
+			}
+		}
+	}
+
+
+	public static double[][] initData(RateType rate, int row, int col) {
+		double[][] data = new double[row][col];
+		DataGenerator dg = new DataGenerator(col);
+		for (int r = 0; r < row; r++) {
+			data[r] = dg.genRecord(rate);
+		}
+		return data;
+	}
+
+	public static double [][] extract(double [][] data, int [] columns) {
+		double [][] result = new double[data.length][columns.length];
+		for(int r = 0; r < data.length; r++) {
+			for (int c = 0; c < columns.length; c++) {
+				result[r][c] = data[r][columns[c]];
+			}
+		}
+		return result;
+	}
+	
+	public static double [][] append(double [][] before, double [][] after) {
+		double [][] result = new double[before.length][before[0].length + after[0].length];
+		for (int r = 0; r < before.length; r++) {
+			for(int b = 0; b < before[r].length;b++) {
+				result[r][b] = before[r][b];
+			}
+			int b = before[r].length;
+			for (int a = 0; a < after[r].length;a++) {
+				result[r][b + a] = after[r][a]; 
+			}
+		}
+		return result;
 	}
 }

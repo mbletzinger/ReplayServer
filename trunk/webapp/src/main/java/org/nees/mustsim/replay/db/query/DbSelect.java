@@ -10,26 +10,32 @@ import org.nees.mustsim.replay.db.table.RateType;
 import org.nees.mustsim.replay.db.table.TableType;
 
 public class DbSelect {
+	private int [] channelMap;
 	private final List<String> channelOrder;
-	private final List<String> tableOrder = new ArrayList<String>();
-	private final DbTableCreation creation;
-	private final String name;
-	private final String rateToken = "xRATEx";
-	private final String rateColumn = "yRATECOLUMNy";
-	private final Map<RateType, String> selects = new HashMap<RateType, String>();
 
+	private final DbTableCreation creation;
+
+	private final String name;
+
+	private final String rateColumn = "yRATECOLUMNy";
+	private final String rateToken = "xRATEx";
+	private final Map<RateType, String> selects = new HashMap<RateType, String>();
+	private final List<String> tableOrder = new ArrayList<String>();
 	public DbSelect(List<String> channelOrder, String name,
 			DbTableCreation creation) {
 		super();
-		this.channelOrder = channelOrder;
+		this.channelOrder = new ArrayList<String>();
+		for(String c : channelOrder) {
+			this.channelOrder.add(creation.getCnr().getId(c));
+		}
 		this.name = name;
 		this.creation = creation;
 		createSelects();
 	}
-
 	private void createSelects() {
 		Map<TableType, String> lists = new HashMap<TableType, String>();
 		tableOrder.clear();
+		channelMap = new int[channelOrder.size()];
 		for (TableType t : TableType.values()) {
 			String s = selectString(t);
 			if (s != null) {
@@ -43,6 +49,7 @@ public class DbSelect {
 			if (s != null) {
 				raw += (first ? "" : " UNION ") + s;
 				first = false;
+				
 			}
 		}
 		raw += "";
@@ -52,6 +59,30 @@ public class DbSelect {
 					: "Step"));
 			selects.put(r, s);
 		}
+		int i = 0;
+		for (String c : channelOrder) {
+			channelMap[i] = tableOrder.indexOf(c);
+			i++;
+		}
+	}
+	/**
+	 * @return the channelMap
+	 */
+	public int[] getChannelMap() {
+		return channelMap;
+	}
+	/**
+	 * @return the channelOrder
+	 */
+	public List<String> getChannelOrder() {
+		return channelOrder;
+	}
+
+	/**
+	 * @return the creation
+	 */
+	public DbTableCreation getCreation() {
+		return creation;
 	}
 
 	/**
@@ -61,8 +92,21 @@ public class DbSelect {
 		return name;
 	}
 
-	public String getSelect(RateType rate) {
-		return selects.get(rate);
+	public String getSelect() {
+		return selects.get(RateType.STEP);
+	}
+	
+	public String getSelect(double start, double stop) {
+		String result = selects.get(RateType.CONT);
+		result += " WHERE time BETWEEN " + start + " AND " + stop;
+		return result;
+	}
+
+	/**
+	 * @return the tableOrder
+	 */
+	public List<String> getTableOrder() {
+		return tableOrder;
 	}
 
 	private String selectString(TableType table) {
@@ -84,6 +128,7 @@ public class DbSelect {
 													// used
 		String result = "SELECT " + rateColumn + " ";
 		boolean first = true;
+		tableOrder.addAll(sublist);
 		for (String c : sublist) {
 			result += (first ? "" : ", ") + c;
 			first = false;
