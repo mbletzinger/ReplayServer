@@ -139,47 +139,4 @@ public class TestTableUpdates {
 		executeStatement(result, connection);
 	}
 
-	@Test
-	public void testUpdateTableStatement() {
-		DbTableUpdate update = new DbTableUpdate(dbT);
-		double contData = 1234563.234;
-		double[] stepData = { 1234563.234, 2.0, 3.0, 123.0 };
-		double[] omData = { 1.2, 2.3, 3.4, 4.5 };
-		double[] daqData = { .012, .023, .034 };
-
-		Connection connection = fetchConnection();
-		String stmt = dbT.createTableStatement(TableType.OM, RateType.CONT);
-		executeStatement(stmt, connection);
-		stmt = dbT.createTableStatement(TableType.OM, RateType.STEP);
-		executeStatement(stmt, connection);
-		stmt = dbT.createTableStatement(TableType.DAQ, RateType.CONT);
-		executeStatement(stmt, connection);
-		stmt = dbT.createTableStatement(TableType.DAQ, RateType.STEP);
-		executeStatement(stmt, connection);
-
-		double[] result = new double[omData.length + 1];
-		System.arraycopy(omData, 0, result, 1, omData.length);
-		result[0] = contData;
-		String sresult = update.update(TableType.OM, RateType.CONT, result);
-		executeStatement(sresult, connection);
-
-		result = new double[omData.length + stepData.length];
-		System.arraycopy(omData, 0, result, stepData.length, omData.length);
-		System.arraycopy(stepData, 0, result, 0, stepData.length);
-		sresult = update.update(TableType.OM, RateType.STEP, result);
-		executeStatement(sresult, connection);
-
-		result = new double[daqData.length + 1];
-		System.arraycopy(daqData, 0, result, 1, daqData.length);
-		result[0] = contData;
-		sresult = update.update(TableType.DAQ, RateType.CONT, result);
-		executeStatement(sresult, connection);
-
-		result = new double[daqData.length + stepData.length];
-		System.arraycopy(daqData, 0, result, stepData.length, daqData.length);
-		System.arraycopy(stepData, 0, result, 0, stepData.length);
-		sresult = update.update(TableType.DAQ, RateType.STEP, result);
-		executeStatement(sresult, connection);
-
-	}
 }

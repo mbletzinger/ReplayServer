@@ -10,6 +10,15 @@ public class Mtx2Str {
 		result += "]";
 		return result;
 	}
+	public static String iArray2String(int [] array) {
+		String result = "[";
+		for (int i = 0; i < array.length; i++) {
+			result += (i == 0 ? "":", ") + array[i];
+		}
+		result += "]";
+		return result;
+	}
+	
 	public static String matrix2String( double [][] matrix) {
 		String result = "\n";
 		for (int i = 0; i < matrix.length; i++) {

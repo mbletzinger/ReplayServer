@@ -5,20 +5,17 @@ import java.util.List;
 import org.nees.mustsim.replay.db.statement.DataInsertStatement;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 import org.nees.mustsim.replay.db.table.DbTableCreation;
-import org.nees.mustsim.replay.db.table.DbTableUpdate;
 import org.nees.mustsim.replay.db.table.RateType;
 import org.nees.mustsim.replay.db.table.TableType;
 
 public class DbDataUpdates {
 	private final DbStatement dbSt;
 	private final DbTableCreation create;
-	private final DbTableUpdate update;
 
 	public DbDataUpdates(DbStatement dbSt, DbTableCreation create) {
 		super();
 		this.dbSt = dbSt;
 		this.create = create;
-		this.update = new DbTableUpdate(create);
 	}
 
 	public boolean createTable(TableType table, List<String> channels) {

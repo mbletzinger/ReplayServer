@@ -9,7 +9,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	TestCreateRemoveDatabase.class,
 		TestTableUpdates.class,
 		TestDbStatement.class,
-		TestChannelLists.class
+		TestChannelLists.class,
+		TestDataStatements.class
 		})
 public class AllTests {
 

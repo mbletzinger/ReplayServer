@@ -24,7 +24,7 @@ public class DbStatement {
 
 	public boolean execute(String statement) {
 		Statement stmt = null;
-		log.debug("Executing " + statement);
+//		log.debug("Executing " + statement);
 		try {
 			stmt = connection.createStatement();
 		} catch (SQLException e) {
@@ -48,13 +48,13 @@ public class DbStatement {
 				}
 			}
 		}
-		log.info("executed \"" + statement + "\"");
+		log.debug("Executed \"" + statement + "\"");
 		return true;
 
 	}
 
 	public void noComplaints(String statement) {
-		log.debug("Executing " + statement);
+//		log.debug("Executing " + statement);
 		Statement stmt = null;
 		try {
 			stmt = connection.createStatement();
@@ -74,7 +74,7 @@ public class DbStatement {
 				}
 			}
 		}
-		log.info("executed \"" + statement + "\"");
+		log.debug("Executed \"" + statement + "\"");
 	}
 
 	public ResultSet query(String statement) {
