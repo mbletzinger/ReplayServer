@@ -14,9 +14,10 @@ public class GenerateActualLate extends GenerateActualColumn {
 		genCol(result, skips, slopeNegative);		
 	}
 
-	public GenerateActualLate(int increment, int rowSize, int gap) {
-		super(increment, rowSize, gap);
+	public GenerateActualLate(int rowSize, double increment, int gap) {
+		super(rowSize, increment, gap);
 	}
+
 
 
 }

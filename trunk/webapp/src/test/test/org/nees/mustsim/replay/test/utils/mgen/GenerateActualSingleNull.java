@@ -14,8 +14,9 @@ public class GenerateActualSingleNull extends GenerateActualColumn {
 		genCol(result, skips, slopeNegative);
 	}
 
-	public GenerateActualSingleNull(int increment, int rowSize, int gap) {
-		super(increment, rowSize, gap);
+	public GenerateActualSingleNull(int rowSize, double increment, int gap) {
+		super(rowSize, increment, gap);
 	}
+
 
 }

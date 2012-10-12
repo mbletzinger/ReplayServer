@@ -9,8 +9,9 @@ public class GenerateExpectedFull extends GenerateExpectedColumn {
 		genFull(result, slopeNegative);
 	}
 
-	public GenerateExpectedFull(int increment, int rowSize) {
-		super(increment, rowSize,0);
+	public GenerateExpectedFull(int rowSize, double increment) {
+		super(rowSize, increment, 0);
 	}
+
 
 }

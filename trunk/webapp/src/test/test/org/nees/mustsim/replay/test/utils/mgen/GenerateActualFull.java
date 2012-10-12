@@ -11,8 +11,9 @@ public class GenerateActualFull extends GenerateActualColumn {
 		genCol(result, skips, slopeNegative);
 	}
 
-	public GenerateActualFull(int rowSize, int increment) {
-		super(rowSize, increment,0);
+	public GenerateActualFull(int rowSize, double increment) {
+		super(rowSize, increment, 0);
 	}
+
 
 }

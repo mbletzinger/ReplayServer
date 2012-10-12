@@ -4,8 +4,9 @@ import java.util.List;
 
 public class GenerateExpectedEarly extends GenerateExpectedColumn {
 
-	public GenerateExpectedEarly(int increment, int rowSize, int gap) {
-		super(increment, rowSize, gap);
+	public GenerateExpectedEarly(int rowSize, double increment, int gap) {
+		super(rowSize, increment, gap);
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
