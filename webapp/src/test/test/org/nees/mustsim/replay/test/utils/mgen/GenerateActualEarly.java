@@ -14,8 +14,9 @@ public class GenerateActualEarly extends GenerateActualColumn {
 		genCol(result, skips, slopeNegative);
 	}
 
-	public GenerateActualEarly(int increment, int rowSize, int gap) {
-		super(increment, rowSize, gap);
+	public GenerateActualEarly(int rowSize, double increment, int gap) {
+		super(rowSize, increment, gap);
 	}
+
 
 }

@@ -3,11 +3,26 @@ package org.nees.mustsim.replay.db.data;
 import java.util.List;
 
 public class DoubleMatrix {
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		String result = "";
+		for (int r = 0; r < data.length; r++) {
+			result += "\n\t[";
+			for (int c = 0; c < data[r].length; c++) {
+				result += (c == 0 ? "" : ", ") + (isNull[r][c] ? "null" : data[r][c]); 
+			}
+			result += "]";
+		}
+		return result;
+	}
 	private final double [][] data;
 	private final boolean [][] isNull;
-	public DoubleMatrix(List<List<Double>> idata, int rowSize) {
-		data = new double[idata.size()][rowSize];
-		isNull = new boolean[idata.size()][rowSize];
+	public DoubleMatrix(List<List<Double>> idata, int columnSize) {
+		data = new double[idata.size()][columnSize];
+		isNull = new boolean[idata.size()][columnSize];
 		int r = 0;
 		for (List<Double> row : idata) {
 			int c = 0;

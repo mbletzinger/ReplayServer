@@ -12,8 +12,9 @@ public class GenerateActualEmpty extends GenerateActualColumn {
 		}
 	}
 
-	public GenerateActualEmpty(int rowSize, int increment) {
-		super(rowSize, increment,0);
+	public GenerateActualEmpty(int rowSize, double increment) {
+		super(rowSize, increment, 0);
 	}
+
 
 }

@@ -4,8 +4,9 @@ import java.util.List;
 
 public class GenerateExpectedLate extends GenerateExpectedColumn {
 
-	public GenerateExpectedLate(int increment, int rowSize, int gap) {
-		super(increment, rowSize, gap);
+
+	public GenerateExpectedLate(int rowSize, double increment, int gap) {
+		super(rowSize, increment, gap);
 	}
 
 	@Override

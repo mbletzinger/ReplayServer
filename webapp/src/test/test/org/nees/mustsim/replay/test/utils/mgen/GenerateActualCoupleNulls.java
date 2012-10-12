@@ -5,6 +5,10 @@ import java.util.List;
 
 public class GenerateActualCoupleNulls extends GenerateActualColumn {
 
+	public GenerateActualCoupleNulls(int rowSize, double increment) {
+		super(rowSize, increment, 0);
+	}
+
 	@Override
 	public void gen(List<List<Double>> result, boolean slopeNegative) {
 		List<Integer> skips = new ArrayList<Integer>();
@@ -13,8 +17,5 @@ public class GenerateActualCoupleNulls extends GenerateActualColumn {
 		genCol(result, skips, slopeNegative);		
 	}
 
-	public GenerateActualCoupleNulls(int rowSize, int increment) {
-		super(rowSize, increment,0);
-	}
 
 }
