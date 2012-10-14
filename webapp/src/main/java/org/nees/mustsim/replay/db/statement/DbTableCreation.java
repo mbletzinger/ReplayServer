@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.db.table;
+package org.nees.mustsim.replay.db.statement;
 
 import java.util.ArrayList;
 import java.util.HashMap;

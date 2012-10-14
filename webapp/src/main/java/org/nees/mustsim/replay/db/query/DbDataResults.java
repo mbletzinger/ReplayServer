@@ -5,10 +5,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.apache.log4j.Logger;
 import org.nees.mustsim.replay.db.data.DoubleMatrix;
+import org.nees.mustsim.replay.db.data.Interpolate;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 
 public class DbDataResults {
@@ -44,7 +43,10 @@ public class DbDataResults {
 			log.error("Result Set fetch failed because ", e);
 			return null;
 		}
-		return new DoubleMatrix(data, rowSize);
+		DoubleMatrix result = new DoubleMatrix(data, rowSize);
+		Interpolate intpl = new Interpolate(result);
+		intpl.fix();
+		return result;
 	}
 	public DbDataResults(DbStatement dbSt, DbSelect select) {
 		super();

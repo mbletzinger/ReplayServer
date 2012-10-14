@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.mustsim.replay.db.table.TableType;
+import org.nees.mustsim.replay.db.statement.TableType;
 
 public class ChannelLists {
 	private final Map<TableType, List<String>> channels = new HashMap<TableType, List<String>>();

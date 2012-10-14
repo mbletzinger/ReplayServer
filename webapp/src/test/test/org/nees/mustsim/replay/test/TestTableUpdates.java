@@ -13,10 +13,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nees.mustsim.replay.db.data.ChannelNameRegistry;
-import org.nees.mustsim.replay.db.table.DbTableCreation;
-import org.nees.mustsim.replay.db.table.DbTableUpdate;
-import org.nees.mustsim.replay.db.table.RateType;
-import org.nees.mustsim.replay.db.table.TableType;
+import org.nees.mustsim.replay.db.statement.DbTableCreation;
+import org.nees.mustsim.replay.db.statement.RateType;
+import org.nees.mustsim.replay.db.statement.TableType;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;

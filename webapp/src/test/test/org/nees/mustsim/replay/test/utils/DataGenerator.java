@@ -4,7 +4,7 @@ import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
 import org.nees.mustsim.replay.db.data.Mtx2Str;
-import org.nees.mustsim.replay.db.table.RateType;
+import org.nees.mustsim.replay.db.statement.RateType;
 
 public class DataGenerator {
 	private int recordNumber = 1;
