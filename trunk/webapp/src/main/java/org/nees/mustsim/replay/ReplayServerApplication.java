@@ -1,7 +1,7 @@
 package org.nees.mustsim.replay;
 
-import org.nees.mustsim.replay.restlet.ChannelListServerResource;
-import org.nees.mustsim.replay.restlet.DataServerResource;
+import org.nees.mustsim.replay.restlet.DataQueryServerResource;
+import org.nees.mustsim.replay.restlet.DataTableServerResource;
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
@@ -16,11 +16,11 @@ public class ReplayServerApplication extends Application {
 	public Restlet createInboundRoot() {
 		// Create a router Restlet that routes each call to a new instance of HelloWorldResource.
         Router router = new Router(getContext());
-
+        // /data/table/{table} - put, post
+        // /data/query/{query}/start/{start} - put, get
         // Defines only one route
-        router.attach("/postData/{dataTable}", DataServerResource.class);
-        router.attach("/channelList", ChannelListServerResource.class);
-        router.attach("/queryData/{list}&{start}&{stop}", DataServerResource.class);
+        router.attach("/data/table/{table}", DataTableServerResource.class);
+        router.attach("/data/query/{query}/start/{start}", DataQueryServerResource.class);
         
         return router;	
 	}

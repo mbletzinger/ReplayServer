@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.nees.mustsim.replay.db.statement.DataInsertStatement;
 import org.nees.mustsim.replay.db.statement.DbStatement;
-import org.nees.mustsim.replay.db.table.DbTableCreation;
-import org.nees.mustsim.replay.db.table.RateType;
-import org.nees.mustsim.replay.db.table.TableType;
+import org.nees.mustsim.replay.db.statement.DbTableCreation;
+import org.nees.mustsim.replay.db.statement.RateType;
+import org.nees.mustsim.replay.db.statement.TableType;
 
 public class DbDataUpdates {
 	private final DbStatement dbSt;

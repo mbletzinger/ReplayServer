@@ -5,30 +5,31 @@ import java.io.OutputStream;
 
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
-import org.restlet.resource.Post;
+import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
 
-public class ChannelListServerResource extends ServerResource implements ChannelListResource {
+public class DataQueryServerResource extends ServerResource implements
+		DataQueryResource {
 
 	@Override
 	@Get
-	public OutputStream getList(String name) {
+	public OutputStream get(String query, String start, String stop) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	@Post
-	public void setList(String name, InputStream list) {
+	@Put
+	public void set(String query, InputStream channels) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	@Delete
-	public void removeList(String name) {
+	public void removeList(String query) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

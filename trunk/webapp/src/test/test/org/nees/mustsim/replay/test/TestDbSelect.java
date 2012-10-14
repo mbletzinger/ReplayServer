@@ -15,9 +15,9 @@ import org.nees.mustsim.replay.db.data.DbDataUpdates;
 import org.nees.mustsim.replay.db.data.Mtx2Str;
 import org.nees.mustsim.replay.db.query.DbSelect;
 import org.nees.mustsim.replay.db.statement.DbStatement;
-import org.nees.mustsim.replay.db.table.DbTableCreation;
-import org.nees.mustsim.replay.db.table.RateType;
-import org.nees.mustsim.replay.db.table.TableType;
+import org.nees.mustsim.replay.db.statement.DbTableCreation;
+import org.nees.mustsim.replay.db.statement.RateType;
+import org.nees.mustsim.replay.db.statement.TableType;
 import org.nees.mustsim.replay.test.utils.ChannelLists;
 import org.nees.mustsim.replay.test.utils.DataGenerator;
 

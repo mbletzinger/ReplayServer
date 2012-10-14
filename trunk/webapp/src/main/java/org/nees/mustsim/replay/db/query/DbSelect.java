@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.mustsim.replay.db.table.DbTableCreation;
-import org.nees.mustsim.replay.db.table.RateType;
-import org.nees.mustsim.replay.db.table.TableType;
+import org.nees.mustsim.replay.db.statement.DbTableCreation;
+import org.nees.mustsim.replay.db.statement.RateType;
+import org.nees.mustsim.replay.db.statement.TableType;
 
 public class DbSelect {
 	private int [] channelMap;

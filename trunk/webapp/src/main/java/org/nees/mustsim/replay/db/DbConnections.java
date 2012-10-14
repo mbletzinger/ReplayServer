@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nees.mustsim.replay.db.statement.DbStatement;
-import org.nees.mustsim.replay.db.table.DbTableCreation;
-import org.nees.mustsim.replay.db.table.RateType;
-import org.nees.mustsim.replay.db.table.TableType;
+import org.nees.mustsim.replay.db.statement.DbTableCreation;
+import org.nees.mustsim.replay.db.statement.RateType;
+import org.nees.mustsim.replay.db.statement.TableType;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
