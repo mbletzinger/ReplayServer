@@ -15,7 +15,7 @@ import org.nees.mustsim.replay.db.data.DbDataUpdates;
 import org.nees.mustsim.replay.db.data.Mtx2Str;
 import org.nees.mustsim.replay.db.query.DbSelect;
 import org.nees.mustsim.replay.db.statement.DbStatement;
-import org.nees.mustsim.replay.db.statement.DbTableCreation;
+import org.nees.mustsim.replay.db.statement.DbTableSpecs;
 import org.nees.mustsim.replay.db.statement.RateType;
 import org.nees.mustsim.replay.db.statement.TableType;
 import org.nees.mustsim.replay.test.utils.ChannelLists;
@@ -23,7 +23,7 @@ import org.nees.mustsim.replay.test.utils.DataGenerator;
 
 public class TestDbSelect {
 	private DbConnections dbc;
-	private DbTableCreation create;
+	private DbTableSpecs create;
 	private double[][] omContData = new double[10][5];
 	private double[][] daqContData = new double[15][4];
 	private double[][] omStepData = new double[10][8];
@@ -33,7 +33,7 @@ public class TestDbSelect {
 		String dbName = "TESTDB";
 		dbc = new DbConnections("org.apache.derby.jdbc.ClientDriver", dbName,
 				"jdbc:derby://localhost:1527/", true);
-		create = new DbTableCreation(new ChannelNameRegistry(), dbName);
+		create = new DbTableSpecs(new ChannelNameRegistry(), dbName);
 		omContData = DataGenerator.initData(RateType.CONT, 10, 4);
 		daqContData = DataGenerator.initData(RateType.CONT, 15, 3);
 		omStepData = DataGenerator.initData(RateType.STEP, 10, 4);
@@ -62,7 +62,7 @@ public class TestDbSelect {
 		List<String> chnls = new ArrayList<String>();
 		chnls.add("OM/CntrlSensor/D_West_X");
 		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_X1");
-		DbSelect dbs = new DbSelect(chnls, "OM_Channels", create);
+		DbSelect dbs = new DbSelect(chnls, "OM_Channels", create,RateType.CONT);
 		Assert.assertEquals("[om_channel4, om_channel1]", dbs.getTableOrder().toString());
 		Assert.assertEquals("[0, 1]", Mtx2Str.iArray2String(dbs.getChannelMap()));
 
@@ -70,7 +70,7 @@ public class TestDbSelect {
 		chnls.add("DAQ/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3");
 		chnls.add("OM/CntrlSensor/D_West_X");
 		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_X1");
-		dbs = new DbSelect(chnls, "Mixed_Channels", create);
+		dbs = new DbSelect(chnls, "Mixed_Channels", create, RateType.STEP);
 		Assert.assertEquals("[om_channel4, om_channel1, daq_channel7]", dbs.getTableOrder().toString());
 		Assert.assertEquals("[2, 0, 1]", Mtx2Str.iArray2String(dbs.getChannelMap()));
 
@@ -90,14 +90,14 @@ public class TestDbSelect {
 		List<String> chnls = new ArrayList<String>();
 		chnls.add("OM/CntrlSensor/D_West_X");
 		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_X1");
-		DbSelect dbs = new DbSelect(chnls, "OM_Channels", create);
+		DbSelect dbs = new DbSelect(chnls, "OM_Channels", create,RateType.STEP);
 		ResultSet rs = dbSt.query(dbs.getSelect());
 
 		chnls = new ArrayList<String>();
 		chnls.add("DAQ/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3");
 		chnls.add("OM/CntrlSensor/D_West_X");
 		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_X1");
-		dbs = new DbSelect(chnls, "Mixed_Channels", create);
+		dbs = new DbSelect(chnls, "Mixed_Channels", create, RateType.CONT);
 
 	}
 }

@@ -13,7 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nees.mustsim.replay.db.data.ChannelNameRegistry;
-import org.nees.mustsim.replay.db.statement.DbTableCreation;
+import org.nees.mustsim.replay.db.statement.DbTableSpecs;
 import org.nees.mustsim.replay.db.statement.RateType;
 import org.nees.mustsim.replay.db.statement.TableType;
 
@@ -21,13 +21,13 @@ import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
 public class TestTableUpdates {
-	private DbTableCreation dbT;
+	private DbTableSpecs dbT;
 	private final Logger log = Logger.getLogger(TestTableUpdates.class);
 	private BoneCP connectionPool;
 
 	@Before
 	public void setUp() throws Exception {
-		dbT = new DbTableCreation(new ChannelNameRegistry(), "TESTDB");
+		dbT = new DbTableSpecs(new ChannelNameRegistry(), "TESTDB");
 		List<String> channels = new ArrayList<String>();
 		channels.add("OM_Cmd_LBCB1_Actuator_C__LBCB1__X1");
 		channels.add("OM_Disp_LBCB1_Cartesian_D__LBCB1__RY");
