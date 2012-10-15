@@ -14,7 +14,7 @@ import org.nees.mustsim.replay.db.data.ChannelNameRegistry;
 import org.nees.mustsim.replay.db.data.DbDataUpdates;
 import org.nees.mustsim.replay.db.data.Mtx2Str;
 import org.nees.mustsim.replay.db.statement.DbStatement;
-import org.nees.mustsim.replay.db.statement.DbTableCreation;
+import org.nees.mustsim.replay.db.statement.DbTableSpecs;
 import org.nees.mustsim.replay.db.statement.RateType;
 import org.nees.mustsim.replay.db.statement.TableType;
 import org.nees.mustsim.replay.test.utils.ChannelLists;
@@ -26,7 +26,7 @@ public class TestDataStatements {
 	private double[][] daqContData = new double[15][4];
 	private double[][] omStepData = new double[10][8];
 	private double[][] daqStepData = new double[15][7];
-	private DbTableCreation create;
+	private DbTableSpecs create;
 	private final Logger log = Logger.getLogger(TestDataStatements.class);
 
 	@Before
@@ -38,7 +38,7 @@ public class TestDataStatements {
 		daqContData = DataGenerator.initData(RateType.CONT, 15, 3);
 		omStepData = DataGenerator.initData(RateType.STEP, 10, 4);
 		daqStepData = DataGenerator.initData(RateType.STEP, 15, 3);
-		create = new DbTableCreation(new ChannelNameRegistry(), dbName);
+		create = new DbTableSpecs(new ChannelNameRegistry(), dbName);
 	}
 
 	@After

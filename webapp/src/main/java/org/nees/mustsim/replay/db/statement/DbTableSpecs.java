@@ -8,24 +8,17 @@ import java.util.Map;
 import org.nees.mustsim.replay.db.data.ChannelNameRegistry;
 
 
-public class DbTableCreation {
-	/**
-	 * @return the cnr
-	 */
-	public ChannelNameRegistry getCnr() {
-		return cnr;
-	}
+public class DbTableSpecs {
+	private final ChannelNameRegistry cnr;
 
 	private final Map<TableType, List<String>> columns = new HashMap<TableType, List<String>>();
-	private final ChannelNameRegistry cnr;
 	private final String dbname;
-
-
-	public DbTableCreation(ChannelNameRegistry cnr, String dbname) {
+	public DbTableSpecs(ChannelNameRegistry cnr, String dbname) {
 		super();
 		this.cnr = cnr;
 		this.dbname = dbname;
 	}
+
 
 	private String addHeaders(RateType rate) {
 		if (rate.equals(RateType.CONT)) {
@@ -41,15 +34,6 @@ public class DbTableCreation {
 		columns.put(table, list);
 	}
 
-	private List<String> lookupChannels(TableType table, List<String> channels) {
-		List<String> result = new ArrayList<String>();
-		for (String c : channels) {
-			String dc = cnr.addChannel(table, c);
-			result.add(dc);
-		}
-		return result;
-	}
-	
 	public String createTableStatement(TableType table, RateType rate) {
 		String result = "CREATE TABLE " + tableName(table, rate) + "(";
 		String header = addHeaders(rate);
@@ -65,6 +49,13 @@ public class DbTableCreation {
 		return result;
 	}
 
+	/**
+	 * @return the cnr
+	 */
+	public ChannelNameRegistry getCnr() {
+		return cnr;
+	}
+	
 	public List<String> getColumns(TableType table) {
 		List<String> result = new ArrayList<String>();
 		List<String> cols = columns.get(table);
@@ -79,6 +70,15 @@ public class DbTableCreation {
 	 */
 	public String getDbname() {
 		return dbname;
+	}
+
+	private List<String> lookupChannels(TableType table, List<String> channels) {
+		List<String> result = new ArrayList<String>();
+		for (String c : channels) {
+			String dc = cnr.addChannel(table, c);
+			result.add(dc);
+		}
+		return result;
 	}
 
 	public int recordLength(TableType table, RateType rate) {

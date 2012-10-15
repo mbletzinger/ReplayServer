@@ -4,47 +4,50 @@ import java.util.List;
 
 import org.nees.mustsim.replay.db.statement.DataInsertStatement;
 import org.nees.mustsim.replay.db.statement.DbStatement;
-import org.nees.mustsim.replay.db.statement.DbTableCreation;
+import org.nees.mustsim.replay.db.statement.DbTableSpecs;
 import org.nees.mustsim.replay.db.statement.RateType;
 import org.nees.mustsim.replay.db.statement.TableType;
 
 public class DbDataUpdates {
 	private final DbStatement dbSt;
-	private final DbTableCreation create;
+	private final DbTableSpecs specs;
 
-	public DbDataUpdates(DbStatement dbSt, DbTableCreation create) {
+	public DbDataUpdates(DbStatement dbSt, DbTableSpecs create) {
 		super();
 		this.dbSt = dbSt;
-		this.create = create;
+		this.specs = create;
 	}
 
 	public boolean createTable(TableType table, List<String> channels) {
 		boolean result = true;
-		create.addTable(table, channels);
+		specs.addTable(table, channels);
 		for (RateType r : RateType.values()) {
-			String statement = create.createTableStatement(table, r);
+			String statement = specs.createTableStatement(table, r);
 			result = result && dbSt.execute(statement);
 		}
 		return result;
 	}
+
 	public boolean removeTable(TableType table) {
 		boolean result = true;
 		for (RateType r : RateType.values()) {
-			dbSt.execute("DROP TABLE " + create.tableName(table, r));
+			dbSt.execute("DROP TABLE " + specs.tableName(table, r));
 		}
-		return result;		
+		return result;
 	}
-	public boolean update(TableType table, RateType rate, double [][] data) {
+
+	public boolean update(TableType table, RateType rate, double[][] data) {
 		boolean result = true;
-		DataInsertStatement prep = DataInsertStatement.getStatement(create.tableName(table, rate), data[0].length);
+		DataInsertStatement prep = DataInsertStatement.getStatement(
+				specs.tableName(table, rate), data[0].length);
 		result = dbSt.createPrepStatement(prep);
-		if(result == false) {
+		if (result == false) {
 			return result;
 		}
 		for (int r = 0; r < data.length; r++) {
 			prep.add(data[r]);
 		}
-		int [] records = prep.execute();
+		int[] records = prep.execute();
 		result = records.length > 0;
 		return result;
 	}
