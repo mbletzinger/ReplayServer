@@ -10,7 +10,9 @@ import org.junit.runners.Suite.SuiteClasses;
 		TestTableUpdates.class,
 		TestDbStatement.class,
 		TestChannelLists.class,
-		TestDataStatements.class
+		TestDataStatements.class,
+		TestInterpolate.class,
+		TestMerge.class
 		})
 public class AllTests {
 

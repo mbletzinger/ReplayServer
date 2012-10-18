@@ -78,7 +78,7 @@ public class DbStatement {
 	}
 
 	public ResultSet query(String statement) {
-		log.debug("Querying " + statement);
+//		log.debug("Querying " + statement);
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
@@ -86,7 +86,7 @@ public class DbStatement {
 		} catch (SQLException e) {
 			log.error("Create statement \"" + statement + "\" failed because ",
 					e);
-			Assert.fail();
+			return null;
 		}
 		try {
 			rs = stmt.executeQuery(statement);

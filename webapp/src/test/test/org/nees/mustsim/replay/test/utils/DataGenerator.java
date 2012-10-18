@@ -1,5 +1,8 @@
 package org.nees.mustsim.replay.test.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
@@ -7,22 +10,26 @@ import org.nees.mustsim.replay.db.data.Mtx2Str;
 import org.nees.mustsim.replay.db.statement.RateType;
 
 public class DataGenerator {
-	private int recordNumber = 1;
+	private int recordNumber = 0;
 	private final int numberOfColumns;
 	private int[] stepNumber = new int[3];
+	private final double timeMultiplier;
+//	private static double startTime = (System.currentTimeMillis() / 1000L) ;
+	private static double startTime = 222.0 ;
 //	private final Logger log = Logger.getLogger(DataGenerator.class);
 
-	public DataGenerator(int numberOfColumns) {
+	public DataGenerator(int numberOfColumns, double timeMultiplier) {
 		super();
 		this.numberOfColumns = numberOfColumns;
 		stepNumber[0] = 1;
 		stepNumber[1] = 0;
 		stepNumber[2] = 1;
+		this.timeMultiplier = timeMultiplier;
 	}
 
 	public double[] genRecord(RateType rate) {
 		double[] result = genData(rate.equals(RateType.CONT) ? 1 : 4);
-		result[0] = 	(System.currentTimeMillis() / 1000L) + recordNumber;
+		result[0] = startTime + (recordNumber * timeMultiplier);
 		if(rate.equals(RateType.STEP)) {
 			for( int s = 0; s < 3; s++) {
 				result[s + 1] = stepNumber[s];
@@ -45,16 +52,16 @@ public class DataGenerator {
 	}
 
 	private void incrementStep() {
-		if (recordNumber % 3 == 0) {
+		if (recordNumber % 4 == 0) {
 			stepNumber[0]++;
 			stepNumber[1] = 0;
 			stepNumber[2] = 0;
 		}
-		if (recordNumber % 2 == 0) {
+		if (recordNumber % 3 == 0) {
 			stepNumber[1]++;
 			stepNumber[2] = 0;
 		}
-		stepNumber[2]++;
+		stepNumber[2]+= timeMultiplier * 10;;
 	}
 
 	public void reset() {
@@ -73,9 +80,9 @@ public class DataGenerator {
 	}
 
 
-	public static double[][] initData(RateType rate, int row, int col) {
+	public static double[][] initData(RateType rate, int row, int col, double timeMultiplier) {
 		double[][] data = new double[row][col];
-		DataGenerator dg = new DataGenerator(col);
+		DataGenerator dg = new DataGenerator(col, timeMultiplier);
 		for (int r = 0; r < row; r++) {
 			data[r] = dg.genRecord(rate);
 		}
@@ -101,6 +108,18 @@ public class DataGenerator {
 			int b = before[r].length;
 			for (int a = 0; a < after[r].length;a++) {
 				result[r][b + a] = after[r][a]; 
+			}
+		}
+		return result;
+	}
+	
+	public static List<List<Double>> toList(double[][] data) {
+		List<List<Double>> result = new ArrayList<List<Double>>();
+		for (int r = 0; r < data.length; r++) {
+			List<Double> row = new ArrayList<Double>();
+			result.add(row);
+			for (int c = 0; c < data[r].length; c++) {
+				row.add(data[r][c]);
 			}
 		}
 		return result;
