@@ -21,11 +21,14 @@ public class DbTableSpecs {
 
 
 	private String addHeaders(RateType rate) {
-		if (rate.equals(RateType.CONT)) {
-			return "time double NOT NULL";
-		} else {
-			return "time double NOT NULL, step double NOT NULL, substep double NOT NULL, correctionstep double NOT NULL";
+		NumberOfColumns noc = new NumberOfColumns(1, rate);
+		String result = "";
+		boolean first = true;
+		for( String h : noc.getHeaders()) {
+			result += (first ? "" : ", ") + h + " double NOT NULL";
+			first = false;
 		}
+		return result;
 	}
 
 	public void addTable(TableType table, List<String> channels) {
@@ -77,16 +80,6 @@ public class DbTableSpecs {
 		for (String c : channels) {
 			String dc = cnr.addChannel(table, c);
 			result.add(dc);
-		}
-		return result;
-	}
-
-	public int recordLength(TableType table, RateType rate) {
-		int result = columns.get(table).size();
-		if (rate.equals(RateType.CONT)) {
-			result++;
-		} else {
-			result += 4;
 		}
 		return result;
 	}
