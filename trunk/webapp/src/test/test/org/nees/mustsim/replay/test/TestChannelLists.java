@@ -34,7 +34,7 @@ public class TestChannelLists {
 	public void testChannelList() {
 		ChannelLists lists = new ChannelLists();
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
-		for (String c : lists.getChannels(TableType.OM, false)) {
+		for (String c : lists.getChannels(TableType.OM)) {
 			cnr.addChannel(TableType.OM, c);
 		}
 		DbStatement dbSt = dbc.createDbStatement();

@@ -45,7 +45,7 @@ public class DbQuerySpec {
 		selectOrder.clear();
 		query2selectMap = new int[queryOrder.size()];
 		for (TableType t : TableType.values()) {
-			DbSelect s = selectString(t);
+			DbSelect s = createSelect(t);
 			if (s != null) {
 				lists.put(t, s);
 			}
@@ -118,7 +118,7 @@ public class DbQuerySpec {
 		return selectOrder;
 	}
 
-	private DbSelect selectString(TableType table) {
+	private DbSelect createSelect(TableType table) {
 		List<String> sublist = new ArrayList<String>();
 		List<String> tableList = specs.getColumns(table);
 		boolean empty = true;
@@ -140,7 +140,7 @@ public class DbQuerySpec {
 			result += ", " + c;
 		}
 		result += " FROM " + tableName;
-		return new DbSelect(result, sublist.size() + noc.getTimeNumber(), noc.getRate());
+		return new DbSelect(result, sublist.size(), noc.getRate());
 	}
 	private String getHeaderQuery() {
 		String result = "";

@@ -5,8 +5,8 @@ import org.nees.mustsim.replay.db.statement.RateType;
 
 public class DbSelect extends NumberOfColumns {
 	private final String select;
-	public DbSelect(String select, int size, RateType rate) {
-		super(size, rate);
+	public DbSelect(String select, int dataColumns, RateType rate) {
+		super(dataColumns, rate);
 		this.select = select;
 	}
 
