@@ -30,7 +30,7 @@ public class ChannelLists {
 
 	};
 	
-	public List<String> getChannels(TableType table, boolean includeExtras) {
+	public List<String> getChannels(TableType table) {
 		List<String> result = new ArrayList<String>();
 		result.addAll(channels.get(table));
 		return result;

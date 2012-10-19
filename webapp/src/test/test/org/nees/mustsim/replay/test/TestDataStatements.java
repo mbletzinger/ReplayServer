@@ -34,9 +34,9 @@ public class TestDataStatements {
 		String dbName = "TESTDB";
 		dbc = new DbConnections("org.apache.derby.jdbc.ClientDriver", dbName,
 				"jdbc:derby://localhost:1527/", true);
-		omContData = DataGenerator.initData(RateType.CONT, 10, 6, 0.5);
+		omContData = DataGenerator.initData(RateType.CONT, 20, 6, 0.5);
 		daqContData = DataGenerator.initData(RateType.CONT, 15, 5, 1);
-		omStepData = DataGenerator.initData(RateType.STEP, 10, 6, 0.5);
+		omStepData = DataGenerator.initData(RateType.STEP, 20, 6, 0.5);
 		daqStepData = DataGenerator.initData(RateType.STEP, 15, 5,1);
 		specs = new DbTableSpecs(new ChannelNameRegistry(), dbName);
 	}
@@ -56,7 +56,7 @@ public class TestDataStatements {
 		ChannelLists cl = new ChannelLists();
 		DbStatement dbSt = dbc.createDbStatement();
 		DbDataUpdates dbu = new DbDataUpdates(dbSt, specs);
-		dbu.createTable(TableType.OM, cl.getChannels(TableType.OM, false));
+		dbu.createTable(TableType.OM, cl.getChannels(TableType.OM));
 		// log.debug("Adding data " +
 		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
 		dbu.update(TableType.OM, RateType.CONT, omContData);
@@ -64,7 +64,7 @@ public class TestDataStatements {
 		String tblName = specs.tableName(TableType.OM, RateType.CONT);
 		queryData(tblName, omContData);
 
-		dbu.createTable(TableType.DAQ, cl.getChannels(TableType.DAQ, false));
+		dbu.createTable(TableType.DAQ, cl.getChannels(TableType.DAQ));
 		// log.debug("Adding data " +
 		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
 		dbu.update(TableType.DAQ, RateType.CONT, daqContData);
@@ -78,7 +78,7 @@ public class TestDataStatements {
 		ChannelLists cl = new ChannelLists();
 		DbStatement dbSt = dbc.createDbStatement();
 		DbDataUpdates dbu = new DbDataUpdates(dbSt, specs);
-		dbu.createTable(TableType.OM, cl.getChannels(TableType.OM, false));
+		dbu.createTable(TableType.OM, cl.getChannels(TableType.OM));
 		 log.debug("Adding data " +
 		 Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
 		dbu.update(TableType.OM, RateType.STEP, omStepData);
@@ -86,7 +86,7 @@ public class TestDataStatements {
 		String tblName = specs.tableName(TableType.OM, RateType.STEP);
 		queryData(tblName, omStepData);
 
-		dbu.createTable(TableType.DAQ, cl.getChannels(TableType.DAQ, false));
+		dbu.createTable(TableType.DAQ, cl.getChannels(TableType.DAQ));
 		 log.debug("Adding data " +
 		 Mtx2Str.matrix2String(Mtx2Str.timeOffset(omStepData)));
 		dbu.update(TableType.DAQ, RateType.STEP, daqStepData);

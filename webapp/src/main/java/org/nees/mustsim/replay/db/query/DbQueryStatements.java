@@ -62,7 +62,6 @@ public class DbQueryStatements {
 
 			while (rs.next()) {
 				List<Double> row = new ArrayList<Double>();
-				log.debug("Processing rs row " + r);
 				for (int i = 0; i < columns; i++) {
 					double val = rs.getDouble(i + 1);
 					if (rs.wasNull()) {
@@ -76,6 +75,7 @@ public class DbQueryStatements {
 				data.add(row);
 				r++;
 			}
+			log.debug("Processed " + r + " rows");
 		} catch (SQLException e) {
 			log.error("Result Set fetch failed because ", e);
 			return null;

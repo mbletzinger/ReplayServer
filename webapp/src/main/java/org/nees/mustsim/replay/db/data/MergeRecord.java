@@ -17,17 +17,20 @@ public class MergeRecord implements Comparable<MergeRecord> {
 
 	private boolean merged = false;
 
-	private final NumberOfColumns noc;
+	private NumberOfColumns noc;
 
 	public MergeRecord(RateType rate, List<Double> list) {
 		super();
 		this.list = list;
-		noc = new NumberOfColumns(list.size(), rate);
+		int dsz = NumberOfColumns.dataColumns(list.size(), rate);
+		noc = new NumberOfColumns(dsz, rate);
 	}
 
 	public void append(List<Double> after) {
 		int i = noc.getTimeNumber();
 		list.addAll(after.subList(i, after.size()));
+		int dsz = noc.getNumber(false) + after.size() - i;
+		noc = new NumberOfColumns(dsz, noc.getRate());
 		merged = true;
 	}
 
@@ -83,6 +86,8 @@ public class MergeRecord implements Comparable<MergeRecord> {
 	public void prepend(List<Double> before) {
 		int i = noc.getTimeNumber();
 		list.addAll(i, before.subList(i, before.size()));
+		int dsz = noc.getNumber(false) + before.size() - i;
+		noc = new NumberOfColumns(dsz, noc.getRate());
 		merged = true;
 	}
 
