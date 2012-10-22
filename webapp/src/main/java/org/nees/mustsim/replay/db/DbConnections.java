@@ -2,13 +2,9 @@ package org.nees.mustsim.replay.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nees.mustsim.replay.db.statement.DbStatement;
-import org.nees.mustsim.replay.db.statement.DbTableSpecs;
-import org.nees.mustsim.replay.db.statement.RateType;
-import org.nees.mustsim.replay.db.statement.TableType;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
@@ -16,8 +12,6 @@ import com.jolbox.bonecp.BoneCPConfig;
 public class DbConnections {
 	private BoneCP connectionPool;
 	private final Logger log = Logger.getLogger(DbConnections.class);
-	private final boolean resetTables;
-
 	public Connection fetchConnection() {
 		Connection connection = null;
 		try {
@@ -36,9 +30,8 @@ public class DbConnections {
 		}
 	}
 		
-	public DbConnections(String driver, String dbName, String dbUrl, boolean resetTables) {
+	public DbConnections(String driver, String dbName, String dbUrl) {
 		String connectionUrl = dbUrl + dbName;
-		this.resetTables = resetTables;
 		try {
 			// load the database driver (make sure this is in your classpath!)
 			Class.forName(driver);

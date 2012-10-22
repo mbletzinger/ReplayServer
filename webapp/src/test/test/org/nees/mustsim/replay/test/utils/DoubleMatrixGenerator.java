@@ -7,7 +7,7 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
-import org.nees.mustsim.replay.db.data.DoubleMatrix;
+import org.nees.mustsim.replay.data.DoubleMatrix;
 import org.nees.mustsim.replay.test.utils.mgen.GenerateActualCoupleNulls;
 import org.nees.mustsim.replay.test.utils.mgen.GenerateActualEarly;
 import org.nees.mustsim.replay.test.utils.mgen.GenerateActualEmpty;

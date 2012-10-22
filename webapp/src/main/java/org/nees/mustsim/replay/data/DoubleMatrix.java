@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.db.data;
+package org.nees.mustsim.replay.data;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -5,11 +5,11 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nees.mustsim.replay.data.TableType;
 import org.nees.mustsim.replay.db.DbConnections;
 import org.nees.mustsim.replay.db.data.ChannelNameRegistry;
 import org.nees.mustsim.replay.db.data.DbChannelNameSynch;
 import org.nees.mustsim.replay.db.statement.DbStatement;
-import org.nees.mustsim.replay.db.statement.TableType;
 import org.nees.mustsim.replay.test.utils.ChannelLists;
 
 public class TestChannelLists {
@@ -18,7 +18,7 @@ public class TestChannelLists {
 	@Before
 	public void setUp() throws Exception {
 		dbc = new DbConnections("org.apache.derby.jdbc.ClientDriver", "TESTDB",
-				"jdbc:derby://localhost:1527/", true);
+				"jdbc:derby://localhost:1527/");
 	}
 
 	@After

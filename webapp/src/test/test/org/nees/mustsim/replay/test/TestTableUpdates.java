@@ -12,10 +12,10 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nees.mustsim.replay.data.RateType;
+import org.nees.mustsim.replay.data.TableType;
 import org.nees.mustsim.replay.db.data.ChannelNameRegistry;
 import org.nees.mustsim.replay.db.statement.DbTableSpecs;
-import org.nees.mustsim.replay.db.statement.RateType;
-import org.nees.mustsim.replay.db.statement.TableType;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;

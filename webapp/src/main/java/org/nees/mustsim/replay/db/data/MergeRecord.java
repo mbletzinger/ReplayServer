@@ -3,18 +3,11 @@ package org.nees.mustsim.replay.db.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.db.statement.NumberOfColumns;
-import org.nees.mustsim.replay.db.statement.RateType;
 
 public class MergeRecord implements Comparable<MergeRecord> {
-	/**
-	 * @return the noc
-	 */
-	public NumberOfColumns getNoc() {
-		return noc;
-	}
 	private List<Double> list;
-
 	private boolean merged = false;
 
 	private NumberOfColumns noc;
@@ -47,6 +40,7 @@ public class MergeRecord implements Comparable<MergeRecord> {
 		Double bD = new Double(b);
 		return aD.compareTo(bD);
 	}
+
 	@Override
 	public int compareTo(MergeRecord o) {
 		if (noc.getRate().equals(RateType.STEP)) {
@@ -68,12 +62,18 @@ public class MergeRecord implements Comparable<MergeRecord> {
 		}
 		return compareTo((MergeRecord) obj) == 0;
 	}
-
 	/**
 	 * @return the list
 	 */
 	public List<Double> getList() {
 		return list;
+	}
+
+	/**
+	 * @return the noc
+	 */
+	public NumberOfColumns getNoc() {
+		return noc;
 	}
 
 	/**

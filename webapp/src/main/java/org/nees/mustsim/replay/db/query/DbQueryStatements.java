@@ -6,20 +6,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.nees.mustsim.replay.db.data.DoubleMatrix;
+import org.nees.mustsim.replay.data.DoubleMatrix;
+import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.db.data.Interpolate;
 import org.nees.mustsim.replay.db.data.MergeSet;
 import org.nees.mustsim.replay.db.statement.DbStatement;
-import org.nees.mustsim.replay.db.statement.RateType;
 
 public class DbQueryStatements {
-	private final DbStatement dbSt;
-	private final DbQuerySpec dbSel;
-	private final Logger log = Logger.getLogger(DbQueryStatements.class);
-
 	public enum QueryType {
-		Step, Cont, ContWithStop
-	};
+		Cont, ContWithStop, Step
+	}
+	private final DbQuerySpec dbSel;
+	private final DbStatement dbSt;
+
+	private final Logger log = Logger.getLogger(DbQueryStatements.class);;
+
+	public DbQueryStatements(DbStatement dbSt, DbQuerySpec dbSel) {
+		super();
+		this.dbSt = dbSt;
+		this.dbSel = dbSel;
+	}
 
 	public DoubleMatrix getData(QueryType qtype, int step, double start,
 			double stop) {
@@ -82,11 +88,5 @@ public class DbQueryStatements {
 		}
 		log.debug("Query returned " + new DoubleMatrix(data, columns));
 		return data;
-	}
-
-	public DbQueryStatements(DbStatement dbSt, DbQuerySpec select) {
-		super();
-		this.dbSt = dbSt;
-		this.dbSel = select;
 	}
 }

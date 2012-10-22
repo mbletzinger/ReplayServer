@@ -21,7 +21,7 @@ public class TestDbStatement {
 	@Before
 	public void setUp() throws Exception {
 		dbc = new DbConnections("org.apache.derby.jdbc.ClientDriver", "TESTDB",
-				"jdbc:derby://localhost:1527/", true);
+				"jdbc:derby://localhost:1527/");
 		for (int i = 0; i < 5; i++) {
 			data[i][0] = i * 0.5 + .001;
 			data[i][1] = i * -0.02 + .001;

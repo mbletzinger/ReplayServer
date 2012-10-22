@@ -7,8 +7,8 @@ import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
+import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.db.data.MergeSet;
-import org.nees.mustsim.replay.db.statement.RateType;
 import org.nees.mustsim.replay.test.utils.DataGenerator;
 
 public class TestMerge {
