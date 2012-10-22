@@ -2,24 +2,28 @@ package org.nees.mustsim.replay.db.data;
 
 import java.util.List;
 
+import org.nees.mustsim.replay.data.DataUpdatesI;
+import org.nees.mustsim.replay.data.RateType;
+import org.nees.mustsim.replay.data.TableType;
+import org.nees.mustsim.replay.db.DbConnections;
 import org.nees.mustsim.replay.db.statement.DataInsertStatement;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 import org.nees.mustsim.replay.db.statement.DbTableSpecs;
-import org.nees.mustsim.replay.db.statement.RateType;
-import org.nees.mustsim.replay.db.statement.TableType;
 
-public class DbDataUpdates {
-	private final DbStatement dbSt;
+public class DbDataUpdates implements DataUpdatesI {
+	private final DbConnections connection;
 	private final DbTableSpecs specs;
 
-	public DbDataUpdates(DbStatement dbSt, DbTableSpecs create) {
+	public DbDataUpdates(DbConnections connection, DbTableSpecs specs) {
 		super();
-		this.dbSt = dbSt;
-		this.specs = create;
+		this.connection = connection;
+		this.specs = specs;
 	}
 
+	@Override
 	public boolean createTable(TableType table, List<String> channels) {
 		boolean result = true;
+		DbStatement dbSt = connection.createDbStatement();
 		specs.addTable(table, channels);
 		for (RateType r : RateType.values()) {
 			String statement = specs.createTableStatement(table, r);
@@ -28,16 +32,20 @@ public class DbDataUpdates {
 		return result;
 	}
 
+	@Override
 	public boolean removeTable(TableType table) {
 		boolean result = true;
+		DbStatement dbSt = connection.createDbStatement();
 		for (RateType r : RateType.values()) {
 			dbSt.execute("DROP TABLE " + specs.tableName(table, r));
 		}
 		return result;
 	}
 
+	@Override
 	public boolean update(TableType table, RateType rate, double[][] data) {
 		boolean result = true;
+		DbStatement dbSt = connection.createDbStatement();
 		DataInsertStatement prep = DataInsertStatement.getStatement(
 				specs.tableName(table, rate), data[0].length);
 		result = dbSt.createPrepStatement(prep);

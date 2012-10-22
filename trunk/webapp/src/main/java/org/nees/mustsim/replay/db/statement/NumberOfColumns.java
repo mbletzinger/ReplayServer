@@ -3,6 +3,8 @@ package org.nees.mustsim.replay.db.statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nees.mustsim.replay.data.RateType;
+
 public class NumberOfColumns {
 	protected final int dataColumns;
 	protected final List<String> headers = new ArrayList<String>();

@@ -9,14 +9,14 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nees.mustsim.replay.data.RateType;
+import org.nees.mustsim.replay.data.TableType;
 import org.nees.mustsim.replay.db.DbConnections;
 import org.nees.mustsim.replay.db.data.ChannelNameRegistry;
 import org.nees.mustsim.replay.db.data.DbDataUpdates;
 import org.nees.mustsim.replay.db.data.Mtx2Str;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 import org.nees.mustsim.replay.db.statement.DbTableSpecs;
-import org.nees.mustsim.replay.db.statement.RateType;
-import org.nees.mustsim.replay.db.statement.TableType;
 import org.nees.mustsim.replay.test.utils.ChannelLists;
 import org.nees.mustsim.replay.test.utils.DataGenerator;
 
@@ -33,7 +33,7 @@ public class TestDataStatements {
 	public void setUp() throws Exception {
 		String dbName = "TESTDB";
 		dbc = new DbConnections("org.apache.derby.jdbc.ClientDriver", dbName,
-				"jdbc:derby://localhost:1527/", true);
+				"jdbc:derby://localhost:1527/");
 		omContData = DataGenerator.initData(RateType.CONT, 20, 6, 0.5);
 		daqContData = DataGenerator.initData(RateType.CONT, 15, 5, 1);
 		omStepData = DataGenerator.initData(RateType.STEP, 20, 6, 0.5);
@@ -43,10 +43,11 @@ public class TestDataStatements {
 
 	@After
 	public void tearDown() throws Exception {
-		DbStatement dbSt = dbc.createDbStatement();
-		DbDataUpdates dbu = new DbDataUpdates(dbSt, specs);
+
+		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
 		dbu.removeTable(TableType.OM);
 		dbu.removeTable(TableType.DAQ);
+		DbStatement dbSt = dbc.createDbStatement();
 		dbSt.close();
 		dbc.close();
 	}
@@ -54,8 +55,7 @@ public class TestDataStatements {
 	@Test
 	public void testContDataUpdate() {
 		ChannelLists cl = new ChannelLists();
-		DbStatement dbSt = dbc.createDbStatement();
-		DbDataUpdates dbu = new DbDataUpdates(dbSt, specs);
+		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
 		dbu.createTable(TableType.OM, cl.getChannels(TableType.OM));
 		// log.debug("Adding data " +
 		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
@@ -76,8 +76,7 @@ public class TestDataStatements {
 	@Test
 	public void testStepDataUpdate() {
 		ChannelLists cl = new ChannelLists();
-		DbStatement dbSt = dbc.createDbStatement();
-		DbDataUpdates dbu = new DbDataUpdates(dbSt, specs);
+		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
 		dbu.createTable(TableType.OM, cl.getChannels(TableType.OM));
 		 log.debug("Adding data " +
 		 Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));

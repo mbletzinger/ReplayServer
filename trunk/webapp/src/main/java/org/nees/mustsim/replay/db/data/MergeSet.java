@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.nees.mustsim.replay.db.statement.RateType;
+import org.nees.mustsim.replay.data.RateType;
 
 public class MergeSet {
 	private final List<MergeRecord> accum = new ArrayList<MergeRecord>();

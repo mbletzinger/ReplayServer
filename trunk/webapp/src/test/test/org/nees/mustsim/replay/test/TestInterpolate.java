@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nees.mustsim.replay.db.data.DoubleMatrix;
+import org.nees.mustsim.replay.data.DoubleMatrix;
 import org.nees.mustsim.replay.db.data.Interpolate;
 import org.nees.mustsim.replay.test.utils.DoubleMatrixGenerator;
 import org.nees.mustsim.replay.test.utils.DoubleMatrixGenerator.ColumnTypes;

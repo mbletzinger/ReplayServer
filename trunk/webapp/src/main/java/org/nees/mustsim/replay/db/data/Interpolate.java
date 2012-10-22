@@ -1,6 +1,7 @@
 package org.nees.mustsim.replay.db.data;
 
 import org.apache.log4j.Logger;
+import org.nees.mustsim.replay.data.DoubleMatrix;
 
 public class Interpolate {
 	public enum ColScanType {
