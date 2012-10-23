@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nees.mustsim.replay.data.DoubleMatrix;
+import org.nees.mustsim.replay.data.Interpolate;
+import org.nees.mustsim.replay.data.MergeSet;
 import org.nees.mustsim.replay.data.RateType;
-import org.nees.mustsim.replay.db.data.Interpolate;
-import org.nees.mustsim.replay.db.data.MergeSet;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 
 public class DbQueryStatements {

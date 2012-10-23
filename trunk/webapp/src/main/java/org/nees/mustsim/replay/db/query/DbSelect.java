@@ -1,7 +1,7 @@
 package org.nees.mustsim.replay.db.query;
 
+import org.nees.mustsim.replay.data.NumberOfColumns;
 import org.nees.mustsim.replay.data.RateType;
-import org.nees.mustsim.replay.db.statement.NumberOfColumns;
 
 public class DbSelect extends NumberOfColumns {
 	private final String select;

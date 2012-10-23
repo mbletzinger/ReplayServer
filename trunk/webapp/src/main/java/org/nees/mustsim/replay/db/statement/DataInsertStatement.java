@@ -3,7 +3,7 @@ package org.nees.mustsim.replay.db.statement;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
-import org.nees.mustsim.replay.db.data.Mtx2Str;
+import org.nees.mustsim.replay.data.Mtx2Str;
 
 public class DataInsertStatement extends PrepStatement {
 	public static DataInsertStatement getStatement(String dataTableName, int numberOfChannels) {
