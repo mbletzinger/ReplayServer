@@ -3,9 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.nees.mustsim.replay</groupId>
+	<groupId>org.nees.mustsim.replay.server</groupId>
 	<artifactId>ReplayServerWebApp</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<packaging>war</packaging>
 	<name>Replay Server</name>
 	<description>Server used to buffer DAQ and Krypton data for NEES@Illinois tests</description>
@@ -97,9 +97,21 @@
 			<version>1.0.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.nees.mustsim.replay</groupId>
+			<groupId>org.nees.mustsim.replay.common</groupId>
 			<artifactId>ReplayServerCommon</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.nees.mustsim.replay.testdata</groupId>
+			<artifactId>ReplayServerTestData</artifactId>
+			<version>0.0.11</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<parent>
+		<groupId>org.nees.mustsim.replay</groupId>
+		<artifactId>ReplayServer</artifactId>
+		<version>0.0.1</version>
+		<relativePath>..</relativePath>
+	</parent>
 </project>

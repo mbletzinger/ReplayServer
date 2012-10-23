@@ -9,8 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nees.mustsim.replay.data.DoubleMatrix;
 import org.nees.mustsim.replay.data.Interpolate;
-import org.nees.mustsim.replay.test.utils.DoubleMatrixGenerator;
-import org.nees.mustsim.replay.test.utils.DoubleMatrixGenerator.ColumnTypes;
+import org.nees.mustsim.replay.test.utils.mgen.DoubleMatrixGenerator;
+import org.nees.mustsim.replay.test.utils.mgen.DoubleMatrixGenerator.ColumnTypes;
 
 public class TestInterpolate {
 	private final Logger log = Logger.getLogger(TestInterpolate.class);
