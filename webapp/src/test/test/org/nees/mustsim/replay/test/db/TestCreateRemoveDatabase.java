@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test;
+package org.nees.mustsim.replay.test.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

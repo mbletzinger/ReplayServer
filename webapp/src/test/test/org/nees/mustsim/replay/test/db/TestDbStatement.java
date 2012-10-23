@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test;
+package org.nees.mustsim.replay.test.db;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

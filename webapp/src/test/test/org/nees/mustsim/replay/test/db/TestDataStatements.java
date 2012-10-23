@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test;
+package org.nees.mustsim.replay.test.db;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,12 +9,12 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nees.mustsim.replay.data.ChannelNameRegistry;
+import org.nees.mustsim.replay.data.Mtx2Str;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.TableType;
 import org.nees.mustsim.replay.db.DbConnections;
-import org.nees.mustsim.replay.db.data.ChannelNameRegistry;
-import org.nees.mustsim.replay.db.data.DbDataUpdates;
-import org.nees.mustsim.replay.db.data.Mtx2Str;
+import org.nees.mustsim.replay.db.data.server.DbDataUpdates;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 import org.nees.mustsim.replay.db.statement.DbTableSpecs;
 import org.nees.mustsim.replay.test.utils.ChannelLists;

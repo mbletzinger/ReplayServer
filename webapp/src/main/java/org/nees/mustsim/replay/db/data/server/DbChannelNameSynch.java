@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.db.data;
+package org.nees.mustsim.replay.db.data.server;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.nees.mustsim.replay.data.ChannelNameRegistry;
 import org.nees.mustsim.replay.db.statement.ChannelInsertStatement;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 

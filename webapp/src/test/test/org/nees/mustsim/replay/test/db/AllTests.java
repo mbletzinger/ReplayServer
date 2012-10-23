@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test;
+package org.nees.mustsim.replay.test.db;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
