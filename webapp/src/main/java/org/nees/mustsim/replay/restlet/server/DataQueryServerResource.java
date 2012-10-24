@@ -1,8 +1,9 @@
-package org.nees.mustsim.replay.restlet;
+package org.nees.mustsim.replay.restlet.server;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.nees.mustsim.replay.restlet.DataQueryResource;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
