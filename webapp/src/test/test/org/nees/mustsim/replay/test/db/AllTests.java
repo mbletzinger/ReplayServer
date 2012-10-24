@@ -11,8 +11,6 @@ import org.junit.runners.Suite.SuiteClasses;
 		TestDbStatement.class,
 		TestChannelLists.class,
 		TestDataStatements.class,
-		TestInterpolate.class,
-		TestMerge.class,
 		TestDbQuery.class
 		})
 public class AllTests {

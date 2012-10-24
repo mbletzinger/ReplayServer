@@ -97,15 +97,8 @@
 			<version>1.0.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.nees.mustsim.replay.common</groupId>
-			<artifactId>ReplayServerCommon</artifactId>
-			<version>0.0.11</version>
-		</dependency>
-		<dependency>
 			<groupId>org.nees.mustsim.replay.testdata</groupId>
 			<artifactId>ReplayServerTestData</artifactId>
-			<version>0.0.11</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<parent>
