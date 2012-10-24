@@ -45,11 +45,6 @@
 			<version>1.2.15</version>
 		</dependency>
 		<dependency>
-			<groupId>org.nees.mustsim.replay.testdata</groupId>
-			<artifactId>ReplayServerTestData</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
 			<version>1.4.4</version>
