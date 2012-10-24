@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.nees.mustsim.replay</groupId>
+  <artifactId>ReplayServer</artifactId>
+  <version>0.0.1</version>
+  <packaging>pom</packaging>
+  <name>Replay Server</name>
+  <description>Restlet server to buffer acquisition data during and after testing</description>
+  <modules>
+  	<module>../ReplayServerCommon</module>
+  	<module>../ReplayServerWebApp</module>
+  	<module>../ReplayServerTestData</module>
+  </modules>
+  <dependencyManagement>
+  	<dependencies>
+  		<dependency>
+  			<groupId>org.nees.mustsim.replay.testdata</groupId>
+  			<artifactId>ReplayServerTestData</artifactId>
+  			<version>0.0.11</version>
+  			<scope>test</scope>
+  		</dependency>
+  		<dependency>
+  			<groupId>org.nees.mustsim.replay.common</groupId>
+  			<artifactId>ReplayServerCommon</artifactId>
+  			<version>0.0.11</version>
+  		</dependency>
+  		<dependency>
+  			<groupId>org.nees.mustsim.replay.server</groupId>
+  			<artifactId>ReplayServerWebApp</artifactId>
+  			<version>0.0.2</version>
+  			<type>war</type>
+  		</dependency>
+  	</dependencies>
+  </dependencyManagement>
+</project>
