@@ -3,9 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.nees.mustsim.replay</groupId>
+	<groupId>org.nees.mustsim.replay.common</groupId>
 	<artifactId>ReplayServerCommon</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.11</version>
 	<name>Replay Server</name>
 	<description>Common Libraries</description>
 	<repositories>
@@ -44,5 +44,36 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
 		</dependency>
+		<dependency>
+			<groupId>org.nees.mustsim.replay.testdata</groupId>
+			<artifactId>ReplayServerTestData</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.4.4</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.jms</groupId>
+			<artifactId>jms</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jdmk</groupId>
+			<artifactId>jmxtools</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jmx</groupId>
+			<artifactId>jmxri</artifactId>
+			<version>1.2.1</version>
+		</dependency>
 	</dependencies>
+	<parent>
+		<groupId>org.nees.mustsim.replay</groupId>
+		<artifactId>ReplayServer</artifactId>
+		<version>0.0.1</version>
+		<relativePath>..</relativePath>
+	</parent>
 </project>
