@@ -1,7 +1,7 @@
 package org.nees.mustsim.replay;
 
-import org.nees.mustsim.replay.restlet.server.DataQueryServerResource;
-import org.nees.mustsim.replay.restlet.server.DataTableServerResource;
+import org.nees.mustsim.replay.restlet.DataQueryServerResource;
+import org.nees.mustsim.replay.restlet.DataTableServerResource;
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
