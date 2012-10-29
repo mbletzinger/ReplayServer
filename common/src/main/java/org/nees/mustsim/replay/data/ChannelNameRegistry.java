@@ -10,6 +10,16 @@ import org.nees.mustsim.replay.data.TableType;
 
 public class ChannelNameRegistry {
 
+	/**
+	 * @return the names
+	 */
+	public List<String> getNames() {
+		List<String> keys = new ArrayList<String>();
+		keys.addAll(names.keySet());
+		Collections.sort(keys);
+		return keys;
+	}
+
 	private long afterLastChannel = 1;
 
 	private final Map<String, String> names = new HashMap<String, String>();
@@ -66,12 +76,9 @@ public class ChannelNameRegistry {
 	 */
 	@Override
 	public String toString() {
-		List<String> keys = new ArrayList<String>();
-		keys.addAll(names.keySet());
-		Collections.sort(keys);
 		String result = "";
 		boolean first = true;
-		for(String k : keys) {
+		for(String k : getNames()) {
 			result += (first ? "" : ", ") + k +" = " + names.get(k);
 			first = false;
 		}
