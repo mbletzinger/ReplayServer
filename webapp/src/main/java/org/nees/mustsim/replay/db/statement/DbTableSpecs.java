@@ -6,19 +6,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.nees.mustsim.replay.data.ChannelNameRegistry;
+import org.nees.mustsim.replay.data.ChannelUpdates;
 import org.nees.mustsim.replay.data.NumberOfColumns;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.TableType;
 
 
-public class DbTableSpecs {
-	private final ChannelNameRegistry cnr;
-
+public class DbTableSpecs extends ChannelUpdates {
 	private final Map<TableType, List<String>> columns = new HashMap<TableType, List<String>>();
 	private final String dbname;
 	public DbTableSpecs(ChannelNameRegistry cnr, String dbname) {
-		super();
-		this.cnr = cnr;
+		super(cnr);
 		this.dbname = dbname;
 	}
 
@@ -55,13 +53,6 @@ public class DbTableSpecs {
 		return result;
 	}
 
-	/**
-	 * @return the cnr
-	 */
-	public ChannelNameRegistry getCnr() {
-		return cnr;
-	}
-	
 	public List<String> getColumns(TableType table) {
 		List<String> result = new ArrayList<String>();
 		List<String> cols = columns.get(table);
@@ -76,15 +67,6 @@ public class DbTableSpecs {
 	 */
 	public String getDbname() {
 		return dbname;
-	}
-
-	private List<String> lookupChannels(TableType table, List<String> channels) {
-		List<String> result = new ArrayList<String>();
-		for (String c : channels) {
-			String dc = cnr.addChannel(table, c);
-			result.add(dc);
-		}
-		return result;
 	}
 
 	public String tableName(TableType table, RateType rate) {

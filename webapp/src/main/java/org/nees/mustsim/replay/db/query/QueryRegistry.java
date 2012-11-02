@@ -4,15 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.nees.mustsim.replay.data.QuerySpec;
 
-public class DbQueryRegistry {
+public class QueryRegistry {
 
-	private final Map<String, DbQuerySpec> queries = new HashMap<String, DbQuerySpec>();
-	private final Logger log = Logger.getLogger(DbQueryRegistry.class);
-	public DbQuerySpec getQuery(String name) {
+	private final Map<String, QuerySpec> queries = new HashMap<String, QuerySpec>();
+	private final Logger log = Logger.getLogger(QueryRegistry.class);
+	public QuerySpec getQuery(String name) {
 		return queries.get(name);
 	}
-	public void setQuery(String name, DbQuerySpec dq) {
+	public void setQuery(String name, QuerySpec dq) {
 		if (queries.containsKey(name)) {
 			log.info("Replacing Query \"" + name + "\"");
 		} else {
