@@ -1,6 +1,9 @@
-package org.nees.mustsim.replay.data;
+package org.nees.mustsim.replay.queries;
 
 import java.util.List;
+
+import org.nees.mustsim.replay.data.DoubleMatrix;
+import org.nees.mustsim.replay.data.StepNumber;
 
 
 public interface DataQueryI {

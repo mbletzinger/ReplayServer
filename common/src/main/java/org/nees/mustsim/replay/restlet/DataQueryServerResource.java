@@ -4,10 +4,10 @@ import java.io.InputStream;
 
 import org.nees.mustsim.replay.conversions.Double2OutputStream;
 import org.nees.mustsim.replay.conversions.InputStream2ChannelList;
-import org.nees.mustsim.replay.data.DataQueryI;
 import org.nees.mustsim.replay.data.DoubleMatrix;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.StepNumber;
+import org.nees.mustsim.replay.queries.DataQueryI;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;

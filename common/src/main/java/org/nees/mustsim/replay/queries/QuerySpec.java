@@ -1,7 +1,11 @@
-package org.nees.mustsim.replay.data;
+package org.nees.mustsim.replay.queries;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.nees.mustsim.replay.channels.ChannelNameRegistry;
+import org.nees.mustsim.replay.data.NumberOfColumns;
+import org.nees.mustsim.replay.data.RateType;
 
 public class QuerySpec {
 

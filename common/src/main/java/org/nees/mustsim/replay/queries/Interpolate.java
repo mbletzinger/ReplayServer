@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.data;
+package org.nees.mustsim.replay.queries;
 
 import org.apache.log4j.Logger;
 import org.nees.mustsim.replay.data.DoubleMatrix;

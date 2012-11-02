@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.data;
+package org.nees.mustsim.replay.queries;
 
 import java.util.HashMap;
 import java.util.Map;
