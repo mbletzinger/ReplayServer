@@ -13,19 +13,28 @@ public class Double2OutputStream {
 
 	private final Logger log = LoggerFactory
 			.getLogger(Double2OutputStream.class);
-	private OutputStream out;
+	private final OutputStream out;
 	public Double2OutputStream(double [][] data) {
 		super();
-		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		DataOutputStream dout = new DataOutputStream(bout);
-		out = dout;
+		out = new ByteArrayOutputStream();
+		writeData(data);
+		buffer = ((ByteArrayOutputStream)out).toByteArray();
+	}
+
+	public Double2OutputStream(OutputStream os) {
+		super();
+		buffer = null;
+		out = os;
+	}
+	
+	public void writeData(double [][] data) {
+
+		DataOutputStream dout = new DataOutputStream(out);
 		try {
 			dout.writeInt(data.length);
 			dout.writeInt(data[0].length);
 		} catch (IOException e) {
 			log.error("Could not write data array because ", e);
-			out = null;
-			buffer = bout.toByteArray();
 			return;
 		}
 		for (int r = 0; r < data.length; r++) {
@@ -34,14 +43,11 @@ public class Double2OutputStream {
 					dout.writeDouble(data[r][c]);
 				} catch (IOException e) {
 					log.error("Could not write data array because ", e);
-					out = null;
-					buffer = bout.toByteArray();
 					return;
 				}
 		}
-		buffer = bout.toByteArray();
 	}
-
+	
 	/**
 	 * @return the buffer
 	 */
@@ -55,6 +61,11 @@ public class Double2OutputStream {
 	public OutputStream getOut() {
 		return out;
 	}
-	
+	public static long streamsSize(double [][]data) {
+		long result = 4; // 2 bytes per 2 ints
+		long elements = data.length * data[0].length;
+		result += elements * 4; // 4 bytes per double
+		return result;		
+	}
 
 }

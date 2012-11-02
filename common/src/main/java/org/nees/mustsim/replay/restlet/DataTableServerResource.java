@@ -42,7 +42,7 @@ public class DataTableServerResource extends ServerResource implements
 		List<List<Double>> doubles = is2dbl.getNumbers();
 		DoubleMatrix dm = new DoubleMatrix(doubles, doubles.get(0).size());
 		TableType tbl = TableType.valueOf(table);
-		RateType rt = RateType.valueOf(table);
+		RateType rt = RateType.valueOf(rate);
 		updates.update(tbl, rt, dm.getData());
 	}
 
