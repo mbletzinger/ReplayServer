@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.nees.mustsim.replay.data.ChannelNameRegistry;
+import org.nees.mustsim.replay.channels.ChannelNameRegistry;
 import org.nees.mustsim.replay.db.statement.ChannelInsertStatement;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 

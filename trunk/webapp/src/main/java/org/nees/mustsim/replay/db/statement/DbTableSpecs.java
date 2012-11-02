@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.mustsim.replay.data.ChannelNameRegistry;
-import org.nees.mustsim.replay.data.ChannelUpdates;
+import org.nees.mustsim.replay.channels.ChannelNameRegistry;
+import org.nees.mustsim.replay.channels.ChannelUpdates;
 import org.nees.mustsim.replay.data.NumberOfColumns;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.TableType;
