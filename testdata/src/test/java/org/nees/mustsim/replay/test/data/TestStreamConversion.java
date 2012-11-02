@@ -7,11 +7,11 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nees.mustsim.replay.channels.ChannelNameRegistry;
 import org.nees.mustsim.replay.conversions.ChannelList2OutputStream;
 import org.nees.mustsim.replay.conversions.Double2OutputStream;
 import org.nees.mustsim.replay.conversions.InputStream2ChannelList;
 import org.nees.mustsim.replay.conversions.InputStream2Double;
-import org.nees.mustsim.replay.data.ChannelNameRegistry;
 import org.nees.mustsim.replay.data.DoubleMatrix;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.TableType;
