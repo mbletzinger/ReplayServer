@@ -5,16 +5,17 @@ import java.util.List;
 import org.nees.mustsim.replay.data.DataQueryI;
 import org.nees.mustsim.replay.data.DoubleMatrix;
 import org.nees.mustsim.replay.data.RateType;
+import org.nees.mustsim.replay.data.StepNumber;
 import org.nees.mustsim.replay.db.DbConnections;
 import org.nees.mustsim.replay.db.query.DbQueryStatements.QueryType;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 import org.nees.mustsim.replay.db.statement.DbTableSpecs;
 
 public class DataQuery implements DataQueryI {
-	private final DbQueryRegistry contDbq = new DbQueryRegistry();
+	private final QueryRegistry contDbq = new QueryRegistry();
 	private final DbConnections dbConnection;
 	private final DbTableSpecs specs;
-	private final DbQueryRegistry stepDbq = new DbQueryRegistry();
+	private final QueryRegistry stepDbq = new QueryRegistry();
 
 	public DataQuery(DbConnections dbConnection, DbTableSpecs specs) {
 		super();
@@ -26,18 +27,23 @@ public class DataQuery implements DataQueryI {
 			double stop) {
 		DbStatement dbSt = dbConnection.createDbStatement();
 		DbQuerySpec dbSpec;
-		if (qtype.equals(QueryType.Step)) {
-			dbSpec = stepDbq.getQuery(name);
-		} else {
-			dbSpec = contDbq.getQuery(name);
-		}
+		dbSpec = (DbQuerySpec) contDbq.getQuery(name);
 		DbQueryStatements dbQuerySt = new DbQueryStatements(dbSt, dbSpec);
-		return dbQuerySt.getData(qtype, 0, start, stop);
+		return dbQuerySt.getData(qtype, start, stop);
+	}
+
+	private DoubleMatrix doQuery(QueryType qtype, String name, StepNumber start,
+			StepNumber stop) {
+		DbStatement dbSt = dbConnection.createDbStatement();
+		DbQuerySpec dbSpec;
+		dbSpec = (DbQuerySpec) stepDbq.getQuery(name);
+		DbQueryStatements dbQuerySt = new DbQueryStatements(dbSt, dbSpec);
+		return dbQuerySt.getData(qtype, start, stop);
 	}
 
 	@Override
 	public DoubleMatrix doQuery(String name) {
-		return doQuery(QueryType.Step, name, 0, 0);
+		return doQuery(QueryType.Step, name, null, null);
 	}
 
 	@Override
@@ -48,6 +54,16 @@ public class DataQuery implements DataQueryI {
 	@Override
 	public DoubleMatrix doQuery(String name, double start, double stop) {
 		return doQuery(QueryType.ContWithStop, name, start, stop);
+	}
+
+	@Override
+	public DoubleMatrix doQuery(String name, StepNumber start) {
+		return doQuery(QueryType.StepWithStart, name, start, null);
+	}
+
+	@Override
+	public DoubleMatrix doQuery(String name, StepNumber start, StepNumber stop) {
+		return doQuery(QueryType.StepWithStop, name, start, stop);
 	}
 
 	@Override

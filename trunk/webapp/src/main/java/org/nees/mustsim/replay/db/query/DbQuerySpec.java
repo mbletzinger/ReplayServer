@@ -5,17 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nees.mustsim.replay.data.ChannelUpdates;
 import org.nees.mustsim.replay.data.NumberOfColumns;
+import org.nees.mustsim.replay.data.QuerySpec;
 import org.nees.mustsim.replay.data.RateType;
+import org.nees.mustsim.replay.data.StepNumber;
 import org.nees.mustsim.replay.data.TableType;
 import org.nees.mustsim.replay.db.statement.DbTableSpecs;
 
-public class DbQuerySpec {
-	private final String name;
-	private final NumberOfColumns noc;
+public class DbQuerySpec extends QuerySpec {
 	private int[] query2selectMap;
-
-	private final List<String> queryOrder;
 
 	private final List<DbSelect> select = new ArrayList<DbSelect>();
 	private final List<String> selectOrder = new ArrayList<String>();
@@ -23,14 +22,8 @@ public class DbQuerySpec {
 
 	public DbQuerySpec(List<String> channelOrder, String name,
 			DbTableSpecs specs, RateType rate) {
-		super();
-		this.queryOrder = new ArrayList<String>();
-		for (String c : channelOrder) {
-			this.queryOrder.add(specs.getCnr().getId(c));
-		}
-		this.name = name;
+		super(channelOrder, name, specs.getCnr(), rate);
 		this.specs = specs;
-		this.noc = new NumberOfColumns(channelOrder.size(), rate);
 		createSelects();
 	}
 
@@ -93,31 +86,10 @@ public class DbQuerySpec {
 	}
 
 	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * @return the noc
-	 */
-	public NumberOfColumns getNoc() {
-		return noc;
-	}
-
-	/**
 	 * @return the channelMap
 	 */
 	public int[] getQuery2selectMap() {
 		return query2selectMap;
-	}
-
-	/**
-	 * @return the channelOrder
-	 */
-	public List<String> getQueryOrder() {
-		return queryOrder;
 	}
 
 	public List<DbSelect> getSelect() {
@@ -132,11 +104,27 @@ public class DbQuerySpec {
 		return result;
 	}
 
+	public List<DbSelect> getSelect(StepNumber start) {
+		List<DbSelect> result = new ArrayList<DbSelect>();
+		for (DbSelect s : select) {
+			result.add(s.cloneWithTimeConstraint(" WHERE step >= " + start.getStep()));
+		}
+		return result;
+	}
 	public List<DbSelect> getSelect(double start, double stop) {
 		List<DbSelect> result = new ArrayList<DbSelect>();
 		for (DbSelect s : select) {
 			result.add(s.cloneWithTimeConstraint(" WHERE time BETWEEN " + start
 					+ " AND " + stop));
+		}
+		return result;
+	}
+
+	public List<DbSelect> getSelect(StepNumber start, StepNumber stop) {
+		List<DbSelect> result = new ArrayList<DbSelect>();
+		for (DbSelect s : select) {
+			result.add(s.cloneWithTimeConstraint(" WHERE step BETWEEN " + start.getStep()
+					+ " AND " + stop.getStep()));
 		}
 		return result;
 	}
@@ -151,7 +139,7 @@ public class DbQuerySpec {
 	/**
 	 * @return the creation
 	 */
-	public DbTableSpecs getSpecs() {
+	public ChannelUpdates getSpecs() {
 		return specs;
 	}
 }

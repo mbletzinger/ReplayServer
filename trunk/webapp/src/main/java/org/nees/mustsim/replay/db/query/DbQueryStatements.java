@@ -10,11 +10,12 @@ import org.nees.mustsim.replay.data.DoubleMatrix;
 import org.nees.mustsim.replay.data.Interpolate;
 import org.nees.mustsim.replay.data.MergeSet;
 import org.nees.mustsim.replay.data.RateType;
+import org.nees.mustsim.replay.data.StepNumber;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 
 public class DbQueryStatements {
 	public enum QueryType {
-		Cont, ContWithStop, Step
+		Cont, ContWithStop, Step, StepWithStart, StepWithStop
 	}
 	private final DbQuerySpec dbSel;
 	private final DbStatement dbSt;
@@ -27,8 +28,22 @@ public class DbQueryStatements {
 		this.dbSel = dbSel;
 	}
 
-	public DoubleMatrix getData(QueryType qtype, int step, double start,
+	public DoubleMatrix getData(QueryType qtype, double start,
 			double stop) {
+		List<DbSelect> selectList = null;
+		MergeSet mSet = null;
+		if (qtype.equals(QueryType.Cont)) {
+			selectList = dbSel.getSelect(start);
+			mSet = new MergeSet(RateType.CONT);
+		}
+		if (qtype.equals(QueryType.ContWithStop)) {
+			selectList = dbSel.getSelect(start, stop);
+			mSet = new MergeSet(RateType.CONT);
+		}
+		return collectQueries(selectList, mSet);
+	}
+
+	public DoubleMatrix getData(QueryType qtype, StepNumber start, StepNumber stop) {
 		List<DbSelect> selectList = null;
 		MergeSet mSet = null;
 		if (qtype.equals(QueryType.Step)) {
@@ -49,12 +64,21 @@ public class DbQueryStatements {
 				mSet.merge(set);			
 			}
 		}
+		return collectQueries(selectList, mSet);
+	}
+
+	private DoubleMatrix collectQueries(List<DbSelect> selectList, MergeSet mSet) {
+		for (DbSelect s : selectList) {
+			List<List<Double>> set = singleQuery(s);
+			if (set != null) {
+				mSet.merge(set);			
+			}
+		}
 		DoubleMatrix result = new DoubleMatrix(mSet.getRecords(), mSet.getColumnSize(true));
 		Interpolate intpl = new Interpolate(result);
 		intpl.fix();
-		return result;
+		return result;		
 	}
-
 	private List<List<Double>> singleQuery(DbSelect select) {
 		ResultSet rs = dbSt.query(select.getSelect());
 		int columns = select.getNumber(true);

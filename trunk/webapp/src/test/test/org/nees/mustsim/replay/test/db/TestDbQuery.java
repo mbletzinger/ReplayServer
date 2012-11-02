@@ -154,7 +154,7 @@ public class TestDbQuery {
 				RateType.STEP);
 		DbStatement dbSt = dbc.createDbStatement();
 		DbQueryStatements ddr = new DbQueryStatements(dbSt, dbs);
-		DoubleMatrix r1 = ddr.getData(QueryType.Step, 0, 0, 0);
+		DoubleMatrix r1 = ddr.getData(QueryType.Step, null, null);
 		log.debug("Results: " + r1.toString());
 		chnls = new ArrayList<String>();
 		chnls.add("OM/CntrlSensor/D_West_X_3");
@@ -162,7 +162,7 @@ public class TestDbQuery {
 		chnls.add("DAQ/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
 		dbs = new DbQuerySpec(chnls, "Mixed_Channels", specs, RateType.CONT);
 		DbQueryStatements ddr2 = new DbQueryStatements(dbSt, dbs);
-		DoubleMatrix r2 = ddr2.getData(QueryType.Cont, 0, 0, 0);
+		DoubleMatrix r2 = ddr2.getData(QueryType.Cont, 0, 0);
 		log.debug("Results: " + r2.toString());
 
 	}
