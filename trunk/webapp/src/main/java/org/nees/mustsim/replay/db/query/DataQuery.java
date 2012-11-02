@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.nees.mustsim.replay.data.DataQueryI;
 import org.nees.mustsim.replay.data.DoubleMatrix;
+import org.nees.mustsim.replay.data.QueryRegistry;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.StepNumber;
 import org.nees.mustsim.replay.db.DbConnections;
