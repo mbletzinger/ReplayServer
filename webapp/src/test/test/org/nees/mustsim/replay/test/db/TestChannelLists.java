@@ -5,7 +5,7 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nees.mustsim.replay.data.ChannelNameRegistry;
+import org.nees.mustsim.replay.channels.ChannelNameRegistry;
 import org.nees.mustsim.replay.data.TableType;
 import org.nees.mustsim.replay.db.DbConnections;
 import org.nees.mustsim.replay.db.data.server.DbChannelNameSynch;

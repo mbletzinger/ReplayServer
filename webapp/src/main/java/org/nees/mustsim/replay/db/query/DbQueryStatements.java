@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nees.mustsim.replay.data.DoubleMatrix;
-import org.nees.mustsim.replay.data.Interpolate;
-import org.nees.mustsim.replay.data.MergeSet;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.StepNumber;
 import org.nees.mustsim.replay.db.statement.DbStatement;
+import org.nees.mustsim.replay.queries.Interpolate;
+import org.nees.mustsim.replay.queries.MergeSet;
 
 public class DbQueryStatements {
 	public enum QueryType {

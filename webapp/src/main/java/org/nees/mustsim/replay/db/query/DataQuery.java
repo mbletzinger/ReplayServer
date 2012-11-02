@@ -2,15 +2,15 @@ package org.nees.mustsim.replay.db.query;
 
 import java.util.List;
 
-import org.nees.mustsim.replay.data.DataQueryI;
 import org.nees.mustsim.replay.data.DoubleMatrix;
-import org.nees.mustsim.replay.data.QueryRegistry;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.StepNumber;
 import org.nees.mustsim.replay.db.DbConnections;
 import org.nees.mustsim.replay.db.query.DbQueryStatements.QueryType;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 import org.nees.mustsim.replay.db.statement.DbTableSpecs;
+import org.nees.mustsim.replay.queries.DataQueryI;
+import org.nees.mustsim.replay.queries.QueryRegistry;
 
 public class DataQuery implements DataQueryI {
 	private final QueryRegistry contDbq = new QueryRegistry();

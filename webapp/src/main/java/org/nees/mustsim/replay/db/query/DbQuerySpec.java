@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.mustsim.replay.data.ChannelUpdates;
+import org.nees.mustsim.replay.channels.ChannelUpdates;
 import org.nees.mustsim.replay.data.NumberOfColumns;
-import org.nees.mustsim.replay.data.QuerySpec;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.StepNumber;
 import org.nees.mustsim.replay.data.TableType;
 import org.nees.mustsim.replay.db.statement.DbTableSpecs;
+import org.nees.mustsim.replay.queries.QuerySpec;
 
 public class DbQuerySpec extends QuerySpec {
 	private int[] query2selectMap;
