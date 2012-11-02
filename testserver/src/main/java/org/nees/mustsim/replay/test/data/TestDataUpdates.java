@@ -2,8 +2,8 @@ package org.nees.mustsim.replay.test.data;
 
 import java.util.List;
 
-import org.nees.mustsim.replay.data.ChannelNameRegistry;
-import org.nees.mustsim.replay.data.ChannelUpdates;
+import org.nees.mustsim.replay.channels.ChannelNameRegistry;
+import org.nees.mustsim.replay.channels.ChannelUpdates;
 import org.nees.mustsim.replay.data.DataUpdatesI;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.TableType;

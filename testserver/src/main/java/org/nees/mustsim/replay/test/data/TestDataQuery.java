@@ -2,9 +2,9 @@ package org.nees.mustsim.replay.test.data;
 
 import java.util.List;
 
-import org.nees.mustsim.replay.data.DataQueryI;
 import org.nees.mustsim.replay.data.DoubleMatrix;
 import org.nees.mustsim.replay.data.StepNumber;
+import org.nees.mustsim.replay.queries.DataQueryI;
 
 public class TestDataQuery implements DataQueryI {
 
