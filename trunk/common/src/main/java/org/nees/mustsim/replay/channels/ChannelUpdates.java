@@ -1,7 +1,9 @@
-package org.nees.mustsim.replay.data;
+package org.nees.mustsim.replay.channels;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.nees.mustsim.replay.data.TableType;
 
 
 public class ChannelUpdates {
