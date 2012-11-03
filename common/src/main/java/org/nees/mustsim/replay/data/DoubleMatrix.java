@@ -32,6 +32,11 @@ public class DoubleMatrix {
 		}
 	}
 
+	public DoubleMatrix(double [][] idata, int columnSize) {
+		data = idata;
+		isNull = new boolean [idata.length][idata[0].length];
+	}
+
 	/**
 	 * @return the data
 	 */
