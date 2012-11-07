@@ -2,21 +2,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nees.mustsim.replay.testdata</groupId>
   <artifactId>ReplayServerTestData</artifactId>
-  <version>0.0.11</version>
   <name>ReplayServerTestData</name>
   <description>Classes to test the replay server code</description>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
   <parent>
   	<groupId>org.nees.mustsim.replay</groupId>
   	<artifactId>ReplayServer</artifactId>
@@ -27,7 +14,8 @@
   	<dependency>
   		<groupId>org.nees.mustsim.replay.common</groupId>
   		<artifactId>ReplayServerCommon</artifactId>
-  		</dependency>
+  		<version>0.0.1</version>
+  	</dependency>
   	<dependency>
   		<groupId>junit</groupId>
   		<artifactId>junit</artifactId>
