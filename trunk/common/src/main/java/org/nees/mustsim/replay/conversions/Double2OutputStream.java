@@ -9,16 +9,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Double2OutputStream {
-	private final byte [] buffer;
+	private final byte[] buffer;
 
 	private final Logger log = LoggerFactory
 			.getLogger(Double2OutputStream.class);
 	private final OutputStream out;
-	public Double2OutputStream(double [][] data) {
+
+	public Double2OutputStream(double[][] data) {
 		super();
 		out = new ByteArrayOutputStream();
 		writeData(data);
-		buffer = ((ByteArrayOutputStream)out).toByteArray();
+		buffer = ((ByteArrayOutputStream) out).toByteArray();
 	}
 
 	public Double2OutputStream(OutputStream os) {
@@ -26,8 +27,8 @@ public class Double2OutputStream {
 		buffer = null;
 		out = os;
 	}
-	
-	public void writeData(double [][] data) {
+
+	public void writeData(double[][] data) {
 
 		DataOutputStream dout = new DataOutputStream(out);
 		try {
@@ -38,16 +39,21 @@ public class Double2OutputStream {
 			return;
 		}
 		for (int r = 0; r < data.length; r++) {
-			for(int c = 0; c < data[0].length; c++)
+			for (int c = 0; c < data[0].length; c++)
 				try {
 					dout.writeDouble(data[r][c]);
 				} catch (IOException e) {
 					log.error("Could not write data array because ", e);
 					return;
+				} finally {
+					try {
+						dout.close();
+					} catch (IOException e) {
+					}
 				}
 		}
 	}
-	
+
 	/**
 	 * @return the buffer
 	 */
@@ -61,11 +67,12 @@ public class Double2OutputStream {
 	public OutputStream getOut() {
 		return out;
 	}
-	public static long streamsSize(double [][]data) {
+
+	public static long streamsSize(double[][] data) {
 		long result = 4; // 2 bytes per 2 ints
 		long elements = data.length * data[0].length;
 		result += elements * 4; // 4 bytes per double
-		return result;		
+		return result;
 	}
 
 }

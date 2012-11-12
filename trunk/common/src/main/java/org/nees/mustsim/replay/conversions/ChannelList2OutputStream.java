@@ -10,35 +10,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ChannelList2OutputStream {
-	private final byte [] buffer;
+	private final byte[] buffer;
 	private final Logger log = LoggerFactory
 			.getLogger(ChannelList2OutputStream.class);
-	private OutputStream out;
-	public ChannelList2OutputStream(List<String>channels) {
+	private final OutputStream out;
+
+	public ChannelList2OutputStream(OutputStream os) {
+		super();
+		buffer = null;
+		out = os;
+	}
+
+	public ChannelList2OutputStream(List<String> channels) {
 		super();
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		String str = "";
-		boolean first = true;
-		for (String s : channels) {
-			str += (first ? "" : ",") + s;
-			first = false;
-		}
-		DataOutputStream dout = new DataOutputStream(bout);
-		out = dout;
-		try {
-			dout.writeChars(str);
-		} catch (IOException e) {
-			log.error("Could not write the string [" + str + "] because ",e);
-			out = null;
-		}
+		out = bout;
+		writeChannels(channels);
 		buffer = bout.toByteArray();
 	}
-/**
- * @return the buffer
- */
-public byte[] getBuffer() {
-	return buffer;
-}
+
+	/**
+	 * @return the buffer
+	 */
+	public byte[] getBuffer() {
+		return buffer;
+	}
 
 	/**
 	 * @return the out
@@ -46,6 +42,24 @@ public byte[] getBuffer() {
 	public OutputStream getOut() {
 		return out;
 	}
-	
 
+	public void writeChannels(List<String> channels) {
+		DataOutputStream dout = new DataOutputStream(out);
+		String str = "";
+		boolean first = true;
+		for (String s : channels) {
+			str += (first ? "" : ",") + s;
+			first = false;
+		}
+		try {
+			dout.writeChars(str);
+		} catch (IOException e) {
+			log.error("Could not write the string [" + str + "] because ", e);
+		} finally {
+			try {
+				dout.close();
+			} catch (IOException e) {
+			}
+		}
+	}
 }
