@@ -2,7 +2,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nees.mustsim.replay.client</groupId>
   <artifactId>ReplayClient</artifactId>
-  <version/>
   <name>ReplayClient</name>
   <description>Client Library for ReplayServer</description>
   <build>
@@ -24,7 +23,7 @@
   </parent>
   <dependencies>
   	<dependency>
-  		<groupId>ReplayServer</groupId>
+  		<groupId>org.nees.mustsim.replay.common</groupId>
   		<artifactId>ReplayServerCommon</artifactId>
   		<version>0.0.1</version>
   	</dependency>
