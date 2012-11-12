@@ -14,7 +14,7 @@
   	<servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
   	<init-param>
   		<param-name>org.restlet.application</param-name>
-  		<param-value>org.nees.mustsim.replay.ReplayServerApplication</param-value>
+  		<param-value>org.nees.mustsim.replay.test.ReplayTestServerApplication</param-value>
   	</init-param>
   </servlet>
   <servlet-mapping>
