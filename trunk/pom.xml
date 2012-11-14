@@ -30,6 +30,11 @@
 			<artifactId>org.restlet</artifactId>
 			<version>2.1rc6</version>
 		</dependency>
+		<dependency>
+			<groupId>org.restlet.jee</groupId>
+			<artifactId>org.restlet.ext.slf4j</artifactId>
+			<version>2.1-RC6</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
