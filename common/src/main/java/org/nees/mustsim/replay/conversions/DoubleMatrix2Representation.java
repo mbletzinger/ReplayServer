@@ -5,30 +5,33 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.restlet.representation.ByteArrayRepresentation;
+import org.restlet.representation.Representation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Double2OutputStream {
+public class DoubleMatrix2Representation {
 	private final byte[] buffer;
 
 	private final Logger log = LoggerFactory
-			.getLogger(Double2OutputStream.class);
-	private final OutputStream out;
+			.getLogger(DoubleMatrix2Representation.class);
+	private final Representation rep;
 
-	public Double2OutputStream(double[][] data) {
+	public DoubleMatrix2Representation(double[][] data) {
 		super();
-		out = new ByteArrayOutputStream();
-		writeData(data);
-		buffer = ((ByteArrayOutputStream) out).toByteArray();
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		writeData(data, bout);
+		buffer = bout.toByteArray();
+		this.rep = new ByteArrayRepresentation(buffer);
 	}
 
-	public Double2OutputStream(OutputStream os) {
+	public DoubleMatrix2Representation(Representation os) {
 		super();
 		buffer = null;
-		out = os;
+		rep = os;
 	}
 
-	public void writeData(double[][] data) {
+	public void writeData(double[][] data, OutputStream out) {
 
 		DataOutputStream dout = new DataOutputStream(out);
 		try {
@@ -64,8 +67,8 @@ public class Double2OutputStream {
 	/**
 	 * @return the out
 	 */
-	public OutputStream getOut() {
-		return out;
+	public Representation getRep() {
+		return rep;
 	}
 
 	public static long streamsSize(double[][] data) {

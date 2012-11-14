@@ -6,27 +6,24 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.restlet.representation.ByteArrayRepresentation;
+import org.restlet.representation.Representation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ChannelList2OutputStream {
+public class ChannelList2Representation {
 	private final byte[] buffer;
 	private final Logger log = LoggerFactory
-			.getLogger(ChannelList2OutputStream.class);
-	private final OutputStream out;
+			.getLogger(ChannelList2Representation.class);
+	private final Representation rep;
 
-	public ChannelList2OutputStream(OutputStream os) {
-		super();
-		buffer = null;
-		out = os;
-	}
 
-	public ChannelList2OutputStream(List<String> channels) {
+	public ChannelList2Representation(List<String> channels) {
 		super();
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		out = bout;
-		writeChannels(channels);
+		writeChannels(channels, bout);
 		buffer = bout.toByteArray();
+		this.rep = new ByteArrayRepresentation(buffer);
 	}
 
 	/**
@@ -39,18 +36,13 @@ public class ChannelList2OutputStream {
 	/**
 	 * @return the out
 	 */
-	public OutputStream getOut() {
-		return out;
+	public Representation getRep() {
+		return rep;
 	}
 
-	public void writeChannels(List<String> channels) {
+	private void writeChannels(List<String> channels, OutputStream out) {
 		DataOutputStream dout = new DataOutputStream(out);
-		String str = "";
-		boolean first = true;
-		for (String s : channels) {
-			str += (first ? "" : ",") + s;
-			first = false;
-		}
+		String str = Str2CL.cl2str(channels);
 		try {
 			dout.writeChars(str);
 		} catch (IOException e) {
