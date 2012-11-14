@@ -1,7 +1,5 @@
 package org.nees.mustsim.replay.restlet.client;
 
-import java.io.InputStream;
-
 import org.nees.mustsim.replay.restlet.DataQueryResource;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -22,7 +20,7 @@ public class DataQueryClientResource extends ClientResource implements
 
 	@Override
 	@Put
-	public void set(String query, InputStream channels) {
+	public void set(String query, String channels) {
 		// TODO Auto-generated method stub
 
 	}
