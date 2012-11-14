@@ -1,9 +1,9 @@
 package org.nees.mustsim.replay.restlet;
 
-import java.io.InputStream;
+import java.util.List;
 
-import org.nees.mustsim.replay.conversions.Double2OutputStream;
-import org.nees.mustsim.replay.conversions.InputStream2ChannelList;
+import org.nees.mustsim.replay.conversions.DoubleMatrix2Representation;
+import org.nees.mustsim.replay.conversions.Str2CL;
 import org.nees.mustsim.replay.data.DoubleMatrix;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.StepNumber;
@@ -38,7 +38,8 @@ public class DataQueryServerResource extends ServerResource implements
 			} else {
 				data = dquery.doQuery(query, strt, stp);
 			}
-			return new DoubleMatrixRepresentation(Double2OutputStream.streamsSize(data.getData()), data);
+			DoubleMatrix2Representation dbl2rep = new DoubleMatrix2Representation(data.getData());
+			return dbl2rep.getRep();
 		}
 		double strt = (start.equals("") ? 0.0 : Double.parseDouble(start));
 		double stp = (stop.equals("") ? 0.0 : Double.parseDouble(stop));
@@ -50,7 +51,8 @@ public class DataQueryServerResource extends ServerResource implements
 		} else {
 			data = dquery.doQuery(query, strt, stp);
 		}
-		return new DoubleMatrixRepresentation(Double2OutputStream.streamsSize(data.getData()), data);
+		DoubleMatrix2Representation dbl2rep = new DoubleMatrix2Representation(data.getData());
+		return dbl2rep.getRep();
 
 	}
 
@@ -63,9 +65,9 @@ public class DataQueryServerResource extends ServerResource implements
 
 	@Override
 	@Put
-	public void set(String query, InputStream channels) {
-		InputStream2ChannelList is2cl = new InputStream2ChannelList(channels);
-		this.dquery.setQuery(query, is2cl.getChannels());
+	public void set(String query, String channels) {
+		List<String> list = Str2CL.str2cl(channels);
+		this.dquery.setQuery(query, list);
 	}
 
 }

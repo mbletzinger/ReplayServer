@@ -2,14 +2,14 @@ package org.nees.mustsim.replay.conversions;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.representation.Representation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class InputStream2Double {
+public class Representation2DoubleMatrix {
 	/**
 	 * @return the numbers
 	 */
@@ -19,11 +19,21 @@ public class InputStream2Double {
 
 	private final List<List<Double>> numbers = new ArrayList<List<Double>>();
 	private final Logger log = LoggerFactory
-			.getLogger(InputStream2Double.class);
+			.getLogger(Representation2DoubleMatrix.class);
 
-	public InputStream2Double(InputStream in) {
+	public Representation2DoubleMatrix(Representation rep) {
 		super();
-		DataInputStream din = new DataInputStream(in);
+		DataInputStream din = null;
+		try {
+			din = new DataInputStream(rep.getStream());
+		} catch (IOException e1) {
+			try {
+				log.error("Could not read representation \"" + rep.getText() + "\"");
+			} catch (IOException e) {
+				log.error("Could not read representation \"" + rep + "\"");
+			}
+			return;
+		}
 		int [] hdrs = new int [2];
 		try {
 			hdrs[0] = din.readInt();
