@@ -3,30 +3,49 @@ package org.nees.mustsim.replay.restlet;
 import java.util.List;
 
 import org.nees.mustsim.replay.conversions.DoubleMatrix2Representation;
+import org.nees.mustsim.replay.conversions.Representation2ChannelList;
 import org.nees.mustsim.replay.conversions.Str2CL;
 import org.nees.mustsim.replay.data.DoubleMatrix;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.StepNumber;
+import org.nees.mustsim.replay.data.TableType;
 import org.nees.mustsim.replay.queries.DataQueryI;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
+import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
 public class DataQueryServerResource extends ServerResource implements
 		DataQueryResource {
-	private final DataQueryI dquery;
+	private  DataQueryI dquery;
 
-	public DataQueryServerResource(DataQueryI query) {
+	public DataQueryServerResource() {
 		super();
-		this.dquery = query;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.restlet.resource.Resource#doInit()
+	 */
+	@Override
+	protected void doInit() throws ResourceException {
+		this.dquery = (DataQueryI) getContext().getAttributes().get("queryI");
+		super.doInit();
 	}
 	
 	@Override
 	@Get
-	public Representation get(String query, String rate, String start, String stop) {
-		RateType rt = RateType.valueOf(rate);
+	public Representation get() {
+		RateType rt = RateType.valueOf((String) getRequest().getAttributes()
+				.get("rate"));
+		String start = (String) getRequest().getAttributes()
+				.get("start");
+		String stop = (String) getRequest().getAttributes()
+				.get("stop");
+		String query = (String) getRequest().getAttributes()
+				.get("query");
+
 		if(rt.equals(RateType.STEP)) {
 			StepNumber strt = (start.equals("") ? null : new StepNumber(start));
 			StepNumber stp = (stop.equals("") ? null : new StepNumber(stop));
@@ -65,8 +84,12 @@ public class DataQueryServerResource extends ServerResource implements
 
 	@Override
 	@Put
-	public void set(String query, String channels) {
-		List<String> list = Str2CL.str2cl(channels);
+	public void set(Representation channels) {
+		String query = (String) getRequest().getAttributes()
+				.get("query");
+		Representation2ChannelList rep2cl = new Representation2ChannelList(
+				channels);
+		List<String> list = rep2cl.getChannels();
 		this.dquery.setQuery(query, list);
 	}
 

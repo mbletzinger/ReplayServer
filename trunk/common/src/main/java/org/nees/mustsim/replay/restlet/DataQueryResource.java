@@ -8,10 +8,10 @@ import org.restlet.resource.Put;
 public interface DataQueryResource {
 
 	@Get("txt|bin")
-	public Representation get(String query, String rate, String start, String stop);
+	public Representation get();
 	
 	@Put
-	public void set(String query, String channels);
+	public void set(Representation channels);
 
 	@Delete
 	public void removeList(String query);
