@@ -23,6 +23,7 @@ import org.nees.mustsim.replay.db.query.DbSelect;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 import org.nees.mustsim.replay.db.statement.DbTableSpecs;
 import org.nees.mustsim.replay.test.utils.ChannelLists;
+import org.nees.mustsim.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.mustsim.replay.test.utils.DataGenerator;
 
 public class TestDbQuery {
@@ -62,12 +63,10 @@ public class TestDbQuery {
 		ChannelLists cl = new ChannelLists();
 
 		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
-		dbu.createTable(TableType.OM, cl.getChannels(TableType.OM));
-		dbu.createTable(TableType.DAQ, cl.getChannels(TableType.DAQ));
+		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
+		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
 
-		List<String> chnls = new ArrayList<String>();
-		chnls.add("OM/CntrlSensor/D_West_X_3");
-		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_X1_0");
+		List<String> chnls = cl.getChannels(ChannelListType.Query1);
 		for (RateType r : RateType.values()) {
 			DbQuerySpec dbs = new DbQuerySpec(chnls, "OM_Channels", specs, r);
 			List<DbSelect> selects = dbs.getSelect();
@@ -89,10 +88,7 @@ public class TestDbQuery {
 			Assert.assertTrue(selects.get(0).getSelect().contains("10.0"));
 			Assert.assertTrue(selects.get(0).getSelect().contains("900.85"));
 		}
-		chnls = new ArrayList<String>();
-		chnls.add("OM/CntrlSensor/D_West_X_3");
-		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_X1_0");
-		chnls.add("DAQ/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
+		chnls = cl.getChannels(ChannelListType.Query2);
 		for (RateType r : RateType.values()) {
 			DbQuerySpec dbs = new DbQuerySpec(chnls, "OM_Channels", specs, r);
 			List<DbSelect> selects = dbs.getSelect();
@@ -111,12 +107,10 @@ public class TestDbQuery {
 		ChannelLists cl = new ChannelLists();
 
 		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
-		dbu.createTable(TableType.OM, cl.getChannels(TableType.OM));
-		dbu.createTable(TableType.DAQ, cl.getChannels(TableType.DAQ));
+		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
+		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
 
-		List<String> chnls = new ArrayList<String>();
-		chnls.add("OM/CntrlSensor/D_West_X_3");
-		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_X1_0");
+		List<String> 	chnls = cl.getChannels(ChannelListType.Query1);
 		DbQuerySpec dbs = new DbQuerySpec(chnls, "OM_Channels", specs,
 				RateType.CONT);
 		Assert.assertEquals("[om_channel4, om_channel1]", dbs.getSelectOrder()
@@ -124,10 +118,7 @@ public class TestDbQuery {
 		Assert.assertEquals("[0, 1]",
 				Mtx2Str.iArray2String(dbs.getQuery2selectMap()));
 
-		chnls = new ArrayList<String>();
-		chnls.add("OM/CntrlSensor/D_West_X_3");
-		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_X1_0");
-		chnls.add("DAQ/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
+		chnls = cl.getChannels(ChannelListType.Query2);
 		dbs = new DbQuerySpec(chnls, "Mixed_Channels", specs, RateType.STEP);
 		Assert.assertEquals("[daq_channel9, om_channel4, om_channel1]", dbs
 				.getSelectOrder().toString());
@@ -141,25 +132,20 @@ public class TestDbQuery {
 		ChannelLists cl = new ChannelLists();
 
 		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
-		dbu.createTable(TableType.OM, cl.getChannels(TableType.OM));
+		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		dbu.update(TableType.OM, RateType.CONT, omContData);
 		dbu.update(TableType.OM, RateType.STEP, omStepData);
-		dbu.createTable(TableType.DAQ, cl.getChannels(TableType.DAQ));
+		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
 		dbu.update(TableType.DAQ, RateType.CONT, daqContData);
 		dbu.update(TableType.DAQ, RateType.STEP, daqStepData);
-		List<String> chnls = new ArrayList<String>();
-		chnls.add("OM/CntrlSensor/D_West_X_3");
-		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_X1_0");
+		List<String> 	chnls = cl.getChannels(ChannelListType.Query1);
 		DbQuerySpec dbs = new DbQuerySpec(chnls, "OM_Channels", specs,
 				RateType.STEP);
 		DbStatement dbSt = dbc.createDbStatement();
 		DbQueryStatements ddr = new DbQueryStatements(dbSt, dbs);
 		DoubleMatrix r1 = ddr.getData(QueryType.Step, null, null);
 		log.debug("Results: " + r1.toString());
-		chnls = new ArrayList<String>();
-		chnls.add("OM/CntrlSensor/D_West_X_3");
-		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_X1_0");
-		chnls.add("DAQ/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
+		chnls = cl.getChannels(ChannelListType.Query2);
 		dbs = new DbQuerySpec(chnls, "Mixed_Channels", specs, RateType.CONT);
 		DbQueryStatements ddr2 = new DbQueryStatements(dbSt, dbs);
 		DoubleMatrix r2 = ddr2.getData(QueryType.Cont, 0, 0);

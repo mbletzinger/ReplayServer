@@ -18,6 +18,7 @@ import org.nees.mustsim.replay.db.data.server.DbDataUpdates;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 import org.nees.mustsim.replay.db.statement.DbTableSpecs;
 import org.nees.mustsim.replay.test.utils.ChannelLists;
+import org.nees.mustsim.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.mustsim.replay.test.utils.DataGenerator;
 
 public class TestDataStatements {
@@ -56,7 +57,7 @@ public class TestDataStatements {
 	public void testContDataUpdate() {
 		ChannelLists cl = new ChannelLists();
 		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
-		dbu.createTable(TableType.OM, cl.getChannels(TableType.OM));
+		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		// log.debug("Adding data " +
 		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
 		dbu.update(TableType.OM, RateType.CONT, omContData);
@@ -64,7 +65,7 @@ public class TestDataStatements {
 		String tblName = specs.tableName(TableType.OM, RateType.CONT);
 		queryData(tblName, omContData);
 
-		dbu.createTable(TableType.DAQ, cl.getChannels(TableType.DAQ));
+		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
 		// log.debug("Adding data " +
 		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
 		dbu.update(TableType.DAQ, RateType.CONT, daqContData);
@@ -77,7 +78,7 @@ public class TestDataStatements {
 	public void testStepDataUpdate() {
 		ChannelLists cl = new ChannelLists();
 		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
-		dbu.createTable(TableType.OM, cl.getChannels(TableType.OM));
+		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		 log.debug("Adding data " +
 		 Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
 		dbu.update(TableType.OM, RateType.STEP, omStepData);
@@ -85,7 +86,7 @@ public class TestDataStatements {
 		String tblName = specs.tableName(TableType.OM, RateType.STEP);
 		queryData(tblName, omStepData);
 
-		dbu.createTable(TableType.DAQ, cl.getChannels(TableType.DAQ));
+		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
 		 log.debug("Adding data " +
 		 Mtx2Str.matrix2String(Mtx2Str.timeOffset(omStepData)));
 		dbu.update(TableType.DAQ, RateType.STEP, daqStepData);
