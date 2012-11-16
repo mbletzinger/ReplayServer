@@ -1,6 +1,5 @@
 package org.nees.mustsim.replay.test.data;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -16,6 +15,7 @@ import org.nees.mustsim.replay.data.DoubleMatrix;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.TableType;
 import org.nees.mustsim.replay.test.utils.ChannelLists;
+import org.nees.mustsim.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.mustsim.replay.test.utils.DataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,22 +31,24 @@ public class TestStreamConversion {
 	public void testChannelListConversion() {
 		ChannelLists lists = new ChannelLists();
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
-		for (String c : lists.getChannels(TableType.OM)) {
+		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
+		for (String c : lists.getChannels(ChannelListType.OM)) {
 			cnr.addChannel(TableType.OM, c);
+			expectedCnr.addChannel(TableType.OM, c);
 		}
 		ChannelList2Representation cl2rep = new ChannelList2Representation(
 				cnr.getNames());
 
 		Representation2ChannelList rep2cl = new Representation2ChannelList(cl2rep.getRep());
-		ChannelNameRegistry cnr1 = new ChannelNameRegistry();
+		ChannelNameRegistry actualCnr = new ChannelNameRegistry();
 		for (String c : rep2cl.getChannels()) {
-			cnr1.addChannel(TableType.OM, c);
+			actualCnr.addChannel(TableType.OM, c);
 		}
-		log.debug("Original CNR " + cnr);
-		log.debug("New CNR " + cnr1);
-		for (String c : cnr.getNames()) {
+		log.debug("expected CNR " + expectedCnr);
+		log.debug("New CNR " + actualCnr);
+		for (String c : expectedCnr.getNames()) {
 			log.debug("Checking \"" + c + "\"");
-			Assert.assertTrue(cnr1.getNames().contains(c));
+			Assert.assertTrue(actualCnr.getNames().contains(c));
 		}
 	}
 	
