@@ -14,19 +14,19 @@ import org.nees.mustsim.replay.test.utils.DataGenerator;
 public class TestDataQuery implements DataQueryI {
 
 	private final ChannelNameRegistry cnr;
+
 	private final QueryRegistry contQr = new QueryRegistry();
+
 	private final QueryRegistry stepQr = new QueryRegistry();
 
 	public TestDataQuery(ChannelNameRegistry cnr) {
 		super();
 		this.cnr = cnr;
 	}
-
 	@Override
 	public DoubleMatrix doQuery(String name) {
 		return generate(name, 40, RateType.STEP);
 	}
-
 	@Override
 	public DoubleMatrix doQuery(String name, double start) {
 		return generate(name, 20, RateType.CONT);
@@ -47,6 +47,36 @@ public class TestDataQuery implements DataQueryI {
 		return generate(name, 5, RateType.STEP);
 	}
 
+	private DoubleMatrix generate(String name, int rows, RateType rate) {
+		QuerySpec qs = rate.equals(RateType.CONT) ? contQr.getQuery(name) : stepQr.getQuery(name);
+		double[][] data = DataGenerator.initData(rate, rows, qs.getNoc()
+				.getNumber(true), 0.5);
+		DoubleMatrix result = new DoubleMatrix(data, data[0].length);
+		return result;
+
+	}
+
+	/**
+	 * @return the cnr
+	 */
+	public ChannelNameRegistry getCnr() {
+		return cnr;
+	}
+
+	/**
+	 * @return the contQr
+	 */
+	public QueryRegistry getContQr() {
+		return contQr;
+	}
+
+	/**
+	 * @return the stepQr
+	 */
+	public QueryRegistry getStepQr() {
+		return stepQr;
+	}
+
 	@Override
 	public boolean isQuery(String name) {
 		return stepQr.getQuery(name) != null;
@@ -57,14 +87,5 @@ public class TestDataQuery implements DataQueryI {
 		contQr.setQuery(name, new QuerySpec(channels, name, cnr, RateType.CONT));
 		stepQr.setQuery(name, new QuerySpec(channels, name, cnr, RateType.STEP));
 		return true;
-	}
-
-	private DoubleMatrix generate(String name, int rows, RateType rate) {
-		QuerySpec qs = rate.equals(RateType.CONT) ? contQr.getQuery(name) : stepQr.getQuery(name);
-		double[][] data = DataGenerator.initData(rate, rows, qs.getNoc()
-				.getNumber(true), 0.5);
-		DoubleMatrix result = new DoubleMatrix(data, data[0].length);
-		return result;
-
 	}
 }
