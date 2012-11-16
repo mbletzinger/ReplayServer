@@ -16,11 +16,12 @@ public class ReplayTestServerApplication extends Application {
 	public Restlet createInboundRoot() {
 		// Create a router Restlet that routes each call to a new instance of HelloWorldResource.
         Router router = new Router(getContext());
-        // /data/experiment/{experiment}/table/{table} - put, post
-        // /data/experiment/{experiment}/query/{query}/start/{start} - put, get
+        // /data/experiment/{experiment}/table/{table}/rate/{rate} - put, post
+        // /data/experiment/{experiment}/query/{query}//rate/{rate}/start/{start}/stop/{stop} - put, get
         // Defines only one route
+        router.attach("/test/data/experiment/{experiment}/table/{table}", DataTableServerResource.class);
         router.attach("/test/data/experiment/{experiment}/table/{table}/rate/{rate}", DataTableServerResource.class);
-        router.attach("/test/data/experiment/{experiment}/query/{query}/rate/{rate}/start/{start}", DataQueryServerResource.class);
+        router.attach("/test/data/experiment/{experiment}/query/{query}/rate/{rate}/start/{start}/stop/{stop}", DataQueryServerResource.class);
         
         return router;	
 	}

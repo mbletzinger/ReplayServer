@@ -1,17 +1,20 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.nees.mustsim.replay.test.server</groupId>
-  <artifactId>ReplayServerTestServer</artifactId>
-  <packaging>war</packaging>
-  <name>Replay Test Server</name>
-  <description>Restlet Server that can be used to test replay clients</description>
-   <dependencies>
-  		<dependency>
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.nees.mustsim.replay.test.server</groupId>
+	<artifactId>ReplayServerTestServer</artifactId>
+	<packaging>war</packaging>
+	<name>Replay Test Server</name>
+	<description>Restlet Server that can be used to test replay clients</description>
+	<dependencies>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 		</dependency>
-  		<dependency>
+		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.15</version>
@@ -22,20 +25,26 @@
 			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
-  		<dependency>
+		<dependency>
 			<groupId>org.nees.mustsim.replay.testdata</groupId>
 			<artifactId>ReplayServerTestData</artifactId>
 			<version>0.0.1</version>
-  		</dependency>
-  		<dependency>
-  			<groupId>org.nees.mustsim.replay.common</groupId>
-  			<artifactId>ReplayServerCommon</artifactId>
-  			<version>0.0.1</version>
-  		</dependency>
-  </dependencies>
-  <parent>
-  	<groupId>org.nees.mustsim.replay</groupId>
-  	<artifactId>ReplayServer</artifactId>
-  	<version>0.0.1</version>
-  </parent>
+		</dependency>
+		<dependency>
+			<groupId>org.nees.mustsim.replay.common</groupId>
+			<artifactId>ReplayServerCommon</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.jee</groupId>
+			<artifactId>org.restlet.ext.servlet</artifactId>
+			<version>2.1-RC6</version>
+		</dependency>
+
+	</dependencies>
+	<parent>
+		<groupId>org.nees.mustsim.replay</groupId>
+		<artifactId>ReplayServer</artifactId>
+		<version>0.0.1</version>
+	</parent>
 </project>

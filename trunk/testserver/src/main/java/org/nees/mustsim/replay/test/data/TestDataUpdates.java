@@ -10,6 +10,21 @@ import org.nees.mustsim.replay.data.TableType;
 
 public class TestDataUpdates implements DataUpdatesI {
 
+	/**
+	 * @return the data
+	 */
+	public double[][] getData() {
+		return data;
+	}
+
+	private double [][] data;
+	/**
+	 * @return the cu
+	 */
+	public ChannelUpdates getCu() {
+		return cu;
+	}
+
 	private final ChannelUpdates cu;
 	
 	@Override
@@ -25,6 +40,7 @@ public class TestDataUpdates implements DataUpdatesI {
 
 	@Override
 	public boolean update(TableType table, RateType rate, double[][] data) {
+		this.data = data;
 		return true;
 	}
 
