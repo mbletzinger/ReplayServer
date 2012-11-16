@@ -11,6 +11,7 @@ import org.nees.mustsim.replay.db.DbConnections;
 import org.nees.mustsim.replay.db.data.server.DbChannelNameSynch;
 import org.nees.mustsim.replay.db.statement.DbStatement;
 import org.nees.mustsim.replay.test.utils.ChannelLists;
+import org.nees.mustsim.replay.test.utils.ChannelLists.ChannelListType;
 
 public class TestChannelLists {
 	private DbConnections dbc;
@@ -34,7 +35,7 @@ public class TestChannelLists {
 	public void testChannelList() {
 		ChannelLists lists = new ChannelLists();
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
-		for (String c : lists.getChannels(TableType.OM)) {
+		for (String c : lists.getChannels(ChannelListType.OM)) {
 			cnr.addChannel(TableType.OM, c);
 		}
 		DbStatement dbSt = dbc.createDbStatement();
