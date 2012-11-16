@@ -6,7 +6,7 @@ import org.restlet.resource.Put;
 
 public interface DataTableResource {
 	@Put
-	public void set(String channels);
+	public void set(Representation channels);
 
 	@Post
 	public void update(Representation data);
