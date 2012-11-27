@@ -10,6 +10,8 @@ import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.StepNumber;
 import org.nees.mustsim.replay.data.TableType;
 import org.nees.mustsim.replay.queries.DataQueryI;
+import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
@@ -45,6 +47,8 @@ public class DataQueryServerResource extends ServerResource implements
 				.get("stop");
 		String query = (String) getRequest().getAttributes()
 				.get("query");
+		
+		List<Preference<MediaType>> mts = getRequest().getClientInfo().getAcceptedMediaTypes();
 
 		if(rt.equals(RateType.STEP)) {
 			StepNumber strt = (start.equals("") ? null : new StepNumber(start));
