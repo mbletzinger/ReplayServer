@@ -11,7 +11,7 @@ public class DataTableClientResource extends ClientResource implements
 
 	@Override
 	@Put
-	public void set(String channels) {
+	public void set(Representation channels) {
 	}
 
 	@Override
