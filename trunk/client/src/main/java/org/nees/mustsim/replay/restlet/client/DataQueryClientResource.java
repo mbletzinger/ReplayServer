@@ -12,15 +12,14 @@ public class DataQueryClientResource extends ClientResource implements
 
 	@Override
 	@Get
-	public Representation get(String query, String rate, String start,
-			String stop) {
+	public Representation get() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	@Put
-	public void set(String query, String channels) {
+	public void set(Representation channels) {
 		// TODO Auto-generated method stub
 
 	}
