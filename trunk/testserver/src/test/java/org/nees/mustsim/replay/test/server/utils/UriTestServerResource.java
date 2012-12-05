@@ -6,6 +6,7 @@ import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
+import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
 import org.slf4j.Logger;
@@ -22,6 +23,11 @@ public class UriTestServerResource extends ServerResource {
 
 	@Put
 	public Representation put() {
+		return process();
+	}
+	
+	@Post
+	public Representation post() {
 		return process();
 	}
 
