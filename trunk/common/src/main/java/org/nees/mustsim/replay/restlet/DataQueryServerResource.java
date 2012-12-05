@@ -4,11 +4,9 @@ import java.util.List;
 
 import org.nees.mustsim.replay.conversions.DoubleMatrix2Representation;
 import org.nees.mustsim.replay.conversions.Representation2ChannelList;
-import org.nees.mustsim.replay.conversions.Str2CL;
 import org.nees.mustsim.replay.data.DoubleMatrix;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.StepNumber;
-import org.nees.mustsim.replay.data.TableType;
 import org.nees.mustsim.replay.queries.DataQueryI;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
@@ -18,10 +16,15 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DataQueryServerResource extends ServerResource implements
 		DataQueryResource {
 	private  DataQueryI dquery;
+	
+	private final Logger log = LoggerFactory
+			.getLogger(DataQueryServerResource.class);
 
 	public DataQueryServerResource() {
 		super();
@@ -51,8 +54,8 @@ public class DataQueryServerResource extends ServerResource implements
 		List<Preference<MediaType>> mts = getRequest().getClientInfo().getAcceptedMediaTypes();
 
 		if(rt.equals(RateType.STEP)) {
-			StepNumber strt = (start.equals("") ? null : new StepNumber(start));
-			StepNumber stp = (stop.equals("") ? null : new StepNumber(stop));
+			StepNumber strt = parseStepNumber(start);
+			StepNumber stp = parseStepNumber(stop);
 			DoubleMatrix data;
 			if(strt == null) {
 				data = dquery.doQuery(query);
@@ -64,12 +67,12 @@ public class DataQueryServerResource extends ServerResource implements
 			DoubleMatrix2Representation dbl2rep = new DoubleMatrix2Representation(data.getData());
 			return dbl2rep.getRep();
 		}
-		double strt = (start.equals("") ? 0.0 : Double.parseDouble(start));
-		double stp = (stop.equals("") ? 0.0 : Double.parseDouble(stop));
+		Double strt = parseDouble(start);
+		Double stp = parseDouble(stop);
 		DoubleMatrix data;
-		if(strt < .99) {
+		if(strt == null) {
 			data = dquery.doQuery(query);
-		} else if(stp < .99) {
+		} else if(stp == null) {
 			data = dquery.doQuery(query, strt);
 		} else {
 			data = dquery.doQuery(query, strt, stp);
@@ -77,6 +80,42 @@ public class DataQueryServerResource extends ServerResource implements
 		DoubleMatrix2Representation dbl2rep = new DoubleMatrix2Representation(data.getData());
 		return dbl2rep.getRep();
 
+	}
+	
+	private StepNumber parseStepNumber(String str) {
+		if(str == null) {
+			return null;
+		}
+		if(str.equals("")) {
+			return null;
+		}
+		StepNumber result = null;
+		try {
+			result = new StepNumber(str);
+		}
+		catch (Exception e) {
+			log.error("Step \"" + str + "\" could not be parsed");
+			return null;
+		}
+		return result;
+	}
+
+	private Double parseDouble(String str) {
+		if(str == null) {
+			return null;
+		}
+		if(str.equals("")) {
+			return null;
+		}
+		Double result = null;
+		try {
+			result = new Double(str);
+		}
+		catch (Exception e) {
+			log.error("Double \"" + str + "\" could not be parsed");
+			return null;
+		}
+		return result;
 	}
 
 	@Override
@@ -93,7 +132,7 @@ public class DataQueryServerResource extends ServerResource implements
 				.get("query");
 		Representation2ChannelList rep2cl = new Representation2ChannelList(
 				channels);
-		List<String> list = rep2cl.getChannels();
+		List<String> list = rep2cl.getIl2cl().getChannels();
 		this.dquery.setQuery(query, list);
 	}
 
