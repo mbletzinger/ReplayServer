@@ -41,7 +41,7 @@ public class TestStreamConversion {
 
 		Representation2ChannelList rep2cl = new Representation2ChannelList(cl2rep.getRep());
 		ChannelNameRegistry actualCnr = new ChannelNameRegistry();
-		for (String c : rep2cl.getChannels()) {
+		for (String c : rep2cl.getIl2cl().getChannels()) {
 			actualCnr.addChannel(TableType.OM, c);
 		}
 		log.debug("expected CNR " + expectedCnr);
@@ -58,7 +58,7 @@ public class TestStreamConversion {
 		DoubleMatrix2Representation rep2os = new DoubleMatrix2Representation(data);
 		DoubleMatrix orig = new DoubleMatrix(DataGenerator.toList(data), data[0].length);
 		Representation2DoubleMatrix rep2dbl = new Representation2DoubleMatrix(rep2os.getRep());
-		List<List<Double>> newL = rep2dbl.getNumbers();
+		List<List<Double>> newL = rep2dbl.getIn2dm().getNumbers();
 		DoubleMatrix newD = new DoubleMatrix(newL,newL.get(0).size());
 		log.debug("Original Data " + orig);
 		log.debug("New  Data " + newD);

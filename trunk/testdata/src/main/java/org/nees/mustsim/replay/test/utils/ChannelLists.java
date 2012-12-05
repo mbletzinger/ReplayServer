@@ -5,9 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nees.mustsim.replay.data.TableType;
+
 
 public class ChannelLists {
 	public enum ChannelListType { OM, DAQ, Query1, Query2 };
+	private final Map<ChannelListType,TableType> cl2tt = new HashMap<ChannelLists.ChannelListType, TableType>();
 	private final Map<ChannelListType, List<String>> channels = new HashMap<ChannelListType, List<String>>();
 	{
 		List<String> chnls = new ArrayList<String>();
@@ -18,6 +21,7 @@ public class ChannelLists {
 		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_Z1_4");
 		chnls.add("OM/Disp/LBCB1/Cartesian/D_LBCB1_RZ_5");
 		channels.put(ChannelListType.OM, chnls);
+		cl2tt.put(ChannelListType.OM, TableType.OM);
 
 
 		chnls = new ArrayList<String>();
@@ -27,6 +31,7 @@ public class ChannelLists {
 		chnls.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL05K_W7_SG_K12_4");
 		chnls.add("DAQ/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B23_5");
 		channels.put(ChannelListType.DAQ, chnls);
+		cl2tt.put(ChannelListType.DAQ, TableType.DAQ);
 
 		chnls = new ArrayList<String>();
 		chnls.add("OM/CntrlSensor/D_West_X_3");
@@ -46,5 +51,7 @@ public class ChannelLists {
 		result.addAll(channels.get(listType));
 		return result;
 	}
-	
+	public TableType getTt(ChannelListType type) {
+		return cl2tt.get(type);
+	}
 }
