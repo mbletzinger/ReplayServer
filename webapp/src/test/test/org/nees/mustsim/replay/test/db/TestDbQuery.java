@@ -1,6 +1,5 @@
 package org.nees.mustsim.replay.test.db;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Assert;
