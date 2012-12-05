@@ -1,5 +1,7 @@
 package org.nees.mustsim.replay.data;
 
+import java.util.regex.PatternSyntaxException;
+
 public class StepNumber implements Comparable<StepNumber> {
 	private final long correctionStep;
 
@@ -13,7 +15,7 @@ public class StepNumber implements Comparable<StepNumber> {
 		this.substep = Math.round(substep);
 		this.correctionStep = Math.round(correctionStep);
 	}
-	public StepNumber(String steps) {
+	public StepNumber(String steps) throws NumberFormatException, PatternSyntaxException {
 		super();
 		String [] ssteps = steps.split("_");
 		this.step = Integer.parseInt(ssteps[0]);

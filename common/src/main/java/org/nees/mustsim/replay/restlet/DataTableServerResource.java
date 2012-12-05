@@ -42,7 +42,7 @@ public class DataTableServerResource extends ServerResource implements
 	public void set(Representation channels) {
 		Representation2ChannelList rep2cl = new Representation2ChannelList(
 				channels);
-		List<String> list = rep2cl.getChannels();
+		List<String> list = rep2cl.getIl2cl().getChannels();
 		TableType tbl = TableType.valueOf((String) getRequest().getAttributes()
 				.get("table"));
 		updates.createTable(tbl, list);
@@ -54,7 +54,7 @@ public class DataTableServerResource extends ServerResource implements
 	public void update(Representation data) {
 		Representation2DoubleMatrix rep2dbl = new Representation2DoubleMatrix(
 				data);
-		List<List<Double>> doubles = rep2dbl.getNumbers();
+		List<List<Double>> doubles = rep2dbl.getIn2dm().getNumbers();
 		DoubleMatrix dm = new DoubleMatrix(doubles, doubles.get(0).size());
 		TableType tbl = TableType.valueOf((String) getRequest().getAttributes()
 				.get("table"));
