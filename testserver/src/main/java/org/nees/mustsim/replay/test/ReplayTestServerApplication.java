@@ -22,19 +22,21 @@ public class ReplayTestServerApplication extends Application {
         Router router = new Router(getContext());
         getContext().getParameters().add("tracing", "true");
 
-        router.attach(hostname + "/test3/", tracer);
+        router.attach("/test3/", tracer);
 
-        router.attach(hostname + "/test1/data/", UriTestServerResource.class);
-        router.attach(hostname + "/test1/data/experiment/", UriTestServerResource.class);
-        router.attach(hostname + "/test1/data/experiment/{experiment}", UriTestServerResource.class);
-        router.attach(hostname + "/test1/data/experiment/{experiment}/table/", UriTestServerResource.class);
-        router.attach(hostname + "/test1/data/experiment/{experiment}/table/{table}", UriTestServerResource.class);
-        router.attach(hostname + "/test1/data/experiment/{experiment}/table/{table}/rate/{rate}", UriTestServerResource.class);
-        router.attach(hostname + "/test1/data/experiment/{experiment}/query/{query}/rate/{rate}/start/{start}", UriTestServerResource.class);
-        router.attach(hostname + "/test1/data/experiment/{experiment}/query/{query}/rate/{rate}/start/{start}/stop/{stop}", UriTestServerResource.class);
-        router.attach(hostname + "/test/data/experiment/{experiment}/table/{table}", DataTableServerResource.class);
-        router.attach(hostname + "/test/data/experiment/{experiment}/table/{table}/rate/{rate}", DataTableServerResource.class);
-        router.attach(hostname + "/test/data/experiment/{experiment}/query/{query}/rate/{rate}/start/{start}/stop/{stop}", DataQueryServerResource.class);
+        router.attach("/test1/data/", UriTestServerResource.class);
+        router.attach("/test1/data/experiment/", UriTestServerResource.class);
+        router.attach("/test1/data/experiment/{experiment}", UriTestServerResource.class);
+        router.attach("/test1/data/experiment/{experiment}/table/", UriTestServerResource.class);
+        router.attach("/test1/data/experiment/{experiment}/table/{table}", UriTestServerResource.class);
+        router.attach("/test1/data/experiment/{experiment}/table/{table}/rate/{rate}", UriTestServerResource.class);
+        router.attach("/test1/data/experiment/{experiment}/query/{query}/rate/{rate}/start/{start}", UriTestServerResource.class);
+        router.attach("/test1/data/experiment/{experiment}/query/{query}/rate/{rate}/start/{start}/stop/{stop}", UriTestServerResource.class);
+        router.attach("/test/data/experiment/{experiment}/table/{table}", DataTableServerResource.class);
+        router.attach("/test/data/experiment/{experiment}/table/{table}/rate/{rate}", DataTableServerResource.class);
+        router.attach("/test/data/experiment/{experiment}/query/{query}", DataQueryServerResource.class);
+        router.attach("/test/data/experiment/{experiment}/query/{query}/rate/{rate}/start/{start}", DataQueryServerResource.class);
+        router.attach("/test/data/experiment/{experiment}/query/{query}/rate/{rate}/start/{start}/stop/{stop}", DataQueryServerResource.class);
         
         return router;	
 	}

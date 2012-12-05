@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.activation.MimeType;
-
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -30,7 +28,6 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
@@ -40,250 +37,6 @@ import org.slf4j.LoggerFactory;
 public class ReplayTestServerTest {
 	private final Logger log = LoggerFactory
 			.getLogger(ReplayTestServerTest.class);
-
-	@Test
-	public void testResourcesOm() {
-		ChannelNameRegistry actualCnr = new ChannelNameRegistry();
-		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
-		TestDataUpdates tdu = new TestDataUpdates(actualCnr);
-		DataTableServerResource dtsR = new DataTableServerResource();
-		Context cxt = new Context();
-		cxt.getAttributes().put("updatesI", tdu);
-
-		ChannelLists cl = new ChannelLists();
-		List<String> channels = cl.getChannels(ChannelListType.OM);
-		ChannelList2Representation cl2rep = new ChannelList2Representation(
-				channels);
-		for (String c : channels) {
-			expectedCnr.addChannel(TableType.OM, c);
-		}
-		Request req = new Request(Method.PUT,
-				"/test/data/experiment/HybridMasonry1/table/OM/",
-				cl2rep.getRep());
-		Map<String, Object> attr = new HashMap<String, Object>();
-		attr.put("table", new String("OM"));
-		req.setAttributes(attr);
-		Response resp = new Response(req);
-		dtsR.init(cxt, req, resp);
-		dtsR.handle();
-		assertTrue(resp.getStatus().isSuccess());
-		Assert.assertEquals(expectedCnr.toString(), actualCnr.toString());
-
-		int columns = channels.size();
-		double[][] dataD = DataGenerator.initData(RateType.CONT, 20, columns,
-				0.02);
-		DoubleMatrix2Representation dm2rep = new DoubleMatrix2Representation(
-				dataD);
-		req = new Request(Method.POST,
-				"/test/data/experiment/HybridMasonry1/table/OM/rate/CONT",
-				dm2rep.getRep());
-		attr = new HashMap<String, Object>();
-		attr.put("table", new String("OM"));
-		attr.put("rate", new String("CONT"));
-		req.setAttributes(attr);
-		resp = new Response(req);
-		dtsR.init(cxt, req, resp);
-		dtsR.handle();
-		assertTrue(resp.getStatus().isSuccess());
-		DataGenerator.compareData(dataD, tdu.getData());
-
-		dataD = DataGenerator.initData(RateType.STEP, 15, columns, 0.02);
-		dm2rep = new DoubleMatrix2Representation(dataD);
-		req = new Request(Method.POST,
-				"/test/data/experiment/HybridMasonry1/table/OM/rate/STEP",
-				dm2rep.getRep());
-		attr = new HashMap<String, Object>();
-		attr.put("table", new String("OM"));
-		attr.put("rate", new String("STEP"));
-		req.setAttributes(attr);
-		resp = new Response(req);
-		dtsR.init(cxt, req, resp);
-		dtsR.handle();
-		assertTrue(resp.getStatus().isSuccess());
-		DataGenerator.compareData(dataD, tdu.getData());
-	}
-
-	@Test
-	public void testResourcesDaq() {
-		ChannelNameRegistry actualCnr = new ChannelNameRegistry();
-		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
-		TestDataUpdates tdu = new TestDataUpdates(actualCnr);
-		DataTableServerResource dtsR = new DataTableServerResource();
-		Context cxt = new Context();
-		cxt.getAttributes().put("updatesI", tdu);
-
-		ChannelLists cl = new ChannelLists();
-		List<String> channels = cl.getChannels(ChannelListType.DAQ);
-		ChannelList2Representation cl2rep = new ChannelList2Representation(
-				channels);
-		for (String c : channels) {
-			expectedCnr.addChannel(TableType.DAQ, c);
-		}
-		Request req = new Request(Method.PUT,
-				"/test/data/experiment/HybridMasonry1/table/DAQ/",
-				cl2rep.getRep());
-		Map<String, Object> attr = new HashMap<String, Object>();
-		attr.put("table", new String("DAQ"));
-		req.setAttributes(attr);
-		Response resp = new Response(req);
-		dtsR.init(cxt, req, resp);
-		dtsR.handle();
-		assertTrue(resp.getStatus().isSuccess());
-		Assert.assertEquals(expectedCnr.toString(), actualCnr.toString());
-
-		int columns = channels.size();
-		double[][] dataD = DataGenerator.initData(RateType.CONT, 20, columns,
-				0.02);
-		DoubleMatrix2Representation dm2rep = new DoubleMatrix2Representation(
-				dataD);
-		req = new Request(Method.POST,
-				"/test/data/experiment/HybridMasonry1/table/DAQ/rate/CONT",
-				dm2rep.getRep());
-		attr = new HashMap<String, Object>();
-		attr.put("table", new String("DAQ"));
-		attr.put("rate", new String("CONT"));
-		req.setAttributes(attr);
-		resp = new Response(req);
-		dtsR.init(cxt, req, resp);
-		dtsR.handle();
-		assertTrue(resp.getStatus().isSuccess());
-		DataGenerator.compareData(dataD, tdu.getData());
-
-		dataD = DataGenerator.initData(RateType.STEP, 15, columns, 0.02);
-		dm2rep = new DoubleMatrix2Representation(dataD);
-		req = new Request(Method.POST,
-				"/test/data/experiment/HybridMasonry1/table/DAQ/rate/STEP",
-				dm2rep.getRep());
-		attr = new HashMap<String, Object>();
-		attr.put("table", new String("DAQ"));
-		attr.put("rate", new String("STEP"));
-		req.setAttributes(attr);
-		resp = new Response(req);
-		dtsR.init(cxt, req, resp);
-		dtsR.handle();
-		assertTrue(resp.getStatus().isSuccess());
-		DataGenerator.compareData(dataD, tdu.getData());
-	}
-
-	@Test
-	public void testQueryResource() {
-		ChannelNameRegistry actualCnr = new ChannelNameRegistry();
-		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
-		TestDataUpdates tdu = new TestDataUpdates(actualCnr);
-		TestDataQuery tdq = new TestDataQuery(actualCnr);
-		DataTableServerResource dtsR = new DataTableServerResource();
-		DataQueryServerResource dqsR = new DataQueryServerResource();
-		Context cxt = new Context();
-		cxt.getAttributes().put("updatesI", tdu);
-		cxt.getAttributes().put("queryI", tdq);
-
-		ChannelLists cl = new ChannelLists();
-		List<String> channels = cl.getChannels(ChannelListType.OM);
-		ChannelList2Representation cl2rep = new ChannelList2Representation(
-				channels);
-		for (String c : channels) {
-			expectedCnr.addChannel(TableType.OM, c);
-		}
-		Request req = new Request(Method.PUT,
-				"/test/data/experiment/HybridMasonry1/table/OM/",
-				cl2rep.getRep());
-		Map<String, Object> attr = new HashMap<String, Object>();
-		attr.put("table", new String("OM"));
-		req.setAttributes(attr);
-		Response resp = new Response(req);
-		dtsR.init(cxt, req, resp);
-		dtsR.handle();
-		channels = cl.getChannels(ChannelListType.DAQ);
-		cl2rep = new ChannelList2Representation(channels);
-		for (String c : channels) {
-			expectedCnr.addChannel(TableType.DAQ, c);
-		}
-		req = new Request(Method.PUT,
-				"/test/data/experiment/HybridMasonry1/table/DAQ/",
-				cl2rep.getRep());
-		attr = new HashMap<String, Object>();
-		attr.put("table", new String("DAQ"));
-		req.setAttributes(attr);
-		resp = new Response(req);
-		dtsR.init(cxt, req, resp);
-		dtsR.handle();
-
-		channels = cl.getChannels(ChannelListType.Query1);
-		cl2rep = new ChannelList2Representation(channels);
-		req = new Request(Method.PUT,
-				"/test/data/experiment/HybridMasonry1/query/query1",
-				cl2rep.getRep());
-		attr = new HashMap<String, Object>();
-		attr.put("query", new String("Test Query Number 1"));
-		req.setAttributes(attr);
-		resp = new Response(req);
-		dqsR.init(cxt, req, resp);
-		dqsR.handle();
-		assertTrue(resp.getStatus().isSuccess());
-		Assert.assertNotNull(tdq.getContQr().getQuery("Test Query Number 1"));
-
-		channels = cl.getChannels(ChannelListType.Query2);
-		cl2rep = new ChannelList2Representation(channels);
-		req = new Request(Method.PUT,
-				"/test/data/experiment/HybridMasonry1/query/query2",
-				cl2rep.getRep());
-		attr = new HashMap<String, Object>();
-		attr.put("query", new String("Test Query Number 2"));
-		req.setAttributes(attr);
-		resp = new Response(req);
-		dqsR.init(cxt, req, resp);
-		dqsR.handle();
-		assertTrue(resp.getStatus().isSuccess());
-		Assert.assertNotNull(tdq.getContQr().getQuery("Test Query Number 2"));
-
-	}
-
-
-	@Test
-	public void testCoolUris() {
-
-		ChannelNameRegistry cnr = new ChannelNameRegistry();
-		TestDataUpdates tdu = new TestDataUpdates(cnr);
-		TestDataQuery tdq = new TestDataQuery(cnr);
-		Context cxt = new Context();
-		cxt.getAttributes().put("updatesI", tdu);
-		cxt.getAttributes().put("queryI", tdq);
-		cxt.getParameters().set("tracing", "true");
-
-		String hostname = "http://localhost:8111";
-		// Instantiate our Restlet component
-		ReplayTestServerApplication app = new ReplayTestServerApplication();
-		app.setContext(cxt);
-		cxt.getParameters().add("hostname", hostname);
-
-		// Prepare a mock HTTP call
-		Request req = new Request(Method.GET, hostname + "/test3/");
-		Response response = new Response(req);
-		log.info("Request " + req.toString());
-
-		app.handle(req, response);
-		log.info("Response " + response.getEntityAsText());
-		// Test if response was successful
-		assertTrue(response.getStatus().isSuccess());
-		List<String> addrs = new ArrayList<String>();
-		addrs.add("/test1/data/");
-		addrs.add("/test1/data/experiment/HybridMasonry1");
-		addrs.add("/test1/data/experiment/HybridMasonry1/table/DAQ");
-		addrs.add("/test1/data/experiment/HybridMasonry1/table/DAQ/rate/CONT");
-		addrs.add("/test1/data/experiment/HybridMasonry1/query/StrainGage/rate/CONT/start/222.34");
-
-		for (String a : addrs) {
-			log.info("Trying URI \"" + hostname + a + "\"");
-			req = new Request(Method.GET, hostname + a);
-			response = new Response(req);
-			log.info("Request " + req.toString());
-
-			app.handle(req, response);
-			log.info("Response " + response);
-			// Test if response was successful
-			assertTrue(response.getStatus().isSuccess());
-		}
-	}
 
 	@Test
 	public void testApplication() {
@@ -383,7 +136,7 @@ public class ReplayTestServerTest {
 	public void testComponent() {
 
 		// Instantiate our Restlet component
-		ReplayTestServerComponent component = new ReplayTestServerComponent();
+		ReplayTestServerComponent component = new ReplayTestServerComponent(8111);
 
 		// Prepare a mock HTTP call
 		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();

@@ -14,8 +14,12 @@ import org.restlet.ext.slf4j.Slf4jLoggerFacade;
 
 public class ReplayTestServerComponent extends Component {
 
-	public ReplayTestServerComponent() {
+	private final int port;
+	private final String hostname; 
+	public ReplayTestServerComponent(int port) {
 		super();
+		this.port = port;
+		hostname = "localhost";
 		// Configure the log service
 		Engine.getInstance().setLoggerFacade(new Slf4jLoggerFacade());
 		// Set basic properties
@@ -34,12 +38,17 @@ public class ReplayTestServerComponent extends Component {
 
 		// Add connectors
 		getClients().add(new Client(Protocol.CLAP));
-		Server server = new Server(cxt, Protocol.HTTP, 8111);
+		Server server = new Server(cxt, Protocol.HTTP, port);
 		getServers().add(server);
 
 		// Attach the application to the default virtual host
-		getDefaultHost().attachDefault(new ReplayTestServerApplication());
+		ReplayTestServerApplication app = new ReplayTestServerApplication();
+		app.setContext(cxt);
+		getDefaultHost().attachDefault(app);
 
+	}
+	public String getAddress() {
+		return "http://" + hostname + ":" + port;
 	}
 
 	/**
@@ -50,7 +59,7 @@ public class ReplayTestServerComponent extends Component {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		new ReplayTestServerComponent().start();
+		new ReplayTestServerComponent(8111).start();
 	}
 
 }
