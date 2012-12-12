@@ -13,15 +13,11 @@ import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.inject.Inject;
 
 public class DataTableServerResource extends ServerResource implements
 		DataTableResource {
-	private final Logger log = LoggerFactory
-			.getLogger(DataTableServerResource.class);
+//	private final Logger log = LoggerFactory
+//			.getLogger(DataTableServerResource.class);
 
 	private DataUpdatesI updates;
 	public DataTableServerResource() {
