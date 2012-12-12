@@ -28,38 +28,33 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.nees.mustsim.replay.test.server.utils;
+package org.nees.mustsim.replay.test.server.utils.example;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
+public class Account {
 
-@XStreamAlias("account")
-public class AccountRepresentation {
+    private String login;
 
-    private volatile String login;
+    private String firstName;
 
-    private volatile String firstName;
+    private String lastName;
 
-    private volatile String lastName;
+    private String nickName;
 
-    private volatile String nickName;
+    private String senderName;
 
-    private volatile String senderName;
+    private String emailAddress;
 
-    private volatile String emailAddress;
+    private List<Contact> contacts;
 
-    @XStreamImplicit
-    private volatile List<String> contactRefs;
-
-    public AccountRepresentation() {
-        this.contactRefs = new CopyOnWriteArrayList<String>();
+    public Account() {
+        this.contacts = new CopyOnWriteArrayList<Contact>();
     }
 
-    public List<String> getContactRefs() {
-        return contactRefs;
+    public List<Contact> getContacts() {
+        return contacts;
     }
 
     public String getEmailAddress() {
@@ -86,8 +81,8 @@ public class AccountRepresentation {
         return senderName;
     }
 
-    public void setContactRefs(List<String> contactRefs) {
-        this.contactRefs = contactRefs;
+    public void setContacts(List<Contact> contact) {
+        this.contacts = contact;
     }
 
     public void setEmailAddress(String emailAddress) {

@@ -11,6 +11,8 @@ import org.nees.mustsim.replay.queries.QueryRegistry;
 import org.nees.mustsim.replay.queries.QuerySpec;
 import org.nees.mustsim.replay.test.utils.DataGenerator;
 
+import com.google.inject.Inject;
+
 public class TestDataQuery implements DataQueryI {
 
 	private final ChannelNameRegistry cnr;
@@ -19,6 +21,7 @@ public class TestDataQuery implements DataQueryI {
 
 	private final QueryRegistry stepQr = new QueryRegistry();
 
+	@Inject
 	public TestDataQuery(ChannelNameRegistry cnr) {
 		super();
 		this.cnr = cnr;
