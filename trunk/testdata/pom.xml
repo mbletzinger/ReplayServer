@@ -28,5 +28,10 @@
   		<version>6.8</version>
   		<scope>test</scope>
   	</dependency>
+  	<dependency>
+  		<groupId>org.nees.mustsim.replay.client</groupId>
+  		<artifactId>ReplayClient</artifactId>
+  		<version>0.0.1</version>
+  	</dependency>
   </dependencies>
 </project>
