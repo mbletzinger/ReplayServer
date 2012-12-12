@@ -24,7 +24,7 @@ import org.nees.mustsim.replay.restlet.ReplayServerApplication;
 import org.nees.mustsim.replay.restlet.ReplayServerComponent;
 import org.nees.mustsim.replay.test.data.TestDataQuery;
 import org.nees.mustsim.replay.test.data.TestDataUpdates;
-import org.nees.mustsim.replay.test.guice.UriTestModule;
+import org.nees.mustsim.replay.test.server.guice.UriTestModule;
 import org.nees.mustsim.replay.test.server.http.ChannelList2HttpEntity;
 import org.nees.mustsim.replay.test.server.http.DoubleMatrix2HttpEntity;
 import org.nees.mustsim.replay.test.utils.ChannelLists;

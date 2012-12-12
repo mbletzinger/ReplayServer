@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test.restlet;
+package org.nees.mustsim.replay.test.server.restlet;
 
 import org.nees.mustsim.replay.restlet.ReplayServerApplication;
 
