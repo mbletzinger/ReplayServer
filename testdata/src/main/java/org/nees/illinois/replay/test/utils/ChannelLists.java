@@ -1,11 +1,11 @@
-package org.nees.mustsim.replay.test.utils;
+package org.nees.illinois.replay.test.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.mustsim.replay.data.TableType;
+import org.nees.illinois.replay.data.TableType;
 
 
 public class ChannelLists {
