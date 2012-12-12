@@ -8,9 +8,8 @@ import org.nees.mustsim.replay.data.DoubleMatrix;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.StepNumber;
 import org.nees.mustsim.replay.queries.DataQueryI;
-import org.restlet.data.MediaType;
-import org.restlet.data.Preference;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
@@ -28,6 +27,7 @@ public class DataQueryServerResource extends ServerResource implements
 
 	public DataQueryServerResource() {
 		super();
+		
 	}
 
 	/* (non-Javadoc)
@@ -40,8 +40,14 @@ public class DataQueryServerResource extends ServerResource implements
 	}
 	
 	@Override
-	@Get
-	public Representation get() {
+	@Get("bin")
+	public Representation getBin() {
+		DoubleMatrix data = getDm();
+		DoubleMatrix2Representation dbl2rep = new DoubleMatrix2Representation(data.getData());
+		return dbl2rep.getRep();
+	}
+	
+	private DoubleMatrix getDm() {
 		RateType rt = RateType.valueOf((String) getRequest().getAttributes()
 				.get("rate"));
 		String start = (String) getRequest().getAttributes()
@@ -50,8 +56,7 @@ public class DataQueryServerResource extends ServerResource implements
 				.get("stop");
 		String query = (String) getRequest().getAttributes()
 				.get("query");
-		
-		List<Preference<MediaType>> mts = getRequest().getClientInfo().getAcceptedMediaTypes();
+
 
 		if(rt.equals(RateType.STEP)) {
 			StepNumber strt = parseStepNumber(start);
@@ -64,8 +69,7 @@ public class DataQueryServerResource extends ServerResource implements
 			} else {
 				data = dquery.doQuery(query, strt, stp);
 			}
-			DoubleMatrix2Representation dbl2rep = new DoubleMatrix2Representation(data.getData());
-			return dbl2rep.getRep();
+			return data;
 		}
 		Double strt = parseDouble(start);
 		Double stp = parseDouble(stop);
@@ -77,11 +81,10 @@ public class DataQueryServerResource extends ServerResource implements
 		} else {
 			data = dquery.doQuery(query, strt, stp);
 		}
-		DoubleMatrix2Representation dbl2rep = new DoubleMatrix2Representation(data.getData());
-		return dbl2rep.getRep();
+		return data;
 
 	}
-	
+
 	private StepNumber parseStepNumber(String str) {
 		if(str == null) {
 			return null;
@@ -134,6 +137,13 @@ public class DataQueryServerResource extends ServerResource implements
 				channels);
 		List<String> list = rep2cl.getIl2cl().getChannels();
 		this.dquery.setQuery(query, list);
+	}
+
+	@Override
+	@Get("txt")
+	public Representation getText() {
+		DoubleMatrix data = getDm();
+		return new StringRepresentation(data.toString().toCharArray());
 	}
 
 }

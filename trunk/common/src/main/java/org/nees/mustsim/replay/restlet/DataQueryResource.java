@@ -7,9 +7,11 @@ import org.restlet.resource.Put;
 
 public interface DataQueryResource {
 
-	@Get("txt|bin")
-	public Representation get();
+	@Get("txt")
+	public Representation getText();
 	
+	@Get("bin")
+	public Representation getBin();
 	@Put
 	public void set(Representation channels);
 
