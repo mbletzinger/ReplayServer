@@ -1,8 +1,8 @@
 package org.nees.mustsim.replay.test.server.restlet;
 
-import org.nees.mustsim.replay.restlet.DataQueryServerResource;
-import org.nees.mustsim.replay.restlet.DataTableServerResource;
-import org.nees.mustsim.replay.restlet.ReplayServerApplication;
+import org.nees.illinois.replay.restlet.DataQueryServerResource;
+import org.nees.illinois.replay.restlet.DataTableServerResource;
+import org.nees.illinois.replay.restlet.ReplayServerApplication;
 
 public class LocalRestletTestApplication extends ReplayServerApplication {
 

@@ -3,7 +3,7 @@ package org.nees.mustsim.replay.test.server.http;
 import java.io.IOException;
 
 import org.apache.http.HttpEntity;
-import org.nees.mustsim.replay.conversions.InputStream2ChannelList;
+import org.nees.illinois.replay.conversions.InputStream2ChannelList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,17 +2,17 @@ package org.nees.mustsim.replay.test.server;
 
 import java.util.List;
 
-import org.nees.mustsim.replay.data.DoubleMatrix;
-import org.nees.mustsim.replay.data.RateType;
-import org.nees.mustsim.replay.data.StepNumber;
-import org.nees.mustsim.replay.restlet.ReplayServerComponent;
-import org.nees.mustsim.replay.restlet.client.DataQueryClient;
-import org.nees.mustsim.replay.restlet.client.DataTableClient;
+import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.RateType;
+import org.nees.illinois.replay.data.StepNumber;
+import org.nees.illinois.replay.restlet.ReplayServerComponent;
+import org.nees.illinois.replay.restlet.client.DataQueryClient;
+import org.nees.illinois.replay.restlet.client.DataTableClient;
+import org.nees.illinois.replay.test.utils.ChannelLists;
+import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.mustsim.replay.test.server.guice.LocalHttpTestModule;
 import org.nees.mustsim.replay.test.server.guice.LocalRestletTestModule;
-import org.nees.mustsim.replay.test.utils.ChannelLists;
-import org.nees.mustsim.replay.test.utils.ChannelLists.ChannelListType;
-import org.nees.mustsim.replay.test.utils.DataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;

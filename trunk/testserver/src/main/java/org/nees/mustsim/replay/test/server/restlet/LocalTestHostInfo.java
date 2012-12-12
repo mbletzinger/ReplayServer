@@ -1,6 +1,6 @@
 package org.nees.mustsim.replay.test.server.restlet;
 
-import org.nees.mustsim.replay.restlet.HostInfo;
+import org.nees.illinois.replay.restlet.HostInfo;
 
 public class LocalTestHostInfo extends HostInfo {
 

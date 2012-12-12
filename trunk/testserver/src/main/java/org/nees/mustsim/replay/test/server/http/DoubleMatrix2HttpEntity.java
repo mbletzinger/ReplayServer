@@ -2,7 +2,7 @@ package org.nees.mustsim.replay.test.server.http;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
-import org.nees.mustsim.replay.conversions.DoubleMatrix2OutputStream;
+import org.nees.illinois.replay.conversions.DoubleMatrix2OutputStream;
 
 public class DoubleMatrix2HttpEntity {
 	private final DoubleMatrix2OutputStream dm2os;

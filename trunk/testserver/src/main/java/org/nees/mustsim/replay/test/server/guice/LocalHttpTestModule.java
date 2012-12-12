@@ -1,10 +1,10 @@
 package org.nees.mustsim.replay.test.server.guice;
 
-import org.nees.mustsim.replay.channels.ChannelNameRegistry;
-import org.nees.mustsim.replay.data.DataUpdatesI;
-import org.nees.mustsim.replay.queries.DataQueryI;
-import org.nees.mustsim.replay.restlet.HostInfo;
-import org.nees.mustsim.replay.restlet.ReplayServerApplication;
+import org.nees.illinois.replay.channels.ChannelNameRegistry;
+import org.nees.illinois.replay.data.DataUpdatesI;
+import org.nees.illinois.replay.queries.DataQueryI;
+import org.nees.illinois.replay.restlet.HostInfo;
+import org.nees.illinois.replay.restlet.ReplayServerApplication;
 import org.nees.mustsim.replay.test.data.TestDataQuery;
 import org.nees.mustsim.replay.test.data.TestDataUpdates;
 import org.nees.mustsim.replay.test.server.restlet.LocalHttpTestApplication;
