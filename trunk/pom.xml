@@ -16,6 +16,7 @@
 		<module>testserver</module>
 		
 		<module>client</module>
+		<module>db</module>
 	</modules>
 	<repositories>
 		<repository>
