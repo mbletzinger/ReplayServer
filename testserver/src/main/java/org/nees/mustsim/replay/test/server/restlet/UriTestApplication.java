@@ -1,6 +1,6 @@
 package org.nees.mustsim.replay.test.server.restlet;
 
-import org.nees.mustsim.replay.restlet.ReplayServerApplication;
+import org.nees.illinois.replay.restlet.ReplayServerApplication;
 
 public class UriTestApplication extends ReplayServerApplication {
 

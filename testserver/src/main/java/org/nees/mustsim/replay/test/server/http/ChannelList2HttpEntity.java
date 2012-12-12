@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
-import org.nees.mustsim.replay.conversions.ChannelList2OutputStream;
+import org.nees.illinois.replay.conversions.ChannelList2OutputStream;
 
 public class ChannelList2HttpEntity {
 	private final ChannelList2OutputStream cl2os;
