@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.nees.mustsim.replay.test.server.http;
+package org.nees.mustsim.replay.test.restlet;
 
 import org.restlet.Context;
 import org.restlet.Request;
