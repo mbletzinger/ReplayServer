@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nees.mustsim.replay.db.DbConnections;
 import org.nees.mustsim.replay.db.statement.DbStatement;
-import org.nees.mustsim.replay.test.utils.TestPrepStatement;
+import org.nees.mustsim.replay.test.db.utils.TestPrepStatement;
 
 public class TestDbStatement {
 	private DbConnections dbc;

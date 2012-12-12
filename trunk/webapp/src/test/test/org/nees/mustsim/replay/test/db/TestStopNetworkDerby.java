@@ -1,7 +1,7 @@
 package org.nees.mustsim.replay.test.db;
 
 import org.junit.Test;
-import org.nees.mustsim.replay.test.utils.DerbyDbControl;
+import org.nees.mustsim.replay.test.db.utils.DerbyDbControl;
 
 public class TestStopNetworkDerby {
 	private DerbyDbControl derby = new DerbyDbControl();
