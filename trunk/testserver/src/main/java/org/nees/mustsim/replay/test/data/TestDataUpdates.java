@@ -8,6 +8,8 @@ import org.nees.mustsim.replay.data.DataUpdatesI;
 import org.nees.mustsim.replay.data.RateType;
 import org.nees.mustsim.replay.data.TableType;
 
+import com.google.inject.Inject;
+
 public class TestDataUpdates implements DataUpdatesI {
 
 	/**
@@ -43,7 +45,7 @@ public class TestDataUpdates implements DataUpdatesI {
 		this.data = data;
 		return true;
 	}
-
+	@Inject
 	public TestDataUpdates(ChannelNameRegistry cnr) {
 		super();
 		this.cu = new ChannelUpdates(cnr);

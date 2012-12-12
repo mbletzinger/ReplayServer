@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test.server.utils;
+package org.nees.mustsim.replay.test.server.utils.example;
 
 import org.restlet.data.Reference;
 

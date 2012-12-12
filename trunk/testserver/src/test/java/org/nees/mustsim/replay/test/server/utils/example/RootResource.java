@@ -28,30 +28,21 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.nees.mustsim.replay.test.server.utils;
+package org.nees.mustsim.replay.test.server.utils.example;
 
-import org.restlet.ext.rdf.Graph;
 import org.restlet.resource.Get;
 
 /**
- * User account resource.
+ * Root resource.
  */
-public interface AccountResource {
+public interface RootResource {
 
     /**
-     * Represents the account as a FOAF profile using RDF.
+     * Represents the application root with a welcome message.
      * 
-     * @return The FOAF profile as a RDF graph.
+     * @return The root representation.
      */
-    @Get("rdf")
-    public Graph getFoafProfile();
-
-    /**
-     * Represents the account as a simple string with the owner name for now.
-     * 
-     * @return The account representation.
-     */
-    @Get
-    public AccountRepresentation represent();
+    @Get("txt")
+    public String represent();
 
 }

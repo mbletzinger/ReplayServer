@@ -26,7 +26,6 @@ import org.nees.mustsim.replay.test.data.TestDataQuery;
 import org.nees.mustsim.replay.test.data.TestDataUpdates;
 import org.nees.mustsim.replay.test.server.utils.ChannelList2HttpEntity;
 import org.nees.mustsim.replay.test.server.utils.DoubleMatrix2HttpEntity;
-import org.nees.mustsim.replay.test.server.utils.LocalHttpTestModule;
 import org.nees.mustsim.replay.test.server.utils.UriTestModule;
 import org.nees.mustsim.replay.test.utils.ChannelLists;
 import org.nees.mustsim.replay.test.utils.ChannelLists.ChannelListType;
@@ -45,8 +44,8 @@ import org.testng.annotations.Test;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-public class HttpTest {
-	private final Logger log = LoggerFactory.getLogger(HttpTest.class);
+public class CoolUriTest {
+	private final Logger log = LoggerFactory.getLogger(CoolUriTest.class);
 	private ReplayServerComponent component;
 	private String hostname;
 	private List<String> addrs = new ArrayList<String>();
@@ -54,8 +53,13 @@ public class HttpTest {
 
 	@BeforeClass
 	public void setup() {
+		addrs.add("/test1/data/experiment/HybridMasonry1/table/DAQ");
+		addrs.add("/test1/data/experiment/HybridMasonry1/table/DAQ/rate/CONT");
+		addrs.add("/test1/data/experiment/HybridMasonry1/query/StrainGage/rate/CONT/start/222.34");
+		addrs.add("/test1/data/experiment/HybridMasonry1/table/OM");
+		addrs.add("/test1/data/experiment/HybridMasonry1/table/OM/rate/CONT");
 		// Instantiate our Restlet component
-		injector = Guice.createInjector(new LocalHttpTestModule());
+		injector = Guice.createInjector(new UriTestModule());
 		component = injector.getInstance(ReplayServerComponent.class);
 		try {
 			component.start();
@@ -79,107 +83,73 @@ public class HttpTest {
 		}
 	}
 
-
 	@Test
-	public void testCreateTables() {
+	public void testCoolUris() {
 
-		// Prepare a mock HTTP call
-		ChannelLists cl = new ChannelLists();
-		String baseString = hostname
-				+ "/test/data/experiment/HybridMasonry1/table/";
+		ChannelNameRegistry cnr = new ChannelNameRegistry();
+		TestDataUpdates tdu = new TestDataUpdates(cnr);
+		TestDataQuery tdq = new TestDataQuery(cnr);
+		Context cxt = new Context();
+		cxt.getAttributes().put("updatesI", tdu);
+		cxt.getAttributes().put("queryI", tdq);
+		cxt.getParameters().set("tracing", "true");
 
-		for (ChannelListType typ : ChannelListType.values()) {
-			if (typ.equals(ChannelListType.Query1)) {
-				break;
-			}
-			List<String> channels = cl.getChannels(typ);
+		String hostname = "http://localhost:8111";
+		// Instantiate our Restlet component
+		ReplayServerApplication app = injector.getInstance(ReplayServerApplication.class);
+		app.setContext(cxt);
+		cxt.getParameters().add("hostname", hostname);
 
-			ChannelList2HttpEntity cl2ent = new ChannelList2HttpEntity(channels);
-			HttpPut httpput = new HttpPut(hostname);
-			httpput.setEntity(cl2ent.getEnt());
-			String uriString = baseString + typ;
-			execute(httpput, uriString);
+
+		for (String a : addrs) {
+			log.info("Trying Get URI \"" + hostname + a + "\"");
+			Request req = new Request(Method.GET, a);
+			Response response = new Response(req);
+			log.info("Request " + req.toString());
+
+			app.handle(req, response);
+			log.info("Response " + response);
+			// Test if response was successful
+			assertTrue(response.getStatus().isSuccess());
+
+			log.info("Trying Put URI \"" + a + "\"");
+			req = new Request(Method.PUT, a);
+			response = new Response(req);
+			log.info("Request " + req.toString());
+
+			app.handle(req, response);
+			log.info("Response " + response);
+			// Test if response was successful
+			assertTrue(response.getStatus().isSuccess());
+
+			log.info("Trying Post URI \"" + a + "\"");
+			req = new Request(Method.POST, a);
+			response = new Response(req);
+			log.info("Request " + req.toString());
+
+			app.handle(req, response);
+			log.info("Response " + response);
+			// Test if response was successful
+			assertTrue(response.getStatus().isSuccess());
 		}
 	}
 
-	@Test(dependsOnMethods = { "testCreateTables" })
-	public void testUpdateTables() {
+	@Test(dependsOnMethods = { "testCoolUris" })
+	public void testCoolUrisWithComponent() {
 
-		ChannelLists cl = new ChannelLists();
-		String baseString = hostname
-				+ "/test/data/experiment/HybridMasonry1/table/";
 
-		for (ChannelListType typ : ChannelListType.values()) {
-			if (typ.equals(ChannelListType.Query1)) {
-				break;
-			}
+		for (String a : addrs) {
+			log.info("Trying Get URI \"" + hostname + a + "\"");
+			HttpGet req = new HttpGet();
+			execute(req, hostname + a);
 
-			List<String> channels = cl.getChannels(typ);
+			log.info("Trying Put URI \"" + hostname + a + "\"");
+			HttpPut put = new HttpPut();
+			execute(put, hostname + a);
 
-			int columns = channels.size();
-			double[][] dataD = DataGenerator.initData(RateType.CONT, 20,
-					columns, 0.02);
-			HttpPost httppost = new HttpPost(hostname);
-			DoubleMatrix2HttpEntity dm2ent = new DoubleMatrix2HttpEntity(dataD);
-			httppost.setEntity(dm2ent.getEnt());
-			String uriString = baseString + typ + "/rate/CONT";
-			execute(httppost, uriString);
-
-			dataD = DataGenerator.initData(RateType.STEP, 20, columns, 0.02);
-			httppost = new HttpPost(hostname);
-			dm2ent = new DoubleMatrix2HttpEntity(dataD);
-			httppost.setEntity(dm2ent.getEnt());
-			uriString = baseString + typ + "/rate/STEP";
-			execute(httppost, uriString);
-		}
-	}
-
-	@Test(dependsOnMethods = { "testUpdateTables" })
-	public void testPutQueries() {
-
-		ChannelLists cl = new ChannelLists();
-		String baseString = hostname
-				+ "/test/data/experiment/HybridMasonry1/query/";
-
-		for (ChannelListType typ : ChannelListType.values()) {
-			if (typ.equals(ChannelListType.OM)
-					|| typ.equals(ChannelListType.DAQ)) {
-				continue;
-			}
-
-			List<String> channels = cl.getChannels(typ);
-			ChannelList2HttpEntity cl2ent = new ChannelList2HttpEntity(channels);
-			HttpPut httpput = new HttpPut(hostname);
-			httpput.setEntity(cl2ent.getEnt());
-			String uriString = baseString + typ;
-			execute(httpput, uriString);
-		}
-	}
-
-	@Test(dependsOnMethods = { "testPutQueries" })
-	public void testGetQueries() {
-
-		String baseString = hostname
-				+ "/test/data/experiment/HybridMasonry1/query/";
-
-		for (ChannelListType typ : ChannelListType.values()) {
-			if (typ.equals(ChannelListType.OM)
-					|| typ.equals(ChannelListType.DAQ)) {
-				continue;
-			}
-
-			HttpGet httpput = new HttpGet(hostname);
-			String uriString = baseString + typ + "/rate/CONT/start/222.34";
-			HttpEntity ent = execute(httpput, uriString);
-			InputStream2DoubleMatrix in2dm = null;
-			try {
-				in2dm = new InputStream2DoubleMatrix(ent.getContent());
-			} catch (Exception e) {
-				log.error("Extracting entity from query \"" + uriString
-						+ "\" failed because ", e);
-				Assert.fail();
-			}
-			log.info("\"" + uriString + "\" retrieved " + in2dm.getMatrix());
+			log.info("Trying Post URI \"" + hostname + a + "\"");
+			HttpPost post = new HttpPost();
+			execute(post, hostname + a);
 		}
 	}
 
