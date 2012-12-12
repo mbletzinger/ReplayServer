@@ -1,12 +1,12 @@
-package org.nees.mustsim.replay.restlet.client;
+package org.nees.illinois.replay.restlet.client;
 
 import java.util.List;
 
-import org.nees.mustsim.replay.conversions.ChannelList2Representation;
-import org.nees.mustsim.replay.conversions.Representation2DoubleMatrix;
-import org.nees.mustsim.replay.data.DoubleMatrix;
-import org.nees.mustsim.replay.data.StepNumber;
-import org.nees.mustsim.replay.restlet.DataQueryResource;
+import org.nees.illinois.replay.conversions.ChannelList2Representation;
+import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
+import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.StepNumber;
+import org.nees.illinois.replay.restlet.DataQueryResource;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
