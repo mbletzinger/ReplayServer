@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test.server.utils;
+package org.nees.mustsim.replay.test.server.http;
 
 import java.util.Map;
 
