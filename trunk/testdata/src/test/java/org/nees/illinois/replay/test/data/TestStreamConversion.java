@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test.data;
+package org.nees.illinois.replay.test.data;
 
 import java.util.List;
 
@@ -6,17 +6,17 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.nees.mustsim.replay.channels.ChannelNameRegistry;
-import org.nees.mustsim.replay.conversions.ChannelList2Representation;
-import org.nees.mustsim.replay.conversions.DoubleMatrix2Representation;
-import org.nees.mustsim.replay.conversions.Representation2ChannelList;
-import org.nees.mustsim.replay.conversions.Representation2DoubleMatrix;
-import org.nees.mustsim.replay.data.DoubleMatrix;
-import org.nees.mustsim.replay.data.RateType;
-import org.nees.mustsim.replay.data.TableType;
-import org.nees.mustsim.replay.test.utils.ChannelLists;
-import org.nees.mustsim.replay.test.utils.ChannelLists.ChannelListType;
-import org.nees.mustsim.replay.test.utils.DataGenerator;
+import org.nees.illinois.replay.channels.ChannelNameRegistry;
+import org.nees.illinois.replay.conversions.ChannelList2Representation;
+import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
+import org.nees.illinois.replay.conversions.Representation2ChannelList;
+import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
+import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.RateType;
+import org.nees.illinois.replay.data.TableType;
+import org.nees.illinois.replay.test.utils.ChannelLists;
+import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

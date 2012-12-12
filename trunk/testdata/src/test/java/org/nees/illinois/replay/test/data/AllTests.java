@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test.data;
+package org.nees.illinois.replay.test.data;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

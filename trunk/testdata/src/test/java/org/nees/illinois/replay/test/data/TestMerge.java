@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test.data;
+package org.nees.illinois.replay.test.data;
 
 import java.util.List;
 
@@ -7,9 +7,9 @@ import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
-import org.nees.mustsim.replay.data.RateType;
-import org.nees.mustsim.replay.queries.MergeSet;
-import org.nees.mustsim.replay.test.utils.DataGenerator;
+import org.nees.illinois.replay.data.RateType;
+import org.nees.illinois.replay.queries.MergeSet;
+import org.nees.illinois.replay.test.utils.DataGenerator;
 
 public class TestMerge {
 	private List<List<Double>> omContData;

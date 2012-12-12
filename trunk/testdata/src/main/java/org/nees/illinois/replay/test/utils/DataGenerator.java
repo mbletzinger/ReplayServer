@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test.utils;
+package org.nees.illinois.replay.test.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
-import org.nees.mustsim.replay.data.Mtx2Str;
-import org.nees.mustsim.replay.data.RateType;
+import org.nees.illinois.replay.data.Mtx2Str;
+import org.nees.illinois.replay.data.RateType;
 
 public class DataGenerator {
 	private int recordNumber = 0;

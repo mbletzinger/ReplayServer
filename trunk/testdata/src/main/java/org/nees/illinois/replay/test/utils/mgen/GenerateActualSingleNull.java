@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test.utils.mgen;
+package org.nees.illinois.replay.test.utils.mgen;
 
 import java.util.ArrayList;
 import java.util.List;

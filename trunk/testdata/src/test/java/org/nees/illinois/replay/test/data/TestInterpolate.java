@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test.data;
+package org.nees.illinois.replay.test.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,10 +7,10 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nees.mustsim.replay.data.DoubleMatrix;
-import org.nees.mustsim.replay.queries.Interpolate;
-import org.nees.mustsim.replay.test.utils.DoubleMatrixGenerator;
-import org.nees.mustsim.replay.test.utils.DoubleMatrixGenerator.ColumnTypes;
+import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.queries.Interpolate;
+import org.nees.illinois.replay.test.utils.DoubleMatrixGenerator;
+import org.nees.illinois.replay.test.utils.DoubleMatrixGenerator.ColumnTypes;
 
 public class TestInterpolate {
 	private final Logger log = Logger.getLogger(TestInterpolate.class);
