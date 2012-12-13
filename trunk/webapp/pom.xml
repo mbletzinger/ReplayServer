@@ -5,7 +5,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nees.mustsim.replay.server</groupId>
 	<artifactId>ReplayServerWebApp</artifactId>
-	<packaging>war</packaging>
 	<name>Replay Server</name>
 	<description>Server used to buffer DAQ and Krypton data for NEES@Illinois tests</description>
 	<repositories>
@@ -57,11 +56,6 @@
 		</plugins>
 	</build>
 	<dependencies>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
