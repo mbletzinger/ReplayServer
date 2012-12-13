@@ -10,6 +10,8 @@ import org.nees.illinois.replay.queries.DataQueryI;
 import org.nees.illinois.replay.queries.QueryRegistry;
 import org.nees.illinois.replay.queries.QuerySpec;
 import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
@@ -21,15 +23,21 @@ public class TestDataQuery implements DataQueryI {
 
 	private final QueryRegistry stepQr = new QueryRegistry();
 
+	private String experiment;
+	
+	private final Logger log = LoggerFactory.getLogger(TestDataQuery.class);
+
 	@Inject
 	public TestDataQuery(ChannelNameRegistry cnr) {
 		super();
 		this.cnr = cnr;
 	}
+
 	@Override
 	public DoubleMatrix doQuery(String name) {
 		return generate(name, 40, RateType.STEP);
 	}
+
 	@Override
 	public DoubleMatrix doQuery(String name, double start) {
 		return generate(name, 20, RateType.CONT);
@@ -51,7 +59,12 @@ public class TestDataQuery implements DataQueryI {
 	}
 
 	private DoubleMatrix generate(String name, int rows, RateType rate) {
-		QuerySpec qs = rate.equals(RateType.CONT) ? contQr.getQuery(name) : stepQr.getQuery(name);
+		if(experiment == null) {// Check to make sure restlet code sets the experiment name
+			log.error("Experiment name is not set");
+			return null;
+		}
+		QuerySpec qs = rate.equals(RateType.CONT) ? contQr.getQuery(name)
+				: stepQr.getQuery(name);
 		double[][] data = DataGenerator.initData(rate, rows, qs.getNoc()
 				.getNumber(true), 0.5);
 		DoubleMatrix result = new DoubleMatrix(data, data[0].length);
@@ -87,8 +100,23 @@ public class TestDataQuery implements DataQueryI {
 
 	@Override
 	public boolean setQuery(String name, List<String> channels) {
+
+		if(experiment == null) {// Check to make sure restlet code sets the experiment name
+			log.error("Experiment name is not set");
+			return false;
+		}
 		contQr.setQuery(name, new QuerySpec(channels, name, cnr, RateType.CONT));
 		stepQr.setQuery(name, new QuerySpec(channels, name, cnr, RateType.STEP));
 		return true;
+	}
+
+	@Override
+	public void setExperiment(String experiment) {
+		this.experiment = experiment;
+	}
+
+	@Override
+	public String getExperiment() {
+		return experiment;
 	}
 }

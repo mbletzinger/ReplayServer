@@ -50,6 +50,7 @@ public class ResourcesTest {
 				cl2rep.getRep());
 		Map<String, Object> attr = new HashMap<String, Object>();
 		attr.put("table", new String("OM"));
+		attr.put("experiment", new String("HybridMasonry1"));
 		req.setAttributes(attr);
 		Response resp = new Response(req);
 		dtsR.init(cxt, req, resp);
@@ -68,6 +69,7 @@ public class ResourcesTest {
 		attr = new HashMap<String, Object>();
 		attr.put("table", new String("OM"));
 		attr.put("rate", new String("CONT"));
+		attr.put("experiment", new String("HybridMasonry1"));
 		req.setAttributes(attr);
 		resp = new Response(req);
 		dtsR.init(cxt, req, resp);
@@ -83,6 +85,7 @@ public class ResourcesTest {
 		attr = new HashMap<String, Object>();
 		attr.put("table", new String("OM"));
 		attr.put("rate", new String("STEP"));
+		attr.put("experiment", new String("HybridMasonry1"));
 		req.setAttributes(attr);
 		resp = new Response(req);
 		dtsR.init(cxt, req, resp);
@@ -112,6 +115,7 @@ public class ResourcesTest {
 				cl2rep.getRep());
 		Map<String, Object> attr = new HashMap<String, Object>();
 		attr.put("table", new String("DAQ"));
+		attr.put("experiment", new String("HybridMasonry1"));
 		req.setAttributes(attr);
 		Response resp = new Response(req);
 		dtsR.init(cxt, req, resp);
@@ -130,6 +134,7 @@ public class ResourcesTest {
 		attr = new HashMap<String, Object>();
 		attr.put("table", new String("DAQ"));
 		attr.put("rate", new String("CONT"));
+		attr.put("experiment", new String("HybridMasonry1"));
 		req.setAttributes(attr);
 		resp = new Response(req);
 		dtsR.init(cxt, req, resp);
@@ -145,6 +150,7 @@ public class ResourcesTest {
 		attr = new HashMap<String, Object>();
 		attr.put("table", new String("DAQ"));
 		attr.put("rate", new String("STEP"));
+		attr.put("experiment", new String("HybridMasonry1"));
 		req.setAttributes(attr);
 		resp = new Response(req);
 		dtsR.init(cxt, req, resp);
@@ -177,6 +183,7 @@ public class ResourcesTest {
 				cl2rep.getRep());
 		Map<String, Object> attr = new HashMap<String, Object>();
 		attr.put("table", new String("OM"));
+		attr.put("experiment", new String("HybridMasonry1"));
 		req.setAttributes(attr);
 		Response resp = new Response(req);
 		dtsR.init(cxt, req, resp);
@@ -191,6 +198,7 @@ public class ResourcesTest {
 				cl2rep.getRep());
 		attr = new HashMap<String, Object>();
 		attr.put("table", new String("DAQ"));
+		attr.put("experiment", new String("HybridMasonry1"));
 		req.setAttributes(attr);
 		resp = new Response(req);
 		dtsR.init(cxt, req, resp);
@@ -203,6 +211,7 @@ public class ResourcesTest {
 				cl2rep.getRep());
 		attr = new HashMap<String, Object>();
 		attr.put("query", new String("Test Query Number 1"));
+		attr.put("experiment", new String("HybridMasonry1"));
 		req.setAttributes(attr);
 		resp = new Response(req);
 		dqsR.init(cxt, req, resp);
@@ -217,6 +226,7 @@ public class ResourcesTest {
 				cl2rep.getRep());
 		attr = new HashMap<String, Object>();
 		attr.put("query", new String("Test Query Number 2"));
+		attr.put("experiment", new String("HybridMasonry1"));
 		req.setAttributes(attr);
 		resp = new Response(req);
 		dqsR.init(cxt, req, resp);
