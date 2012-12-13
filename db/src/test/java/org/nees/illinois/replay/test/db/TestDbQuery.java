@@ -13,7 +13,7 @@ import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.Mtx2Str;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
-import org.nees.illinois.replay.db.DbConnections;
+import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.data.server.DbDataUpdates;
 import org.nees.illinois.replay.db.query.DbQuerySpec;
 import org.nees.illinois.replay.db.query.DbQueryStatements;
@@ -26,18 +26,18 @@ import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 
 public class TestDbQuery {
-	private DbConnections dbc;
+	private DbPools dbc;
 	private DbTableSpecs specs;
 	private double[][] omContData = new double[20][7];
 	private double[][] daqContData = new double[15][6];
 	private double[][] omStepData = new double[20][10];
 	private double[][] daqStepData = new double[15][9];
 	private final Logger log = Logger.getLogger(TestDbQuery.class);
+	private String dbName = "TESTDB";
 
 	@Before
 	public void setUp() throws Exception {
-		String dbName = "TESTDB";
-		dbc = new DbConnections("org.apache.derby.jdbc.ClientDriver", dbName,
+		dbc = new DbPools("org.apache.derby.jdbc.ClientDriver",
 				"jdbc:derby://localhost:1527/");
 		specs = new DbTableSpecs(new ChannelNameRegistry(), dbName);
 		omContData = DataGenerator.initData(RateType.CONT, 20, 6, 0.7);
@@ -49,9 +49,10 @@ public class TestDbQuery {
 	@After
 	public void tearDown() throws Exception {
 		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
+		dbu.setExperiment(dbName);
 		dbu.removeTable(TableType.OM);
 		dbu.removeTable(TableType.DAQ);
-		DbStatement dbSt = dbc.createDbStatement();
+		DbStatement dbSt = dbc.createDbStatement(dbName);
 		dbSt.close();
 		dbc.close();
 	}
@@ -62,6 +63,7 @@ public class TestDbQuery {
 		ChannelLists cl = new ChannelLists();
 
 		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
+		dbu.setExperiment(dbName);
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
 
@@ -106,6 +108,7 @@ public class TestDbQuery {
 		ChannelLists cl = new ChannelLists();
 
 		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
+		dbu.setExperiment(dbName);
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
 
@@ -131,6 +134,7 @@ public class TestDbQuery {
 		ChannelLists cl = new ChannelLists();
 
 		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
+		dbu.setExperiment(dbName);
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		dbu.update(TableType.OM, RateType.CONT, omContData);
 		dbu.update(TableType.OM, RateType.STEP, omStepData);
@@ -140,7 +144,7 @@ public class TestDbQuery {
 		List<String> 	chnls = cl.getChannels(ChannelListType.Query1);
 		DbQuerySpec dbs = new DbQuerySpec(chnls, "OM_Channels", specs,
 				RateType.STEP);
-		DbStatement dbSt = dbc.createDbStatement();
+		DbStatement dbSt = dbc.createDbStatement(dbName);
 		DbQueryStatements ddr = new DbQueryStatements(dbSt, dbs);
 		DoubleMatrix r1 = ddr.getData(QueryType.Step, null, null);
 		log.debug("Results: " + r1.toString());

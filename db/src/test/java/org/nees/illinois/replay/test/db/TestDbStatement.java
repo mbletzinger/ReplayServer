@@ -9,18 +9,19 @@ import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nees.illinois.replay.db.DbConnections;
+import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.statement.DbStatement;
 import org.nees.illinois.replay.test.db.utils.TestPrepStatement;
 
 public class TestDbStatement {
-	private DbConnections dbc;
+	private DbPools dbc;
 	private double[][] data = new double[5][2];
 	private final Logger log = Logger.getLogger(TestDbStatement.class);
+	final String experiment = "TESTDB";
 
 	@Before
 	public void setUp() throws Exception {
-		dbc = new DbConnections("org.apache.derby.jdbc.ClientDriver", "TESTDB",
+		dbc = new DbPools("org.apache.derby.jdbc.ClientDriver",
 				"jdbc:derby://localhost:1527/");
 		for (int i = 0; i < 5; i++) {
 			data[i][0] = i * 0.5 + .001;
@@ -30,7 +31,7 @@ public class TestDbStatement {
 
 	@After
 	public void tearDown() throws Exception {
-		DbStatement dbSt = dbc.createDbStatement();
+		DbStatement dbSt = dbc.createDbStatement(experiment);
 		dbSt.noComplaints("DROP TABLE TestTable");
 		dbSt.close();
 		dbc.close();
@@ -38,7 +39,7 @@ public class TestDbStatement {
 
 	@Test
 	public void testExecute() {
-		DbStatement dbSt = dbc.createDbStatement();
+		DbStatement dbSt = dbc.createDbStatement(experiment);
 		boolean result = dbSt
 				.execute("CREATE TABLE TestTable (col1 double, col2 double)");
 		Assert.assertTrue(result);
@@ -50,7 +51,7 @@ public class TestDbStatement {
 	@Test
 	public void testCreatePrepStatement() {
 		String tblName = "TestTable";
-		DbStatement dbSt = dbc.createDbStatement();
+		DbStatement dbSt = dbc.createDbStatement(experiment);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
 		TestPrepStatement prep = new TestPrepStatement(tblName);
 		dbSt.createPrepStatement(prep);
@@ -66,7 +67,7 @@ public class TestDbStatement {
 	@Test
 	public void testQuery1() {
 		String tblName = "TestTable";
-		DbStatement dbSt = dbc.createDbStatement();
+		DbStatement dbSt = dbc.createDbStatement(experiment);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
 		double[][] result = new double[5][2];
 		for (int i = 0; i < 5; i++) {
@@ -106,7 +107,7 @@ public class TestDbStatement {
 	@Test
 	public void testQuery2() {
 		String tblName = "TestTable";
-		DbStatement dbSt = dbc.createDbStatement();
+		DbStatement dbSt = dbc.createDbStatement(experiment);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
 		TestPrepStatement prep = new TestPrepStatement(tblName);
 		dbSt.createPrepStatement(prep);
