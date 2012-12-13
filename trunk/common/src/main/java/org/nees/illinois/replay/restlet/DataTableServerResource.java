@@ -41,6 +41,8 @@ public class DataTableServerResource extends ServerResource implements
 		List<String> list = rep2cl.getIl2cl().getChannels();
 		TableType tbl = TableType.valueOf((String) getRequest().getAttributes()
 				.get("table"));
+		String experiment = (String) getRequest().getAttributes().get("experiment");
+		updates.setExperiment(experiment);
 		updates.createTable(tbl, list);
 
 	}
@@ -56,6 +58,8 @@ public class DataTableServerResource extends ServerResource implements
 				.get("table"));
 		RateType rt = RateType.valueOf((String) getRequest().getAttributes()
 				.get("rate"));
+		String experiment = (String) getRequest().getAttributes().get("experiment");
+		updates.setExperiment(experiment);
 		updates.update(tbl, rt, dm.getData());
 	}
 
