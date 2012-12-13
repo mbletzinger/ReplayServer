@@ -56,6 +56,9 @@ public class DataQueryServerResource extends ServerResource implements
 				.get("stop");
 		String query = (String) getRequest().getAttributes()
 				.get("query");
+		String experiment = (String) getRequest().getAttributes().get("experiment");
+		dquery.setExperiment(experiment);
+
 
 
 		if(rt.equals(RateType.STEP)) {
@@ -135,6 +138,8 @@ public class DataQueryServerResource extends ServerResource implements
 				.get("query");
 		Representation2ChannelList rep2cl = new Representation2ChannelList(
 				channels);
+		String experiment = (String) getRequest().getAttributes().get("experiment");
+		dquery.setExperiment(experiment);
 		List<String> list = rep2cl.getIl2cl().getChannels();
 		this.dquery.setQuery(query, list);
 	}
