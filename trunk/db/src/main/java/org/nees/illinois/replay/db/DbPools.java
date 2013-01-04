@@ -11,11 +11,13 @@ import org.nees.illinois.replay.db.statement.DbStatement;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
-public class DbPools {
+public abstract class DbPools {
 	private final Map<String, BoneCP> connectionPools = new HashMap<String, BoneCP>();
 	private final Logger log = Logger.getLogger(DbPools.class);
 	private final String dbUrl;
 	private final String driver;
+	private final String logon;
+	private final String passwd;
 
 	public Connection fetchConnection(String experiment) {
 		Connection connection = null;
@@ -38,13 +40,15 @@ public class DbPools {
 		return new DbStatement(connection);
 	}
 
-	public DbPools(String driver, String dbUrl) {
+	public DbPools(String driver, String dbUrl, String logon, String passwd) {
 		this.dbUrl = dbUrl;
 		this.driver = driver;
+		this.logon = logon;
+		this.passwd = passwd;
 	}
 
 	private void createConnection(String experiment) {
-		String connectionUrl = dbUrl + experiment;
+		String connectionUrl = filterUrl(dbUrl, experiment);
 		try {
 			// load the database driver (make sure this is in your classpath!)
 			Class.forName(driver);
@@ -59,6 +63,12 @@ public class DbPools {
 		config.setMinConnectionsPerPartition(5);
 		config.setMaxConnectionsPerPartition(10);
 		config.setPartitionCount(1);
+		if(logon != null) {
+			config.setUsername(logon);
+			if(passwd != null) {
+				config.setPassword(passwd);
+			}
+		}
 		BoneCP pool = null;
 		try {
 			pool = new BoneCP(config);
@@ -74,4 +84,5 @@ public class DbPools {
 			c.shutdown();
 		}
 	}
+	public abstract String filterUrl(String url, String experiment); 
 }

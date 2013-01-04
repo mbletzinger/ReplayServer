@@ -1,13 +1,13 @@
 package org.nees.illinois.replay.test.db;
 
-import org.junit.Test;
 import org.nees.illinois.replay.test.db.utils.DerbyDbControl;
+import org.testng.annotations.AfterSuite;
 
 public class TestStopNetworkDerby {
 	private DerbyDbControl derby = new DerbyDbControl();
 
-	@Test
-	public void testStartDerby() {
+	@AfterSuite
+	public void testStopDerby() {
 		derby.stopDerby();
 	}
 

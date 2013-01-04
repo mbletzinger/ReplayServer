@@ -1,15 +1,15 @@
 package org.nees.illinois.replay.test.db;
 
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.AssertJUnit;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import junit.framework.Assert;
-
 import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.nees.illinois.replay.db.DbPools;
+import org.nees.illinois.replay.db.DerbyPools;
 import org.nees.illinois.replay.db.statement.DbStatement;
 import org.nees.illinois.replay.test.db.utils.TestPrepStatement;
 
@@ -17,19 +17,18 @@ public class TestDbStatement {
 	private DbPools dbc;
 	private double[][] data = new double[5][2];
 	private final Logger log = Logger.getLogger(TestDbStatement.class);
-	final String experiment = "TESTDB";
+	final String experiment = "HybridMasonry1";
 
-	@Before
+	@BeforeMethod
 	public void setUp() throws Exception {
-		dbc = new DbPools("org.apache.derby.jdbc.ClientDriver",
-				"jdbc:derby://localhost:1527/");
+		dbc = new DerbyPools();
 		for (int i = 0; i < 5; i++) {
 			data[i][0] = i * 0.5 + .001;
 			data[i][1] = i * -0.02 + .001;
 		}
 	}
 
-	@After
+	@AfterMethod
 	public void tearDown() throws Exception {
 		DbStatement dbSt = dbc.createDbStatement(experiment);
 		dbSt.noComplaints("DROP TABLE TestTable");
@@ -42,9 +41,9 @@ public class TestDbStatement {
 		DbStatement dbSt = dbc.createDbStatement(experiment);
 		boolean result = dbSt
 				.execute("CREATE TABLE TestTable (col1 double, col2 double)");
-		Assert.assertTrue(result);
+		AssertJUnit.assertTrue(result);
 		result = dbSt.execute("DROP TABLE TestTable");
-		Assert.assertTrue(result);
+		AssertJUnit.assertTrue(result);
 		dbSt.close();
 	}
 
@@ -59,7 +58,7 @@ public class TestDbStatement {
 			prep.add(data[i][0], data[i][1]);
 		}
 		int [] result = prep.execute();
-		Assert.assertNotNull(result);
+		AssertJUnit.assertNotNull(result);
 		dbSt.execute("DROP TABLE TestTable");
 		dbSt.close();
 	}
@@ -85,7 +84,7 @@ public class TestDbStatement {
 				}
 			} catch (SQLException e) {
 				log.error("Result Set fetch failed because ", e);
-				Assert.fail();
+				AssertJUnit.fail();
 			}
 			String rStr1 = "Result = [";
 			String rStr2 = "              [";
@@ -97,8 +96,8 @@ public class TestDbStatement {
 			dbSt.closeQuery(rs);
 		}
 		for (int i = 0; i < 5; i++) {
-			Assert.assertEquals(data[i][0], result[i][0], .001);
-			Assert.assertEquals(data[i][1], result[i][1], .001);
+			AssertJUnit.assertEquals(data[i][0], result[i][0], .001);
+			AssertJUnit.assertEquals(data[i][1], result[i][1], .001);
 		}
 		dbSt.execute("DROP TABLE TestTable");
 		dbSt.close();
@@ -127,12 +126,12 @@ public class TestDbStatement {
 			}
 		} catch (SQLException e) {
 			log.error("Result Set fetch failed because ", e);
-			Assert.fail();
+			AssertJUnit.fail();
 		}
 		dbSt.closeQuery(rs);
 		for (int i = 0; i < 5; i++) {
-			Assert.assertEquals(data[i][0], result[i][0], .001);
-			Assert.assertEquals(data[i][1], result[i][1], .001);
+			AssertJUnit.assertEquals(data[i][0], result[i][0], .001);
+			AssertJUnit.assertEquals(data[i][1], result[i][1], .001);
 		}
 		dbSt.execute("DROP TABLE TestTable");
 		dbSt.close();

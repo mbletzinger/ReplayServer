@@ -1,25 +1,25 @@
 package org.nees.illinois.replay.test.db;
 
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.AssertJUnit;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import junit.framework.Assert;
-
 import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.nees.illinois.replay.channels.ChannelNameRegistry;
+import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.Mtx2Str;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
+import org.nees.illinois.replay.db.DerbyPools;
 import org.nees.illinois.replay.db.data.server.DbDataUpdates;
 import org.nees.illinois.replay.db.statement.DbStatement;
 import org.nees.illinois.replay.db.statement.DbTableSpecs;
 import org.nees.illinois.replay.test.utils.ChannelLists;
-import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.DataGenerator;
 
 public class TestDataStatements {
 	private DbPools dbc;
@@ -27,29 +27,28 @@ public class TestDataStatements {
 	private double[][] daqContData = new double[15][6];
 	private double[][] omStepData = new double[10][10];
 	private double[][] daqStepData = new double[15][9];
-	private DbTableSpecs specs;
-	private final Logger log = Logger.getLogger(TestDataStatements.class);
-	private final String dbName = "TESTDB";
+	private ChannelNameRegistry cnr = new ChannelNameRegistry();
 
-	@Before
+	private final Logger log = Logger.getLogger(TestDataStatements.class);
+	private final String experiment = "HybridMasonry1";
+
+	@BeforeMethod
 	public void setUp() throws Exception {
-		dbc = new DbPools("org.apache.derby.jdbc.ClientDriver",
-				"jdbc:derby://localhost:1527/");
+		dbc = new DerbyPools();
 		omContData = DataGenerator.initData(RateType.CONT, 20, 6, 0.5);
 		daqContData = DataGenerator.initData(RateType.CONT, 15, 5, 1);
 		omStepData = DataGenerator.initData(RateType.STEP, 20, 6, 0.5);
 		daqStepData = DataGenerator.initData(RateType.STEP, 15, 5,1);
-		specs = new DbTableSpecs(new ChannelNameRegistry(), dbName);
 	}
 
-	@After
+	@AfterMethod
 	public void tearDown() throws Exception {
 
-		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
-		dbu.setExperiment(dbName);
+		DbDataUpdates dbu = new DbDataUpdates(dbc,cnr);
+		dbu.setExperiment(experiment);
 		dbu.removeTable(TableType.OM);
 		dbu.removeTable(TableType.DAQ);
-		DbStatement dbSt = dbc.createDbStatement(dbName);
+		DbStatement dbSt = dbc.createDbStatement(experiment);
 		dbSt.close();
 		dbc.close();
 	}
@@ -57,8 +56,9 @@ public class TestDataStatements {
 	@Test
 	public void testContDataUpdate() {
 		ChannelLists cl = new ChannelLists();
-		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
-		dbu.setExperiment(dbName);
+		DbDataUpdates dbu = new DbDataUpdates(dbc,cnr);
+		dbu.setExperiment(experiment);
+		DbTableSpecs specs = new DbTableSpecs(cnr, experiment);
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		// log.debug("Adding data " +
 		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
@@ -79,8 +79,9 @@ public class TestDataStatements {
 	@Test
 	public void testStepDataUpdate() {
 		ChannelLists cl = new ChannelLists();
-		DbDataUpdates dbu = new DbDataUpdates(dbc, specs);
-		dbu.setExperiment(dbName);
+		DbDataUpdates dbu = new DbDataUpdates(dbc, cnr);
+		dbu.setExperiment(experiment);
+		DbTableSpecs specs = new DbTableSpecs(cnr, experiment);
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		 log.debug("Adding data " +
 		 Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
@@ -99,16 +100,16 @@ public class TestDataStatements {
 	}
 
 	private void queryData(String tblName, double[][] expected) {
-		DbStatement dbSt = dbc.createDbStatement(dbName);
+		DbStatement dbSt = dbc.createDbStatement(experiment);
 		ResultSet rs = dbSt.query("SELECT * FROM " + tblName);
 		int columns = 0;
 		try {
 			columns = rs.getMetaData().getColumnCount();
 		} catch (SQLException e) {
 			log.error("ResultSet has no metadata because ", e);
-			Assert.fail();
+			AssertJUnit.fail();
 		}
-		Assert.assertEquals(expected[0].length, columns);
+		AssertJUnit.assertEquals(expected[0].length, columns);
 		double[][] rsData = new double[expected.length][columns];
 		int r = 0;
 		try {
@@ -121,7 +122,7 @@ public class TestDataStatements {
 			}
 		} catch (SQLException e) {
 			log.error("Result Set fetch failed because ", e);
-			Assert.fail();
+			AssertJUnit.fail();
 		}
 		DataGenerator.compareData(expected, rsData);
 	}
