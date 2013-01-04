@@ -1,14 +1,15 @@
 package org.nees.mustsim.replay.test.server;
 
-import static org.junit.Assert.assertTrue;
-
+import static org.testng.AssertJUnit.assertTrue;
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.illinois.replay.channels.ChannelNameRegistry;
 import org.nees.illinois.replay.conversions.ChannelList2Representation;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
+import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.restlet.DataQueryServerResource;
@@ -24,7 +25,7 @@ import org.restlet.Response;
 import org.restlet.data.Method;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
+@Test(groups = { "resources-test" })
 public class ResourcesTest {
 //	private final Logger log = LoggerFactory
 //			.getLogger(ResourcesTest.class);
@@ -56,7 +57,7 @@ public class ResourcesTest {
 		dtsR.init(cxt, req, resp);
 		dtsR.handle();
 		assertTrue(resp.getStatus().isSuccess());
-		Assert.assertEquals(expectedCnr.toString(), actualCnr.toString());
+		AssertJUnit.assertEquals(expectedCnr.toString(), actualCnr.toString());
 
 		int columns = channels.size();
 		double[][] dataD = DataGenerator.initData(RateType.CONT, 20, columns,
@@ -121,7 +122,7 @@ public class ResourcesTest {
 		dtsR.init(cxt, req, resp);
 		dtsR.handle();
 		assertTrue(resp.getStatus().isSuccess());
-		Assert.assertEquals(expectedCnr.toString(), actualCnr.toString());
+		AssertJUnit.assertEquals(expectedCnr.toString(), actualCnr.toString());
 
 		int columns = channels.size();
 		double[][] dataD = DataGenerator.initData(RateType.CONT, 20, columns,
@@ -217,7 +218,7 @@ public class ResourcesTest {
 		dqsR.init(cxt, req, resp);
 		dqsR.handle();
 		assertTrue(resp.getStatus().isSuccess());
-		Assert.assertNotNull(tdq.getContQr().getQuery("Test Query Number 1"));
+		AssertJUnit.assertNotNull(tdq.getContQr().getQuery("Test Query Number 1"));
 
 		channels = cl.getChannels(ChannelListType.Query2);
 		cl2rep = new ChannelList2Representation(channels);
@@ -232,7 +233,7 @@ public class ResourcesTest {
 		dqsR.init(cxt, req, resp);
 		dqsR.handle();
 		assertTrue(resp.getStatus().isSuccess());
-		Assert.assertNotNull(tdq.getContQr().getQuery("Test Query Number 2"));
+		AssertJUnit.assertNotNull(tdq.getContQr().getQuery("Test Query Number 2"));
 
 	}
 }

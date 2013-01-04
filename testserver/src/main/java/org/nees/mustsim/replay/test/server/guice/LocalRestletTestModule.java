@@ -1,6 +1,6 @@
 package org.nees.mustsim.replay.test.server.guice;
 
-import org.nees.illinois.replay.channels.ChannelNameRegistry;
+import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.DataUpdatesI;
 import org.nees.illinois.replay.queries.DataQueryI;
 import org.nees.illinois.replay.restlet.HostInfo;

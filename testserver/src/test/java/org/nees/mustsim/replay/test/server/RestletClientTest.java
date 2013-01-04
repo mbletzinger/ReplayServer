@@ -1,5 +1,9 @@
 package org.nees.mustsim.replay.test.server;
 
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeClass;
+import org.testng.AssertJUnit;
 import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
@@ -9,9 +13,8 @@ import org.nees.illinois.replay.restlet.ReplayServerComponent;
 import org.nees.illinois.replay.restlet.client.DataQueryClient;
 import org.nees.illinois.replay.restlet.client.DataTableClient;
 import org.nees.illinois.replay.test.utils.ChannelLists;
-import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
-import org.nees.mustsim.replay.test.server.guice.LocalHttpTestModule;
+import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.nees.mustsim.replay.test.server.guice.LocalRestletTestModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +25,7 @@ import org.testng.annotations.Test;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
+@Test(groups = { "restlet-client-test" })
 public class RestletClientTest {
 	private final Logger log = LoggerFactory.getLogger(RestletClientTest.class);
 	private ReplayServerComponent component;
@@ -38,7 +41,7 @@ public class RestletClientTest {
 			component.start();
 		} catch (Exception e2) {
 			log.error("Component failed to start because ", e2);
-			Assert.fail();
+			AssertJUnit.fail();
 		}
 		hostname = component.getHostinfo().getAddress();
 	}
@@ -51,7 +54,7 @@ public class RestletClientTest {
 				Thread.sleep(4000);
 			} catch (Exception e) {
 				log.error("Component Stop Failed ", e);
-				Assert.fail();
+				AssertJUnit.fail();
 			}
 		}
 	}

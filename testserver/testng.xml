@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="TestServerSuite" parallel="none">
+  <test name="TestServerTest">
+   <groups>
+    <dependencies>
+      <group name="cool-uritest" depends-on="resources-test.*" />
+      <group name="http-test" depends-on="cool-uritest.*" />
+      <group name="restlet-client-test" depends-on="http-test.*" />
+    </dependencies>
+  </groups>
+    <classes>
+      <class name="org.nees.mustsim.replay.test.server.RestletClientTest"/>
+      <class name="org.nees.mustsim.replay.test.server.CoolUriTest"/>
+      <class name="org.nees.mustsim.replay.test.server.ResourcesTest"/>
+      <class name="org.nees.mustsim.replay.test.server.HttpTest"/>
+    </classes>
+  </test> <!-- Test -->
+</suite> <!-- Suite -->

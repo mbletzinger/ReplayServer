@@ -3,9 +3,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.nees.mustsim.replay.test.server</groupId>
+	<groupId>org.nees.illinois.replay.test.server</groupId>
 	<artifactId>ReplayServerTestServer</artifactId>
-	<packaging>war</packaging>
 	<name>Replay Test Server</name>
 	<description>Restlet Server that can be used to test replay clients</description>
 	<dependencies>
@@ -20,12 +19,12 @@
 			<version>1.2.15</version>
 		</dependency>
 		<dependency>
-			<groupId>org.nees.mustsim.replay.testdata</groupId>
+			<groupId>org.nees.illinois.replay.testdata</groupId>
 			<artifactId>ReplayServerTestData</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.nees.mustsim.replay.common</groupId>
+			<groupId>org.nees.illinois.replay.common</groupId>
 			<artifactId>ReplayServerCommon</artifactId>
 			<version>0.0.1</version>
 		</dependency>
@@ -59,9 +58,14 @@
 			<version>6.8</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.nees.illinois.replay.client</groupId>
+			<artifactId>ReplayClient</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 	</dependencies>
 	<parent>
-		<groupId>org.nees.mustsim.replay</groupId>
+		<groupId>org.nees.illinois.replay</groupId>
 		<artifactId>ReplayServer</artifactId>
 		<version>0.0.1</version>
 	</parent>

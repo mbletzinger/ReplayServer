@@ -1,11 +1,8 @@
 package org.nees.mustsim.replay.test.server;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -17,27 +14,18 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.nees.illinois.replay.channels.ChannelNameRegistry;
 import org.nees.illinois.replay.conversions.InputStream2DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.restlet.ReplayServerApplication;
 import org.nees.illinois.replay.restlet.ReplayServerComponent;
 import org.nees.illinois.replay.test.utils.ChannelLists;
-import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
-import org.nees.mustsim.replay.test.data.TestDataQuery;
-import org.nees.mustsim.replay.test.data.TestDataUpdates;
+import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.nees.mustsim.replay.test.server.guice.LocalHttpTestModule;
-import org.nees.mustsim.replay.test.server.guice.UriTestModule;
 import org.nees.mustsim.replay.test.server.http.ChannelList2HttpEntity;
 import org.nees.mustsim.replay.test.server.http.DoubleMatrix2HttpEntity;
-import org.restlet.Context;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.Assert;
+import org.testng.AssertJUnit;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -45,11 +33,12 @@ import org.testng.annotations.Test;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+@Test(groups = { "http-test" })
 public class HttpTest {
 	private final Logger log = LoggerFactory.getLogger(HttpTest.class);
 	private ReplayServerComponent component;
 	private String hostname;
-	private List<String> addrs = new ArrayList<String>();
+//	private List<String> addrs = new ArrayList<String>();
 	private Injector injector;
 
 	@BeforeClass
@@ -61,7 +50,7 @@ public class HttpTest {
 			component.start();
 		} catch (Exception e2) {
 			log.error("Component failed to start because ", e2);
-			Assert.fail();
+			AssertJUnit.fail();
 		}
 		hostname = component.getHostinfo().getAddress();
 	}
@@ -74,11 +63,10 @@ public class HttpTest {
 				Thread.sleep(4000);
 			} catch (Exception e) {
 				log.error("Component Stop Failed ", e);
-				Assert.fail();
+				AssertJUnit.fail();
 			}
 		}
 	}
-
 
 	@Test
 	public void testCreateTables() {
@@ -100,7 +88,17 @@ public class HttpTest {
 			String uriString = baseString + typ;
 			execute(httpput, uriString);
 		}
-	}
+
+		ChannelListType typ = ChannelListType.OM;
+		List<String> channels = cl.getChannels(typ);
+
+		ChannelList2HttpEntity cl2ent = new ChannelList2HttpEntity(channels);
+		HttpPut httpput = new HttpPut(hostname);
+		httpput.setEntity(cl2ent.getEnt());
+		String uriString = baseString + typ;
+		uriString = uriString.replace("HybridMasonry1", "HybridMasonryERR");
+		executeFail(httpput, uriString);
+}
 
 	@Test(dependsOnMethods = { "testCreateTables" })
 	public void testUpdateTables() {
@@ -132,6 +130,17 @@ public class HttpTest {
 			uriString = baseString + typ + "/rate/STEP";
 			execute(httppost, uriString);
 		}
+		ChannelListType typ = ChannelListType.OM;
+		List<String> channels = cl.getChannels(typ);
+		int columns = channels.size();
+		double[][] dataD = DataGenerator.initData(RateType.CONT, 20,
+				columns, 0.02);
+		HttpPost httppost = new HttpPost(hostname);
+		DoubleMatrix2HttpEntity dm2ent = new DoubleMatrix2HttpEntity(dataD);
+		httppost.setEntity(dm2ent.getEnt());
+		String uriString = baseString + typ + "/rate/CONT";
+		uriString = uriString.replace("HybridMasonry1", "HybridMasonryERR");
+		executeFail(httppost, uriString);
 	}
 
 	@Test(dependsOnMethods = { "testUpdateTables" })
@@ -154,6 +163,14 @@ public class HttpTest {
 			String uriString = baseString + typ;
 			execute(httpput, uriString);
 		}
+		ChannelListType typ = ChannelListType.Query1;
+		List<String> channels = cl.getChannels(typ);
+		ChannelList2HttpEntity cl2ent = new ChannelList2HttpEntity(channels);
+		HttpPut httpput = new HttpPut(hostname);
+		httpput.setEntity(cl2ent.getEnt());
+		String uriString = baseString + typ;
+		uriString = uriString.replace("HybridMasonry1", "HybridMasonryERR");
+		executeFail(httpput, uriString);
 	}
 
 	@Test(dependsOnMethods = { "testPutQueries" })
@@ -168,45 +185,74 @@ public class HttpTest {
 				continue;
 			}
 
-			HttpGet httpput = new HttpGet(hostname);
+			HttpGet httpget = new HttpGet(hostname);
 			String uriString = baseString + typ + "/rate/CONT/start/222.34";
-			HttpEntity ent = execute(httpput, uriString);
+			HttpEntity ent = execute(httpget, uriString);
 			InputStream2DoubleMatrix in2dm = null;
 			try {
 				in2dm = new InputStream2DoubleMatrix(ent.getContent());
 			} catch (Exception e) {
 				log.error("Extracting entity from query \"" + uriString
 						+ "\" failed because ", e);
-				Assert.fail();
+				AssertJUnit.fail();
 			}
 			log.info("\"" + uriString + "\" retrieved " + in2dm.getMatrix());
 		}
+		
+		ChannelListType typ = ChannelListType.Query1;
+		HttpGet httpget = new HttpGet(hostname);
+		String uriString = baseString + typ + "/rate/CONT/start/222.34";
+		HttpEntity ent = execute(httpget, uriString);
+		InputStream2DoubleMatrix in2dm = null;
+		try {
+			in2dm = new InputStream2DoubleMatrix(ent.getContent());
+		} catch (Exception e) {
+			log.error("Extracting entity from query \"" + uriString
+					+ "\" failed because ", e);
+			AssertJUnit.fail();
+		}
+		log.info("\"" + uriString + "\" retrieved " + in2dm.getMatrix());
+		uriString = uriString.replace("HybridMasonry1", "HybridMasonryERR");
+		executeFail(httpget, uriString);
+	}
+
+	private HttpEntity executeFail(HttpRequestBase request, String uriString) {
+		HttpResponse response = sendRequest(request, uriString);
+		AssertJUnit.assertEquals(response.getStatusLine().getStatusCode(), 500);
+		HttpEntity entity = response.getEntity();
+		return entity;
 	}
 
 	private HttpEntity execute(HttpRequestBase request, String uriString) {
+		HttpResponse response = sendRequest(request, uriString);
+		AssertJUnit.assertEquals(response.getStatusLine().getStatusCode(), 200);
+		HttpEntity entity = response.getEntity();
+
+		AssertJUnit.assertNotNull(entity);
+		return entity;
+
+	}
+
+	private HttpResponse sendRequest(HttpRequestBase request, String uriString) {
 		HttpResponse response = null;
 		HttpClient httpclient = new DefaultHttpClient();
 		try {
 			request.setURI(new URI(uriString));
 		} catch (URISyntaxException e1) {
 			log.error("URI : " + uriString + " could not be parsed", e1);
-			Assert.fail();
+			AssertJUnit.fail();
 		}
 
 		try {
 			response = httpclient.execute(request);
 		} catch (ClientProtocolException e) {
 			log.error("Protocol failure for " + uriString, e);
-			Assert.fail();
+			AssertJUnit.fail();
 		} catch (IOException e) {
 			log.error("IO failure for " + uriString, e);
-			Assert.fail();
+			AssertJUnit.fail();
 		}
-		Assert.assertEquals(response.getStatusLine().getStatusCode(),200);
-		HttpEntity entity = response.getEntity();
-
-		Assert.assertNotNull(entity);
-		return entity;
-
+		log.debug("Request " + request + " cause Response " + response);
+		return response;
 	}
 }
