@@ -1,9 +1,8 @@
-package org.nees.illinois.replay.channels;
+package org.nees.illinois.replay.data;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nees.illinois.replay.data.TableType;
 
 
 public class ChannelUpdates {

@@ -9,30 +9,38 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.ext.slf4j.Slf4jLoggerFacade;
+import org.restlet.service.StatusService;
 
 import com.google.inject.Inject;
 
 public class ReplayServerComponent extends Component {
 
 	private final HostInfo hostinfo;
+
 	@Inject
 	public ReplayServerComponent(HostInfo hostinfo,
 			ReplayServerApplication app, DataUpdatesI tdu, DataQueryI tdq) {
 		super();
 		this.hostinfo = hostinfo;
 		// Configure the log service
-		Engine.getInstance().setLoggerFacade(new Slf4jLoggerFacade());
+		System.setProperty("org.restlet.engine.loggerFacadeClass",
+				"org.restlet.ext.slf4j.Slf4jLoggerFacade");
+
+		StatusService status = new ReplayErrorService();
+		setStatusService(status);
+		app.setStatusService(status);
+
 		// Set basic properties
 		setName("MUST-SIM Replay Server component");
 		setDescription("Replay server for collecting test data");
 		setOwner("NEES@Illinois");
 		setAuthor("Michael Bletzinger");
-		Context cxt = new Context();
+		Context cxt = getContext().createChildContext();
 		cxt.getAttributes().put("updatesI", tdu);
 		cxt.getAttributes().put("queryI", tdq);
-		cxt.getParameters().set("tracing", "true");
-		setContext(cxt);
-
+		if (hostinfo.isTracing()) {
+			cxt.getParameters().set("tracing", "true");
+		}
 		// Add connectors
 		getClients().add(new Client(Protocol.CLAP));
 		Server server = new Server(cxt, Protocol.HTTP, hostinfo.getPort());

@@ -15,31 +15,34 @@ public class StepNumber implements Comparable<StepNumber> {
 		this.substep = Math.round(substep);
 		this.correctionStep = Math.round(correctionStep);
 	}
-	public StepNumber(String steps) throws NumberFormatException, PatternSyntaxException {
-		super();
-		String [] ssteps = steps.split("_");
-		this.step = Integer.parseInt(ssteps[0]);
-		this.substep = Integer.parseInt(ssteps[1]);
-		this.correctionStep = Integer.parseInt(ssteps[2]);
-	}
+
 	public StepNumber(int step, int substep, int correctionStep) {
 		super();
 		this.step = step;
 		this.substep = substep;
 		this.correctionStep = correctionStep;
 	}
+
+	public StepNumber(String steps) throws NumberFormatException,
+			PatternSyntaxException {
+		super();
+		String[] ssteps = steps.split("_");
+		this.step = Integer.parseInt(ssteps[0]);
+		this.substep = Integer.parseInt(ssteps[1]);
+		this.correctionStep = Integer.parseInt(ssteps[2]);
+	}
+
 	@Override
 	public int compareTo(StepNumber other) {
-		if(other.step != step) {
+		if (other.step != step) {
 			return compareToLong(step, other.step);
 		}
-		if(other.substep != substep) {
+		if (other.substep != substep) {
 			return compareToLong(substep, other.substep);
 		}
 		return compareToLong(correctionStep, other.correctionStep);
-		
+
 	}
-	
 
 	private int compareToLong(long me, long other) {
 		Long meL = new Long(me);
@@ -66,5 +69,15 @@ public class StepNumber implements Comparable<StepNumber> {
 	 */
 	public long getSubstep() {
 		return substep;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return step + "_" + substep + "_" + correctionStep;
 	}
 }

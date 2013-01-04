@@ -3,7 +3,7 @@ package org.nees.illinois.replay.queries;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nees.illinois.replay.channels.ChannelNameRegistry;
+import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.NumberOfColumns;
 import org.nees.illinois.replay.data.RateType;
 
