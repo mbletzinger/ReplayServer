@@ -1,12 +1,11 @@
 package org.nees.illinois.replay.test.data;
 
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.AssertJUnit;
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.apache.log4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.queries.MergeSet;
 import org.nees.illinois.replay.test.utils.DataGenerator;
@@ -18,7 +17,7 @@ public class TestMerge {
 	private List<List<Double>> daqStepData;
 	private final Logger log = Logger.getLogger(TestMerge.class);
 
-	@Before
+	@BeforeMethod
 	public void setUp() throws Exception {
 		double[][] dat = DataGenerator.initData(RateType.CONT, 20, 4, 0.7);
 		omContData = DataGenerator.toList(dat);
@@ -39,43 +38,43 @@ public class TestMerge {
 		MergeSet mset = new MergeSet(RateType.CONT);
 		mset.merge(daqContData);
 		log.debug("DAQ only " + mset);
-		Assert.assertEquals(3, mset.getColumnSize(false));
-		Assert.assertEquals(4, mset.getColumnSize(true));
+		AssertJUnit.assertEquals(3, mset.getColumnSize(false));
+		AssertJUnit.assertEquals(4, mset.getColumnSize(true));
 		List<List<Double>> result = mset.getRecords();
 		for (List<Double> r : result) {
 			log.info("Checking " + r );
-			Assert.assertEquals(daqcsz[1], r.size());
+			AssertJUnit.assertEquals(daqcsz[1], r.size());
 		}
 		mset.merge(omContData);
 		result = mset.getRecords();
 		log.debug("with OM " + mset);
-		Assert.assertEquals(7, mset.getColumnSize(false));
-		Assert.assertEquals(8, mset.getColumnSize(true));
+		AssertJUnit.assertEquals(7, mset.getColumnSize(false));
+		AssertJUnit.assertEquals(8, mset.getColumnSize(true));
 		log.debug("DAQ Cont[" + daqcsz[0] + "][" + daqcsz[1] + "]");
 		log.debug("OM Cont[" + omcsz[0] + "][" + omcsz[1] + "]");
 
 		for (List<Double> r : result) {
 			log.info("Checking " + r );
-			Assert.assertEquals(daqcsz[1] + omcsz[1] - 1, r.size());
+			AssertJUnit.assertEquals(daqcsz[1] + omcsz[1] - 1, r.size());
 		}
 		mset = new MergeSet(RateType.STEP);
 		mset.merge(daqStepData);
 		result = mset.getRecords();
 		log.debug("DAQ only " + mset);
-		Assert.assertEquals(3, mset.getColumnSize(false));
-		Assert.assertEquals(7, mset.getColumnSize(true));
+		AssertJUnit.assertEquals(3, mset.getColumnSize(false));
+		AssertJUnit.assertEquals(7, mset.getColumnSize(true));
 		for (List<Double> r : result) {
 			log.info("Checking " + r );
-			Assert.assertEquals(daqssz[1], r.size());
+			AssertJUnit.assertEquals(daqssz[1], r.size());
 		}
 		mset.merge(omStepData);
 		result = mset.getRecords();
 		log.debug("with OM " + mset);
-		Assert.assertEquals(7, mset.getColumnSize(false));
-		Assert.assertEquals(11, mset.getColumnSize(true));
+		AssertJUnit.assertEquals(7, mset.getColumnSize(false));
+		AssertJUnit.assertEquals(11, mset.getColumnSize(true));
 		for (List<Double> r : result) {
 			log.info("Checking " + r );
-			Assert.assertEquals(daqssz[1] + omssz[1] - 4, r.size());
+			AssertJUnit.assertEquals(daqssz[1] + omssz[1] - 4, r.size());
 		}
 
 	}
