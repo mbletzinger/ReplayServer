@@ -1,9 +1,7 @@
-package org.nees.illinois.replay.queries;
+package org.nees.illinois.replay.data;
 
 import java.util.List;
 
-import org.nees.illinois.replay.data.DoubleMatrix;
-import org.nees.illinois.replay.data.StepNumber;
 
 public interface DataQueryI {
 

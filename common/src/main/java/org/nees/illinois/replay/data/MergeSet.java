@@ -1,11 +1,10 @@
-package org.nees.illinois.replay.queries;
+package org.nees.illinois.replay.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.nees.illinois.replay.data.RateType;
 
 public class MergeSet {
 	private final List<MergeRecord> accum = new ArrayList<MergeRecord>();

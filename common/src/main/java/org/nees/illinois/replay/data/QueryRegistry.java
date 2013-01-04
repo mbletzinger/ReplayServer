@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.queries;
+package org.nees.illinois.replay.data;
 
 import java.util.HashMap;
 import java.util.Map;
