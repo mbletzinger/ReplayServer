@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.channels;
+package org.nees.illinois.replay.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.illinois.replay.data.TableType;
 
 public class ChannelNameRegistry {
 
