@@ -1,7 +1,6 @@
-package org.nees.illinois.replay.queries;
+package org.nees.illinois.replay.data;
 
 import org.apache.log4j.Logger;
-import org.nees.illinois.replay.data.DoubleMatrix;
 
 public class Interpolate {
 	public enum ColScanType {

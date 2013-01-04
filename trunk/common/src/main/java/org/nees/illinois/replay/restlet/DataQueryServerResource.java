@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
+import org.nees.illinois.replay.data.DataQueryI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
-import org.nees.illinois.replay.queries.DataQueryI;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Delete;
