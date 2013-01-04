@@ -2,7 +2,7 @@ package org.nees.mustsim.replay.test.data;
 
 import java.util.List;
 
-import org.nees.illinois.replay.channels.ChannelNameRegistry;
+import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
@@ -35,26 +35,31 @@ public class TestDataQuery implements DataQueryI {
 
 	@Override
 	public DoubleMatrix doQuery(String name) {
+		log.debug("Name query \"" + name + "\"");
 		return generate(name, 40, RateType.STEP);
 	}
 
 	@Override
 	public DoubleMatrix doQuery(String name, double start) {
+		log.debug("Name query \"" + name + "\" with start " +  start);
 		return generate(name, 20, RateType.CONT);
 	}
 
 	@Override
 	public DoubleMatrix doQuery(String name, double start, double stop) {
+		log.debug("Name query \"" + name + "\" with start " +  start + " & stop " + stop);
 		return generate(name, 10, RateType.CONT);
 	}
 
 	@Override
 	public DoubleMatrix doQuery(String name, StepNumber start) {
+		log.debug("Name query \"" + name + "\" with start step " +  start);
 		return generate(name, 15, RateType.STEP);
 	}
 
 	@Override
 	public DoubleMatrix doQuery(String name, StepNumber start, StepNumber stop) {
+		log.debug("Name query \"" + name + "\" with start step " +  start + " & stop step " + stop);
 		return generate(name, 5, RateType.STEP);
 	}
 
@@ -62,6 +67,10 @@ public class TestDataQuery implements DataQueryI {
 		if(experiment == null) {// Check to make sure restlet code sets the experiment name
 			log.error("Experiment name is not set");
 			return null;
+		}
+		// Force a runtime error
+		if(experiment.contains("ERR")) {
+			throw new RuntimeException("Help me I died");
 		}
 		QuerySpec qs = rate.equals(RateType.CONT) ? contQr.getQuery(name)
 				: stepQr.getQuery(name);
@@ -104,6 +113,10 @@ public class TestDataQuery implements DataQueryI {
 		if(experiment == null) {// Check to make sure restlet code sets the experiment name
 			log.error("Experiment name is not set");
 			return false;
+		}
+		// Force a runtime error
+		if(experiment.contains("ERR")) {
+			throw new RuntimeException("Help me I died");
 		}
 		contQr.setQuery(name, new QuerySpec(channels, name, cnr, RateType.CONT));
 		stepQr.setQuery(name, new QuerySpec(channels, name, cnr, RateType.STEP));

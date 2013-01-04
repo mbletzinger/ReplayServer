@@ -1,6 +1,6 @@
 package org.nees.mustsim.replay.test.server;
 
-import static org.junit.Assert.assertTrue;
+import static org.testng.AssertJUnit.assertTrue;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,33 +17,26 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.nees.illinois.replay.channels.ChannelNameRegistry;
-import org.nees.illinois.replay.conversions.InputStream2DoubleMatrix;
-import org.nees.illinois.replay.data.RateType;
+import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.restlet.ReplayServerApplication;
 import org.nees.illinois.replay.restlet.ReplayServerComponent;
-import org.nees.illinois.replay.test.utils.ChannelLists;
-import org.nees.illinois.replay.test.utils.DataGenerator;
-import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.mustsim.replay.test.data.TestDataQuery;
 import org.nees.mustsim.replay.test.data.TestDataUpdates;
 import org.nees.mustsim.replay.test.server.guice.UriTestModule;
-import org.nees.mustsim.replay.test.server.http.ChannelList2HttpEntity;
-import org.nees.mustsim.replay.test.server.http.DoubleMatrix2HttpEntity;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.Assert;
+import org.testng.AssertJUnit;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-
+@Test(groups = { "cool-uritest" })
 public class CoolUriTest {
 	private final Logger log = LoggerFactory.getLogger(CoolUriTest.class);
 	private ReplayServerComponent component;
@@ -65,7 +58,7 @@ public class CoolUriTest {
 			component.start();
 		} catch (Exception e2) {
 			log.error("Component failed to start because ", e2);
-			Assert.fail();
+			AssertJUnit.fail();
 		}
 		hostname = component.getHostinfo().getAddress();
 	}
@@ -78,7 +71,7 @@ public class CoolUriTest {
 				Thread.sleep(4000);
 			} catch (Exception e) {
 				log.error("Component Stop Failed ", e);
-				Assert.fail();
+				AssertJUnit.fail();
 			}
 		}
 	}
@@ -160,22 +153,22 @@ public class CoolUriTest {
 			request.setURI(new URI(uriString));
 		} catch (URISyntaxException e1) {
 			log.error("URI : " + uriString + " could not be parsed", e1);
-			Assert.fail();
+			AssertJUnit.fail();
 		}
 
 		try {
 			response = httpclient.execute(request);
 		} catch (ClientProtocolException e) {
 			log.error("Protocol failure for " + uriString, e);
-			Assert.fail();
+			AssertJUnit.fail();
 		} catch (IOException e) {
 			log.error("IO failure for " + uriString, e);
-			Assert.fail();
+			AssertJUnit.fail();
 		}
-		Assert.assertEquals(response.getStatusLine().getStatusCode(),200);
+		AssertJUnit.assertEquals(response.getStatusLine().getStatusCode(),200);
 		HttpEntity entity = response.getEntity();
 
-		Assert.assertNotNull(entity);
+		AssertJUnit.assertNotNull(entity);
 		return entity;
 
 	}

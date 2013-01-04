@@ -2,8 +2,8 @@ package org.nees.mustsim.replay.test.data;
 
 import java.util.List;
 
-import org.nees.illinois.replay.channels.ChannelNameRegistry;
-import org.nees.illinois.replay.channels.ChannelUpdates;
+import org.nees.illinois.replay.data.ChannelNameRegistry;
+import org.nees.illinois.replay.data.ChannelUpdates;
 import org.nees.illinois.replay.data.DataUpdatesI;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
@@ -34,6 +34,11 @@ public class TestDataUpdates implements DataUpdatesI {
 		if(experiment == null) {// Check to make sure restlet code sets the experiment name
 			log.error("Experiment name is not set");
 			return false;
+		}
+		
+		// Force a runtime error
+		if(experiment.contains("ERR")) {
+			throw new RuntimeException("Help me I died");
 		}
 
 		cu.lookupChannels(table, channels);
@@ -74,6 +79,10 @@ public class TestDataUpdates implements DataUpdatesI {
 		if(experiment == null) {// Check to make sure restlet code sets the experiment name
 			log.error("Experiment name is not set");
 			return false;
+		}
+		// Force a runtime error
+		if(experiment.contains("ERR")) {
+			throw new RuntimeException("Help me I died");
 		}
 		this.data = data;
 		return true;
