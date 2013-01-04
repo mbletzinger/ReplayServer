@@ -1,12 +1,12 @@
 package org.nees.illinois.replay.test.data;
 
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.queries.Interpolate;
 import org.nees.illinois.replay.test.utils.DoubleMatrixGenerator;
@@ -16,11 +16,11 @@ public class TestInterpolate {
 	private final Logger log = Logger.getLogger(TestInterpolate.class);
 	private DoubleMatrixGenerator dmg = new DoubleMatrixGenerator(10, 0.02);
 	
-	@Before
+	@BeforeMethod
 	public void setUp() throws Exception {
 	}
 
-	@After
+	@AfterMethod
 	public void tearDown() throws Exception {
 	}
 

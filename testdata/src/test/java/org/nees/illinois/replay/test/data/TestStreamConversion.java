@@ -1,16 +1,15 @@
 package org.nees.illinois.replay.test.data;
 
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.AssertJUnit;
 import java.util.List;
 
-import junit.framework.Assert;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.nees.illinois.replay.channels.ChannelNameRegistry;
 import org.nees.illinois.replay.conversions.ChannelList2Representation;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
+import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
@@ -23,7 +22,7 @@ import org.slf4j.LoggerFactory;
 public class TestStreamConversion {
 	private final Logger log = LoggerFactory
 			.getLogger(TestStreamConversion.class);
-	@Before
+	@BeforeMethod
 	public void setUp() throws Exception {
 	}
 
@@ -48,7 +47,7 @@ public class TestStreamConversion {
 		log.debug("New CNR " + actualCnr);
 		for (String c : expectedCnr.getNames()) {
 			log.debug("Checking \"" + c + "\"");
-			Assert.assertTrue(actualCnr.getNames().contains(c));
+			AssertJUnit.assertTrue(actualCnr.getNames().contains(c));
 		}
 	}
 	
