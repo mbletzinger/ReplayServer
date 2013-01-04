@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.nees.illinois.replay.channels.ChannelNameRegistry;
+import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.db.statement.ChannelInsertStatement;
 import org.nees.illinois.replay.db.statement.DbStatement;
 

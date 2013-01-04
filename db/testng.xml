@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="DerbyDbSuite" parallel="none">
+  <test name="DerbyTest">
+    <classes>
+      <class name="org.nees.illinois.replay.test.db.TestCreateRemoveDatabase"/>
+      <class name="org.nees.illinois.replay.test.db.TestChannelLists"/>
+      <class name="org.nees.illinois.replay.test.db.TestStopNetworkDerby"/>
+      <class name="org.nees.illinois.replay.test.db.TestDataStatements"/>
+      <class name="org.nees.illinois.replay.test.db.TestTableUpdates"/>
+      <class name="org.nees.illinois.replay.test.db.TestDbQuery"/>
+      <class name="org.nees.illinois.replay.test.db.TestStartNetworkDerby"/>
+      <class name="org.nees.illinois.replay.test.db.TestDbStatement"/>
+    </classes>
+  </test> <!-- DerbyTest -->
+</suite> <!-- DerbyDbSuite -->

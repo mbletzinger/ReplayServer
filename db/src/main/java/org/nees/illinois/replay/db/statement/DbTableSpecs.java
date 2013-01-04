@@ -5,27 +5,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.illinois.replay.channels.ChannelNameRegistry;
-import org.nees.illinois.replay.channels.ChannelUpdates;
+import org.nees.illinois.replay.data.ChannelNameRegistry;
+import org.nees.illinois.replay.data.ChannelUpdates;
 import org.nees.illinois.replay.data.NumberOfColumns;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 
-
 public class DbTableSpecs extends ChannelUpdates {
 	private final Map<TableType, List<String>> columns = new HashMap<TableType, List<String>>();
-	private final String dbname;
+
+	private String dbname;
+
 	public DbTableSpecs(ChannelNameRegistry cnr, String dbname) {
 		super(cnr);
 		this.dbname = dbname;
 	}
-
-
 	private String addHeaders(RateType rate) {
 		NumberOfColumns noc = new NumberOfColumns(1, rate);
 		String result = "";
 		boolean first = true;
-		for( String h : noc.getHeaders()) {
+		for (String h : noc.getHeaders()) {
 			result += (first ? "" : ", ") + h + " double NOT NULL";
 			first = false;
 		}
@@ -49,8 +48,15 @@ public class DbTableSpecs extends ChannelUpdates {
 											// underlines
 			result += ", " + channel + " double NOT NULL";
 		}
-		result +=  ")";
+		result += ")";
 		return result;
+	}
+
+	/**
+	 * @return the columns
+	 */
+	public Map<TableType, List<String>> getColumns() {
+		return columns;
 	}
 
 	public List<String> getColumns(TableType table) {
@@ -67,6 +73,14 @@ public class DbTableSpecs extends ChannelUpdates {
 	 */
 	public String getDbname() {
 		return dbname;
+	}
+
+	/**
+	 * @param dbname
+	 *            the dbname to set
+	 */
+	public void setDbname(String dbname) {
+		this.dbname = dbname;
 	}
 
 	public String tableName(TableType table, RateType rate) {

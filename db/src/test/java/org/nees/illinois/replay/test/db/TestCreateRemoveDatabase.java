@@ -1,15 +1,13 @@
 package org.nees.illinois.replay.test.db;
 
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import junit.framework.Assert;
-
 import org.apache.log4j.Logger;
-import org.junit.Test;
-
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
@@ -19,14 +17,14 @@ public class TestCreateRemoveDatabase {
 	@Test
 	public void createDatabase() {
 		String driver = "org.apache.derby.jdbc.ClientDriver";
-		String dbName = "TestDB";
+		String dbName = "HybridMasonry1";
 		String connectionURL = "jdbc:derby://localhost:1527/" + dbName + ";create=true";
 		try {
 			Class.forName(driver);
 		} catch (ClassNotFoundException e1) {
 			log.error("connection failed because " + driver
 					+ " could not be found");
-			Assert.fail();
+			AssertJUnit.fail();
 		}
 		log.info("driver loaded");
 		Connection connection = null;
@@ -34,7 +32,7 @@ public class TestCreateRemoveDatabase {
 			connection = DriverManager.getConnection(connectionURL);
 		} catch (SQLException e) {
 			log.error("connection failed because ",e);
-			Assert.fail();
+			AssertJUnit.fail();
 		}
 		
 		log.info("connected to database");
@@ -50,7 +48,7 @@ public class TestCreateRemoveDatabase {
 		}
 		if (!gotSQLExc) {
 			log.error("Database did not shut down normally");
-			Assert.fail();
+			AssertJUnit.fail();
 		} else {
 			log.info("Database shut down normally");
 		}
@@ -60,14 +58,14 @@ public class TestCreateRemoveDatabase {
 	@Test
 	public void createDatabasePool() {
 		String driver = "org.apache.derby.jdbc.ClientDriver";
-		String dbName = "TestDB";
+		String dbName = "HybridMasonry1";
 		String connectionURL = "jdbc:derby://localhost:1527/" + dbName;
 		try {
 			// load the database driver (make sure this is in your classpath!)
 			Class.forName(driver);
 		} catch (Exception e) {
 			log.error("Driver " + driver + " did not load ", e);
-			Assert.fail();
+			AssertJUnit.fail();
 			return;
 		}
 		Connection connection = null;
@@ -83,7 +81,7 @@ public class TestCreateRemoveDatabase {
 			connectionPool = new BoneCP(config);
 		} catch (SQLException e1) {
 			log.error("Connection Pool failed to start ", e1);
-			Assert.fail();
+			AssertJUnit.fail();
 			return;
 		} // setup the connection pool
 
@@ -91,7 +89,7 @@ public class TestCreateRemoveDatabase {
 			connection = connectionPool.getConnection();
 		} catch (SQLException e1) {
 			log.error("getConnection failed because ", e1);
-			Assert.fail();
+			AssertJUnit.fail();
 		} // fetch a connection
 
 		if (connection != null) {
@@ -108,25 +106,26 @@ public class TestCreateRemoveDatabase {
 		}
 	}
 
+	@Test(enabled = false)
 	private void testWithStatement(Connection connection) {
 		Statement stmt = null;
 		try {
 			stmt = connection.createStatement();
 		} catch (SQLException e) {
 			log.error("Create statement failed because ", e);
-			Assert.fail();
+			AssertJUnit.fail();
 		}
 		try {
 			stmt.execute("CREATE TABLE TestTable (col1 double, col2 double)");
 		} catch (SQLException e) {
 			log.error("Create table failed because ", e);
-			Assert.fail();
+			AssertJUnit.fail();
 		} // do something with the connection.
 		try {
 			stmt.execute("DROP TABLE TestTable");
 		} catch (SQLException e) {
 			log.error("Remove table failed because ", e);
-			Assert.fail();
+			AssertJUnit.fail();
 		} // do something with the connection.
 		
 	}	

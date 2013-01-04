@@ -2,6 +2,7 @@ package org.nees.illinois.replay.db.query;
 
 import java.util.List;
 
+import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
@@ -12,17 +13,21 @@ import org.nees.illinois.replay.db.statement.DbTableSpecs;
 import org.nees.illinois.replay.queries.DataQueryI;
 import org.nees.illinois.replay.queries.QueryRegistry;
 
+import com.google.inject.Inject;
+
 public class DbDataQuery implements DataQueryI {
+
 	private final QueryRegistry contDbq = new QueryRegistry();
 	private final DbPools pools;
-	private final DbTableSpecs specs;
+	private final ChannelNameRegistry cnr;
 	private final QueryRegistry stepDbq = new QueryRegistry();
 	private String experiment;
 
-	public DbDataQuery(DbPools pools, DbTableSpecs specs) {
+	@Inject
+	public DbDataQuery(DbPools pools, ChannelNameRegistry cnr) {
 		super();
 		this.pools = pools;
-		this.specs = specs;
+		this.cnr = cnr;
 	}
 
 	private DoubleMatrix doQuery(QueryType qtype, String name, double start,
@@ -75,6 +80,7 @@ public class DbDataQuery implements DataQueryI {
 
 	@Override
 	public boolean setQuery(String name, List<String> channels) {
+		DbTableSpecs specs = new DbTableSpecs(cnr, experiment);
 		DbQuerySpec dq = new DbQuerySpec(channels, name, specs, RateType.CONT);
 		contDbq.setQuery(name, dq);
 		dq = new DbQuerySpec(channels, name, specs, RateType.STEP);

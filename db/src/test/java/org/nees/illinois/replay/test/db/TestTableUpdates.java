@@ -1,18 +1,17 @@
 package org.nees.illinois.replay.test.db;
 
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.AssertJUnit;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.nees.illinois.replay.channels.ChannelNameRegistry;
+import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.statement.DbTableSpecs;
@@ -25,9 +24,9 @@ public class TestTableUpdates {
 	private final Logger log = Logger.getLogger(TestTableUpdates.class);
 	private BoneCP connectionPool;
 
-	@Before
+	@BeforeMethod
 	public void setUp() throws Exception {
-		dbT = new DbTableSpecs(new ChannelNameRegistry(), "TESTDB");
+		dbT = new DbTableSpecs(new ChannelNameRegistry(), "HybridMasonry1");
 		List<String> channels = new ArrayList<String>();
 		channels.add("OM_Cmd_LBCB1_Actuator_C__LBCB1__X1");
 		channels.add("OM_Disp_LBCB1_Cartesian_D__LBCB1__RY");
@@ -48,7 +47,7 @@ public class TestTableUpdates {
 			Class.forName(driver);
 		} catch (Exception e) {
 			log.error("Driver " + driver + " did not load ", e);
-			Assert.fail();
+			AssertJUnit.fail();
 			return;
 		}
 		// setup the connection pool
@@ -62,13 +61,13 @@ public class TestTableUpdates {
 			connectionPool = new BoneCP(config);
 		} catch (SQLException e1) {
 			log.error("Connection Pool failed to start ", e1);
-			Assert.fail();
+			AssertJUnit.fail();
 			return;
 		} // setup the connection pool
 
 	}
 
-	@After
+	@AfterMethod
 	public void teardown() {
 		Connection connection = fetchConnection();
 		for (RateType r : RateType.values()) {
@@ -93,7 +92,7 @@ public class TestTableUpdates {
 			connection = connectionPool.getConnection();
 		} catch (SQLException e1) {
 			log.error("getConnection failed because ", e1);
-			Assert.fail();
+			AssertJUnit.fail();
 		} // fetch a connection
 		return connection;
 	}
@@ -104,20 +103,20 @@ public class TestTableUpdates {
 			stmt = connection.createStatement();
 		} catch (SQLException e) {
 			log.error("Create statement failed because ", e);
-			Assert.fail();
+			AssertJUnit.fail();
 		}
 		try {
 			stmt.execute(statement);
 		} catch (SQLException e) {
 			log.error("\"" + statement + "\" failed because ", e);
-			Assert.fail();
+			AssertJUnit.fail();
 		} finally {
 			if (stmt != null) {
 				try {
 					stmt.close();
 				} catch (SQLException e) {
 					log.error("\"" + statement + "\" failed because ", e);
-					Assert.fail();
+					AssertJUnit.fail();
 				}
 			}
 		}

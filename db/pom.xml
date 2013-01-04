@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.nees.mustsim.replay.db</groupId>
+	<groupId>org.nees.illinois.replay.db</groupId>
 	<artifactId>ReplayServerDb</artifactId>
 	<name>Replay Server Database Access</name>
 	<description>Code to add and query data in a relational database</description>
@@ -34,7 +34,6 @@
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
 			<version>10.9.1.0</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.jolbox</groupId>
@@ -47,12 +46,6 @@
 			<version>1.2.15</version>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.10</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.5.10</version>
@@ -61,7 +54,6 @@
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derbyclient</artifactId>
 			<version>10.9.1.0</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>gov.nist.math</groupId>
@@ -69,19 +61,30 @@
 			<version>1.0.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.nees.mustsim.replay.testdata</groupId>
+			<groupId>org.nees.illinois.replay.testdata</groupId>
 			<artifactId>ReplayServerTestData</artifactId>
 			<version>0.0.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.nees.mustsim.replay.common</groupId>
+			<groupId>org.nees.illinois.replay.common</groupId>
 			<artifactId>ReplayServerCommon</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.8</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.22</version>
+		</dependency>
 	</dependencies>
 	<parent>
-		<groupId>org.nees.mustsim.replay</groupId>
+		<groupId>org.nees.illinois.replay</groupId>
 		<artifactId>ReplayServer</artifactId>
 		<version>0.0.1</version>
 		<relativePath>..</relativePath>

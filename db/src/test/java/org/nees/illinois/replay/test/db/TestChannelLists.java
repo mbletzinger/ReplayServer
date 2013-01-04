@@ -1,29 +1,28 @@
 package org.nees.illinois.replay.test.db;
 
-import junit.framework.Assert;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.nees.illinois.replay.channels.ChannelNameRegistry;
+import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
+import org.nees.illinois.replay.db.DerbyPools;
 import org.nees.illinois.replay.db.data.server.DbChannelNameSynch;
 import org.nees.illinois.replay.db.statement.DbStatement;
 import org.nees.illinois.replay.test.utils.ChannelLists;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
+import org.testng.AssertJUnit;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 public class TestChannelLists {
 	private DbPools dbc;
-	final String experiment = "TESTDB";
+	final String experiment = "HybridMasonry1";
 
-	@Before
+	@BeforeClass
 	public void setUp() throws Exception {
-		dbc = new DbPools("org.apache.derby.jdbc.ClientDriver", 
-				"jdbc:derby://localhost:1527/");
+		dbc = new DerbyPools();
 	}
 
-	@After
+	@AfterClass
 	public void tearDown() throws Exception {
 		DbStatement dbSt = dbc.createDbStatement(experiment);
 		DbChannelNameSynch dbcs = new DbChannelNameSynch(null, dbSt);
@@ -47,7 +46,7 @@ public class TestChannelLists {
 		dbSt = dbc.createDbStatement(experiment);
 		dbcs = new DbChannelNameSynch(cnr1, dbSt);
 		dbcs.initialize();
-		Assert.assertEquals(cnr.toString(), cnr1.toString());
+		AssertJUnit.assertEquals(cnr.toString(), cnr1.toString());
 	}
 
 }
