@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.nees.mustsim.replay.server</groupId>
+	<groupId>org.nees.illinois.replay.server</groupId>
 	<artifactId>ReplayServerWebApp</artifactId>
 	<name>Replay Server</name>
 	<description>Server used to buffer DAQ and Krypton data for NEES@Illinois tests</description>
@@ -77,30 +77,29 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.5.10</version>
 		</dependency>
-		<dependency>
-			<groupId>org.nees.mustsim.replay.testdata</groupId>
-			<artifactId>ReplayServerTestData</artifactId>
-			<version>0.0.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.nees.mustsim.replay.common</groupId>
-			<artifactId>ReplayServerCommon</artifactId>
-			<version>0.0.1</version>
-		</dependency>
  		<dependency>
 			<groupId>org.restlet.jee</groupId>
 			<artifactId>org.restlet.ext.servlet</artifactId>
 			<version>2.1-RC6</version>
 		</dependency>
  		<dependency>
- 			<groupId>org.nees.mustsim.replay.db</groupId>
+ 			<groupId>org.nees.illinois.replay.db</groupId>
  			<artifactId>ReplayServerDb</artifactId>
  			<version>0.0.1</version>
  		</dependency>
+ 		<dependency>
+ 			<groupId>org.nees.illinois.replay.test.server</groupId>
+ 			<artifactId>ReplayServerTestServer</artifactId>
+ 			<version>0.0.1</version>
+ 		</dependency>
+ 		<dependency>
+ 			<groupId>org.testng</groupId>
+ 			<artifactId>testng</artifactId>
+ 			<version>6.8</version>
+ 		</dependency>
 	</dependencies>
 	<parent>
-		<groupId>org.nees.mustsim.replay</groupId>
+		<groupId>org.nees.illinois.replay</groupId>
 		<artifactId>ReplayServer</artifactId>
 		<version>0.0.1</version>
 		<relativePath>..</relativePath>
