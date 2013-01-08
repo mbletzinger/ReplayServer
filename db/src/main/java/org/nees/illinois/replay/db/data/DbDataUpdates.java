@@ -1,9 +1,9 @@
-package org.nees.illinois.replay.db.data.server;
+package org.nees.illinois.replay.db.data;
 
 import java.util.List;
 
 import org.nees.illinois.replay.data.ChannelNameRegistry;
-import org.nees.illinois.replay.data.DataUpdatesI;
+import org.nees.illinois.replay.data.DataUpdateI;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
@@ -13,18 +13,11 @@ import org.nees.illinois.replay.db.statement.DbTableSpecs;
 
 import com.google.inject.Inject;
 
-public class DbDataUpdates implements DataUpdatesI {
-
-	/**
-	 * @return the specs
-	 */
-	public DbTableSpecs getSpecs() {
-		return specs;
-	}
+public class DbDataUpdates implements DataUpdateI {
 
 	private final DbPools pools;
-	private final DbTableSpecs specs;
 
+	private final DbTableSpecs specs;
 	@Inject
 	public DbDataUpdates(DbPools pools, ChannelNameRegistry cnr) {
 		super();
@@ -42,6 +35,18 @@ public class DbDataUpdates implements DataUpdatesI {
 			result = result && dbSt.execute(statement);
 		}
 		return result;
+	}
+
+	@Override
+	public String getExperiment() {
+		return specs.getDbname();
+	}
+
+	/**
+	 * @return the specs
+	 */
+	public DbTableSpecs getSpecs() {
+		return specs;
 	}
 
 	@Override
@@ -80,10 +85,5 @@ public class DbDataUpdates implements DataUpdatesI {
 		int[] records = prep.execute();
 		result = records.length > 0;
 		return result;
-	}
-
-	@Override
-	public String getExperiment() {
-		return specs.getDbname();
 	}
 }

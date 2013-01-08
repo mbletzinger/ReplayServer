@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.MatrixFix;
+import org.nees.illinois.replay.data.MergeSet;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.db.statement.DbStatement;
-import org.nees.illinois.replay.queries.Interpolate;
-import org.nees.illinois.replay.queries.MergeSet;
 
 public class DbQueryStatements {
 	public enum QueryType {
@@ -75,7 +75,7 @@ public class DbQueryStatements {
 			}
 		}
 		DoubleMatrix result = new DoubleMatrix(mSet.getRecords(), mSet.getColumnSize(true));
-		Interpolate intpl = new Interpolate(result);
+		MatrixFix intpl = new MatrixFix(result);
 		intpl.fix();
 		return result;		
 	}

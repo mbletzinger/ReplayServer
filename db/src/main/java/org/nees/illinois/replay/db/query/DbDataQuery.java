@@ -3,15 +3,15 @@ package org.nees.illinois.replay.db.query;
 import java.util.List;
 
 import org.nees.illinois.replay.data.ChannelNameRegistry;
+import org.nees.illinois.replay.data.DataQueryI;
 import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.QueryRegistry;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.query.DbQueryStatements.QueryType;
 import org.nees.illinois.replay.db.statement.DbStatement;
 import org.nees.illinois.replay.db.statement.DbTableSpecs;
-import org.nees.illinois.replay.queries.DataQueryI;
-import org.nees.illinois.replay.queries.QueryRegistry;
 
 import com.google.inject.Inject;
 

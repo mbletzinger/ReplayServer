@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.nees.illinois.replay.data.ChannelUpdates;
+import org.nees.illinois.replay.data.QuerySpec;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.statement.DbTableSpecs;
-import org.nees.illinois.replay.queries.QuerySpec;
 
 public class DbQuerySpec extends QuerySpec {
 	private int[] query2selectMap;
@@ -103,13 +103,6 @@ public class DbQuerySpec extends QuerySpec {
 		return result;
 	}
 
-	public List<DbSelect> getSelect(StepNumber start) {
-		List<DbSelect> result = new ArrayList<DbSelect>();
-		for (DbSelect s : select) {
-			result.add(s.cloneWithTimeConstraint(" WHERE step >= " + start.getStep()));
-		}
-		return result;
-	}
 	public List<DbSelect> getSelect(double start, double stop) {
 		List<DbSelect> result = new ArrayList<DbSelect>();
 		for (DbSelect s : select) {
@@ -119,11 +112,20 @@ public class DbQuerySpec extends QuerySpec {
 		return result;
 	}
 
+	public List<DbSelect> getSelect(StepNumber start) {
+		List<DbSelect> result = new ArrayList<DbSelect>();
+		for (DbSelect s : select) {
+			result.add(s.cloneWithTimeConstraint(" WHERE step >= "
+					+ start.getStep()));
+		}
+		return result;
+	}
+
 	public List<DbSelect> getSelect(StepNumber start, StepNumber stop) {
 		List<DbSelect> result = new ArrayList<DbSelect>();
 		for (DbSelect s : select) {
-			result.add(s.cloneWithTimeConstraint(" WHERE step BETWEEN " + start.getStep()
-					+ " AND " + stop.getStep()));
+			result.add(s.cloneWithTimeConstraint(" WHERE step BETWEEN "
+					+ start.getStep() + " AND " + stop.getStep()));
 		}
 		return result;
 	}
