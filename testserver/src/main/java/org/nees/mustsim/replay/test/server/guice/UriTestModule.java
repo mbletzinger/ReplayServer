@@ -1,8 +1,8 @@
 package org.nees.mustsim.replay.test.server.guice;
 
 import org.nees.illinois.replay.data.ChannelNameRegistry;
-import org.nees.illinois.replay.data.DataUpdatesI;
-import org.nees.illinois.replay.queries.DataQueryI;
+import org.nees.illinois.replay.data.DataQueryI;
+import org.nees.illinois.replay.data.DataUpdateI;
 import org.nees.illinois.replay.restlet.HostInfo;
 import org.nees.illinois.replay.restlet.ReplayServerApplication;
 import org.nees.mustsim.replay.test.data.TestDataQuery;
@@ -21,7 +21,7 @@ public class UriTestModule extends AbstractModule {
 	protected void configure() {
 		bind(HostInfo.class).to(LocalTestHostInfo.class);
 		bind(ReplayServerApplication.class).to(UriTestApplication.class);
-		bind(DataUpdatesI.class).to(TestDataUpdates.class);
+		bind(DataUpdateI.class).to(TestDataUpdates.class);
 		bind(DataQueryI.class).to(TestDataQuery.class);
 		bind(ChannelNameRegistry.class);
 	}
