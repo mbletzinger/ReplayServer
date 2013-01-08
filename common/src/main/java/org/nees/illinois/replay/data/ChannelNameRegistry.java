@@ -9,16 +9,6 @@ import java.util.Map;
 
 public class ChannelNameRegistry {
 
-	/**
-	 * @return the names
-	 */
-	public List<String> getNames() {
-		List<String> keys = new ArrayList<String>();
-		keys.addAll(names.keySet());
-		Collections.sort(keys);
-		return keys;
-	}
-
 	private long afterLastChannel = 1;
 
 	private final Map<String, String> names = new HashMap<String, String>();
@@ -47,6 +37,16 @@ public class ChannelNameRegistry {
 
 	public String getId(String channel) {
 		return names.get(channel);
+	}
+
+	/**
+	 * @return the names
+	 */
+	public List<String> getNames() {
+		List<String> keys = new ArrayList<String>();
+		keys.addAll(names.keySet());
+		Collections.sort(keys);
+		return keys;
 	}
 
 	public void init(Map<String, String> values, long alc) {

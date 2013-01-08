@@ -2,20 +2,20 @@ package org.nees.illinois.replay.data;
 
 import org.apache.log4j.Logger;
 
-public class Interpolate {
-	public enum ColScanType {
+public class MatrixFix {
+	private enum ColScanType {
 		Early, Empty, Full, Gaps, Late
 	}
 
-	private final Logger log = Logger.getLogger(Interpolate.class);
+	private final Logger log = Logger.getLogger(MatrixFix.class);
 	private final DoubleMatrix matrix;
 
-	public Interpolate(DoubleMatrix indata) {
+	public MatrixFix(DoubleMatrix indata) {
 		super();
 		this.matrix = indata;
 	};
 
-	public ColScanType columnScan(int column) {
+	private ColScanType columnScan(int column) {
 		boolean hasContents = false;
 		boolean hasNulls = false;
 		int[] sizes = matrix.sizes();
@@ -44,7 +44,7 @@ public class Interpolate {
 		return ColScanType.Empty;
 	}
 
-	public void extrapolate(ColScanType scan, int column) {
+	private void extrapolate(ColScanType scan, int column) {
 		int[] sizes = matrix.sizes();
 		int start = 0;
 		int interval = 1;
@@ -69,7 +69,7 @@ public class Interpolate {
 
 	public void fix() {
 		int[] sizes = matrix.sizes();
-		log.debug("Matrix sizes are ["+sizes[0] + "][" + sizes[1] + "]");
+		log.debug("Matrix sizes are [" + sizes[0] + "][" + sizes[1] + "]");
 		for (int c = 0; c < sizes[1]; c++) {
 			ColScanType scan = columnScan(c);
 			while (scan.equals(ColScanType.Full) == false
@@ -99,7 +99,7 @@ public class Interpolate {
 		return matrix;
 	}
 
-	public void interpolate(int column, int firstNull) {
+	private void interpolate(int column, int firstNull) {
 		int nonNull = firstNull;
 
 		while (matrix.isNull(nonNull, column)) {
@@ -109,7 +109,9 @@ public class Interpolate {
 		double startVal = matrix.value(firstNull - 1, column);
 		double stopVal = matrix.value(nonNull, column);
 		double increment = (stopVal - startVal) / (nonNull - (firstNull - 1));
-		log.debug("interpolate values: start=" + startVal + " stop=" + stopVal + " non=" + nonNull + " first=" + firstNull + " incr=" + increment);
+		log.debug("interpolate values: start=" + startVal + " stop=" + stopVal
+				+ " non=" + nonNull + " first=" + firstNull + " incr="
+				+ increment);
 		for (int i = firstNull; i < nonNull; i++) {
 			matrix.set(i, column, (startVal + increment * (i - firstNull + 1)));
 		}
