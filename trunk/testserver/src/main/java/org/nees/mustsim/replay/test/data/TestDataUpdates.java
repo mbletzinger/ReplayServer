@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.ChannelUpdates;
-import org.nees.illinois.replay.data.DataUpdatesI;
+import org.nees.illinois.replay.data.DataUpdateI;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
-public class TestDataUpdates implements DataUpdatesI {
+public class TestDataUpdates implements DataUpdateI {
 
 	private final ChannelUpdates cu;
 	

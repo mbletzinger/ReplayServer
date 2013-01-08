@@ -3,12 +3,12 @@ package org.nees.mustsim.replay.test.data;
 import java.util.List;
 
 import org.nees.illinois.replay.data.ChannelNameRegistry;
+import org.nees.illinois.replay.data.DataQueryI;
 import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.QueryRegistry;
+import org.nees.illinois.replay.data.QuerySpec;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
-import org.nees.illinois.replay.queries.DataQueryI;
-import org.nees.illinois.replay.queries.QueryRegistry;
-import org.nees.illinois.replay.queries.QuerySpec;
 import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +76,7 @@ public class TestDataQuery implements DataQueryI {
 				: stepQr.getQuery(name);
 		double[][] data = DataGenerator.initData(rate, rows, qs.getNoc()
 				.getNumber(true), 0.5);
-		DoubleMatrix result = new DoubleMatrix(data, data[0].length);
+		DoubleMatrix result = new DoubleMatrix(data);
 		return result;
 
 	}
