@@ -6,23 +6,25 @@ import org.apache.log4j.Logger;
 import org.nees.illinois.replay.data.Mtx2Str;
 
 public class DataInsertStatement extends PrepStatement {
-	public static DataInsertStatement getStatement(String dataTableName, int numberOfChannels) {
+	public static DataInsertStatement getStatement(String dataTableName,
+			int numberOfChannels) {
 		String statement = "INSERT INTO " + dataTableName + " VALUES (";
-		for(int c = 0; c < numberOfChannels; c++) {
+		for (int c = 0; c < numberOfChannels; c++) {
 			statement += (c == 0 ? "" : ", ") + "?";
 		}
 		statement += ")";
 		return new DataInsertStatement(dataTableName, statement);
 	}
-	
+
 	public DataInsertStatement(String dataTableName, String statement) {
 		super(statement, Logger.getLogger(DataInsertStatement.class));
 	}
-	public boolean add(double [] data) {
+
+	public boolean add(double[] data) {
 		log.debug("Adding " + Mtx2Str.array2String(data));
 		try {
 			for (int c = 0; c < data.length; c++) {
-				statement.setDouble(c+ 1, data[c]);
+				statement.setDouble(c + 1, data[c]);
 			}
 			statement.addBatch();
 		} catch (SQLException e) {

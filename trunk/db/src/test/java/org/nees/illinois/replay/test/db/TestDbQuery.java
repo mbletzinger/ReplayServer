@@ -14,7 +14,7 @@ import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.DerbyPools;
-import org.nees.illinois.replay.db.data.server.DbDataUpdates;
+import org.nees.illinois.replay.db.data.DbDataUpdates;
 import org.nees.illinois.replay.db.query.DbQuerySpec;
 import org.nees.illinois.replay.db.query.DbQueryStatements;
 import org.nees.illinois.replay.db.query.DbSelect;

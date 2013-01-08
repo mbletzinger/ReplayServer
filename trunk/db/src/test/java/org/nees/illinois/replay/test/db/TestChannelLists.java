@@ -4,7 +4,7 @@ import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.DerbyPools;
-import org.nees.illinois.replay.db.data.server.DbChannelNameSynch;
+import org.nees.illinois.replay.db.data.DbChannelNameSynch;
 import org.nees.illinois.replay.db.statement.DbStatement;
 import org.nees.illinois.replay.test.utils.ChannelLists;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;

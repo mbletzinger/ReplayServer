@@ -16,13 +16,29 @@ public class DbStatement {
 		this.connection = connection;
 	}
 
+	public void close() {
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			log.error("Connection could not be closed because ", e);
+		}
+	}
+
+	public void closeQuery(ResultSet rs) {
+		try {
+			rs.getStatement().close();
+		} catch (SQLException e) {
+			log.error("Statement close failed because ", e);
+		}
+	}
+
 	public boolean createPrepStatement(PrepStatement prep) {
 		return prep.create(connection);
 	}
 
 	public boolean execute(String statement) {
 		Statement stmt = null;
-//		log.debug("Executing " + statement);
+		// log.debug("Executing " + statement);
 		try {
 			stmt = connection.createStatement();
 		} catch (SQLException e) {
@@ -52,7 +68,7 @@ public class DbStatement {
 	}
 
 	public void noComplaints(String statement) {
-//		log.debug("Executing " + statement);
+		// log.debug("Executing " + statement);
 		Statement stmt = null;
 		try {
 			stmt = connection.createStatement();
@@ -76,7 +92,7 @@ public class DbStatement {
 	}
 
 	public ResultSet query(String statement) {
-//		log.debug("Querying " + statement);
+		// log.debug("Querying " + statement);
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
@@ -103,19 +119,5 @@ public class DbStatement {
 		}
 		log.info("executed \"" + statement + "\"");
 		return rs;
-	}
-	public void closeQuery(ResultSet rs) {
-		try {
-			rs.getStatement().close();
-		} catch (SQLException e) {
-			log.error("Statement close failed because ", e);
-		}
-	}
-	public void close() {
-		try {
-			connection.close();
-		} catch (SQLException e) {
-			log.error("Connection could not be closed because ",e);
-		}
 	}
 }

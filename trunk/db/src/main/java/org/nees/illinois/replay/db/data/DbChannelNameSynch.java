@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.db.data.server;
+package org.nees.illinois.replay.db.data;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,12 +14,12 @@ public class DbChannelNameSynch {
 	private final String channelTable = "CHANNEL_NAMES";
 	private final DbStatement db;
 	private final Logger log = Logger.getLogger(DbChannelNameSynch.class);
-	private final ChannelNameRegistry registry;
+	private final ChannelNameRegistry cnr;
 	private final String afterLastChannel = "AfterLastChannel";
 
-	public DbChannelNameSynch(ChannelNameRegistry registry, DbStatement db) {
+	public DbChannelNameSynch(ChannelNameRegistry cnr, DbStatement db) {
 		super();
-		this.registry = registry;
+		this.cnr = cnr;
 		this.db = db;
 	}
 
@@ -48,7 +48,7 @@ public class DbChannelNameSynch {
 		if (names.isEmpty() == false) {
 			long alastChannel = Long.parseLong(names.get(afterLastChannel));
 			names.remove(afterLastChannel);
-			registry.init(names, alastChannel);
+			cnr.init(names, alastChannel);
 		}
 	}
 
@@ -59,14 +59,14 @@ public class DbChannelNameSynch {
 	public void synchronize() {
 		removeTable();
 		createTable();
-		Map<String, String> reg = registry.getClone();
+		Map<String, String> reg = cnr.getClone();
 		ChannelInsertStatement prep = new ChannelInsertStatement(channelTable);
 		db.createPrepStatement(prep);
 		for (String n : reg.keySet()) {
 			prep.add(n, reg.get(n));
 		}
 		prep.add(afterLastChannel,
-				Long.toString(registry.getAfterLastChannel()));
+				Long.toString(cnr.getAfterLastChannel()));
 		if (prep.execute() == null) {
 			log.error("Channel name synchronize failed");
 			return;
