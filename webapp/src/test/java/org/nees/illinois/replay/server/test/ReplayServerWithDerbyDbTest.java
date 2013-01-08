@@ -123,10 +123,10 @@ public class ReplayServerWithDerbyDbTest {
 			int columns = channels.size();
 			double[][] dataD = DataGenerator.initData(RateType.CONT, 20,
 					columns, 0.02);
-			dtc.addData(cl.getTt(typ), RateType.CONT, new DoubleMatrix(dataD, columns));
+			dtc.addData(cl.getTt(typ), RateType.CONT, new DoubleMatrix(dataD));
 
 			dataD = DataGenerator.initData(RateType.STEP, 20, columns, 0.02);
-			dtc.addData(cl.getTt(typ), RateType.STEP, new DoubleMatrix(dataD, columns));
+			dtc.addData(cl.getTt(typ), RateType.STEP, new DoubleMatrix(dataD));
 		}
 	}
 
