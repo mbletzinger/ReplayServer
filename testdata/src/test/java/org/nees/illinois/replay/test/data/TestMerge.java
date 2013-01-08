@@ -6,8 +6,8 @@ import org.testng.AssertJUnit;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nees.illinois.replay.data.MergeSet;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.queries.MergeSet;
 import org.nees.illinois.replay.test.utils.DataGenerator;
 
 public class TestMerge {
