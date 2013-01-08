@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nees.illinois.replay.data.DoubleMatrix;
-import org.nees.illinois.replay.queries.Interpolate;
+import org.nees.illinois.replay.data.MatrixFix;
 import org.nees.illinois.replay.test.utils.DoubleMatrixGenerator;
 import org.nees.illinois.replay.test.utils.DoubleMatrixGenerator.ColumnTypes;
 
@@ -33,7 +33,7 @@ public class TestInterpolate {
 		List<List<Double>> actualL = dmg.generate(spec, false);
 		DoubleMatrix actual = new DoubleMatrix(actualL, spec.size());
 		log.debug("Actual: " + actual);
-		Interpolate iplt = new Interpolate(actual);
+		MatrixFix iplt = new MatrixFix(actual);
 		iplt.fix();
 		log.debug("Fixed: " + actual);		
 		List<List<Double>> expectedL = dmg.generate(spec, true);
@@ -50,7 +50,7 @@ public class TestInterpolate {
 		List<List<Double>> actualL = dmg.generate(spec, false);
 		DoubleMatrix actual = new DoubleMatrix(actualL, spec.size());
 		log.debug("Actual: " + actual);
-		Interpolate iplt = new Interpolate(actual);
+		MatrixFix iplt = new MatrixFix(actual);
 		iplt.fix();
 		log.debug("Fixed: " + actual);		
 		List<List<Double>> expectedL = dmg.generate(spec, true);
@@ -70,7 +70,7 @@ public class TestInterpolate {
 		List<List<Double>> actualL = dmg.generate(spec, false);
 		DoubleMatrix actual = new DoubleMatrix(actualL, spec.size());
 		log.debug("Actual: " + actual);
-		Interpolate iplt = new Interpolate(actual);
+		MatrixFix iplt = new MatrixFix(actual);
 		iplt.fix();
 		log.debug("Fixed: " + actual);				
 		List<List<Double>> expectedL = dmg.generate(spec, true);
@@ -91,7 +91,7 @@ public class TestInterpolate {
 		List<List<Double>> actualL = dmg.generate(spec, false);
 		DoubleMatrix actual = new DoubleMatrix(actualL, spec.size());
 		log.debug("Actual: " + actual);
-		Interpolate iplt = new Interpolate(actual);
+		MatrixFix iplt = new MatrixFix(actual);
 		iplt.fix();
 		log.debug("Fixed: " + actual);				
 		List<List<Double>> expectedL = dmg.generate(spec, true);
