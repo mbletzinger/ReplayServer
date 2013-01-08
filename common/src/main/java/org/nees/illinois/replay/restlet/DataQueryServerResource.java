@@ -1,6 +1,8 @@
 package org.nees.illinois.replay.restlet;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
@@ -8,6 +10,7 @@ import org.nees.illinois.replay.data.DataQueryI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
+import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Delete;
@@ -15,15 +18,16 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DataQueryServerResource extends ServerResource implements
 		DataQueryResource {
 	private  DataQueryI dquery;
 	
-	private final Logger log = LoggerFactory
-			.getLogger(DataQueryServerResource.class);
+//	private final Logger log = LoggerFactory
+//			.getLogger(DataQueryServerResource.class);
+	
+	private AttributeExtraction extract;
+
 
 	public DataQueryServerResource() {
 		super();
@@ -35,7 +39,7 @@ public class DataQueryServerResource extends ServerResource implements
 	 */
 	@Override
 	protected void doInit() throws ResourceException {
-		this.dquery = (DataQueryI) getContext().getAttributes().get("queryI");
+		extract = new AttributeExtraction(getRequest().getAttributes());
 		super.doInit();
 	}
 	
@@ -48,22 +52,29 @@ public class DataQueryServerResource extends ServerResource implements
 	}
 	
 	private DoubleMatrix getDm() {
-		RateType rt = RateType.valueOf((String) getRequest().getAttributes()
-				.get("rate"));
-		String start = (String) getRequest().getAttributes()
-				.get("start");
-		String stop = (String) getRequest().getAttributes()
-				.get("stop");
-		String query = (String) getRequest().getAttributes()
-				.get("query");
-		String experiment = (String) getRequest().getAttributes().get("experiment");
+		final List<RequiredAttrType> reqAttrs= new ArrayList<AttributeExtraction.RequiredAttrType>();
+
+		reqAttrs.add(RequiredAttrType.Experiment);
+		reqAttrs.add(RequiredAttrType.Rate);
+		reqAttrs.add(RequiredAttrType.Query);
+		extract.extract(reqAttrs);
+		Map<RequiredAttrType,Object> attrs = extract.getAttrs();
+		RateType rate = (RateType) attrs.get(RequiredAttrType.Rate);
+		String experiment = (String) attrs.get(RequiredAttrType.Experiment);
+		String query = (String) attrs.get(RequiredAttrType.Query);
+
 		dquery.setExperiment(experiment);
 
-
-
-		if(rt.equals(RateType.STEP)) {
-			StepNumber strt = parseStepNumber(start);
-			StepNumber stp = parseStepNumber(stop);
+		reqAttrs.clear();
+		reqAttrs.add(RequiredAttrType.Start);
+		reqAttrs.add(RequiredAttrType.Stop);
+		reqAttrs.add(rate.equals(RateType.STEP) ? RequiredAttrType.StepNumber : RequiredAttrType.Double);
+		extract.extract(reqAttrs);
+		attrs = extract.getAttrs();
+		
+		if(rate.equals(RateType.STEP)) {
+			StepNumber strt = (StepNumber) attrs.get(RequiredAttrType.Start);
+			StepNumber stp = (StepNumber) attrs.get(RequiredAttrType.Stop);
 			DoubleMatrix data;
 			if(strt == null) {
 				data = dquery.doQuery(query);
@@ -74,8 +85,8 @@ public class DataQueryServerResource extends ServerResource implements
 			}
 			return data;
 		}
-		Double strt = parseDouble(start);
-		Double stp = parseDouble(stop);
+		Double strt = (Double) attrs.get(RequiredAttrType.Start);
+		Double stp = (Double) attrs.get(RequiredAttrType.Stop);
 		DoubleMatrix data;
 		if(strt == null) {
 			data = dquery.doQuery(query);
@@ -87,43 +98,7 @@ public class DataQueryServerResource extends ServerResource implements
 		return data;
 
 	}
-
-	private StepNumber parseStepNumber(String str) {
-		if(str == null) {
-			return null;
-		}
-		if(str.equals("")) {
-			return null;
-		}
-		StepNumber result = null;
-		try {
-			result = new StepNumber(str);
-		}
-		catch (Exception e) {
-			log.error("Step \"" + str + "\" could not be parsed");
-			return null;
-		}
-		return result;
-	}
-
-	private Double parseDouble(String str) {
-		if(str == null) {
-			return null;
-		}
-		if(str.equals("")) {
-			return null;
-		}
-		Double result = null;
-		try {
-			result = new Double(str);
-		}
-		catch (Exception e) {
-			log.error("Double \"" + str + "\" could not be parsed");
-			return null;
-		}
-		return result;
-	}
-
+	
 	@Override
 	@Delete
 	public void removeList(String query) {
@@ -134,11 +109,17 @@ public class DataQueryServerResource extends ServerResource implements
 	@Override
 	@Put
 	public void set(Representation channels) {
-		String query = (String) getRequest().getAttributes()
-				.get("query");
+		final List<RequiredAttrType> reqAttrs= new ArrayList<AttributeExtraction.RequiredAttrType>();
+
+		reqAttrs.add(RequiredAttrType.Experiment);
+		reqAttrs.add(RequiredAttrType.Query);
+		extract.extract(reqAttrs);
+		Map<RequiredAttrType,Object> attrs = extract.getAttrs();
+		String experiment = (String) attrs.get(RequiredAttrType.Experiment);
+		String query = (String) attrs.get(RequiredAttrType.Query);
+
 		Representation2ChannelList rep2cl = new Representation2ChannelList(
 				channels);
-		String experiment = (String) getRequest().getAttributes().get("experiment");
 		dquery.setExperiment(experiment);
 		List<String> list = rep2cl.getIl2cl().getChannels();
 		this.dquery.setQuery(query, list);
