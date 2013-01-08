@@ -32,7 +32,7 @@ public class DoubleMatrix {
 		}
 	}
 
-	public DoubleMatrix(double [][] idata, int columnSize) {
+	public DoubleMatrix(double [][] idata) {
 		data = idata;
 		isNull = new boolean [idata.length][idata[0].length];
 	}
