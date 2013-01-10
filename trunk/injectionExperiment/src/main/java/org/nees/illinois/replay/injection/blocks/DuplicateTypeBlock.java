@@ -2,7 +2,7 @@ package org.nees.illinois.replay.injection.blocks;
 
 import com.google.inject.Inject;
 
-public class DuplicateTypeBlock {
+public class DuplicateTypeBlock implements BlockI {
 
 	final int count;
 	final int count1;
@@ -75,6 +75,10 @@ public class DuplicateTypeBlock {
 		return "DuplicateTypeBlock [id=" + id + ", id2=" + id2 + ", ratio="
 				+ ratio + ", ratio3=" + ratio3 + ", count=" + count
 				+ ", count1=" + count1 + "]";
+	}
+	@Override
+	public String publish() {
+		return toString();
 	}
 
 }

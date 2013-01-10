@@ -1,19 +1,18 @@
 package org.nees.illinois.replay.injection.composites;
 
+import org.nees.illinois.replay.injection.blocks.BlockI;
 import org.nees.illinois.replay.injection.blocks.DataTypeBlock;
-import org.nees.illinois.replay.injection.blocks.SimpleBlock;
 
 import com.google.inject.Inject;
 
-public class MixedComposite {
+public class MixedComposite implements BlockI, CompI {
 
-	private final SimpleBlock block;
+	private final BlockI block;
 	private final DataTypeBlock datatype;
 	private final String identity;
 
 	@Inject
-	public MixedComposite(String identity, SimpleBlock block,
-			DataTypeBlock datatype) {
+	public MixedComposite(String identity, BlockI block, DataTypeBlock datatype) {
 		super();
 		this.identity = identity;
 		this.block = block;
@@ -23,7 +22,7 @@ public class MixedComposite {
 	/**
 	 * @return the block
 	 */
-	public SimpleBlock getBlock() {
+	public BlockI getBlock() {
 		return block;
 	}
 
@@ -50,6 +49,16 @@ public class MixedComposite {
 	public String toString() {
 		return "MixedComposite [identity=" + identity + ", block=" + block
 				+ ", datatype=" + datatype + "]";
+	}
+
+	@Override
+	public String publish() {
+		return toString();
+	}
+
+	@Override
+	public String cpublish() {
+		return publish();
 	}
 
 }

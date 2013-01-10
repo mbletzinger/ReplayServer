@@ -2,7 +2,7 @@ package org.nees.illinois.replay.injection.blocks;
 
 import com.google.inject.Inject;
 
-public class SimpleBlock {
+public class SimpleBlock implements BlockI {
 
 	final String name;
 
@@ -19,12 +19,19 @@ public class SimpleBlock {
 		return name;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "SimpleBlock \"" + name + "\"";
 	}
-	
+
+	@Override
+	public String publish() {
+		return toString();
+	}
+
 }
