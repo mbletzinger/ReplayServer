@@ -2,7 +2,7 @@ package org.nees.illinois.replay.injection.blocks;
 
 import com.google.inject.Inject;
 
-public class DataTypeBlock {
+public class DataTypeBlock  implements BlockI {
 
 	final int count;
 	final String id;
@@ -39,6 +39,11 @@ public class DataTypeBlock {
 	@Override
 	public String toString() {
 		return "DataTypeBlock \"" + id + "\" " + count + " " + ratio;
+	}
+	
+	@Override
+	public String publish() {
+		return toString();
 	}
 
 }

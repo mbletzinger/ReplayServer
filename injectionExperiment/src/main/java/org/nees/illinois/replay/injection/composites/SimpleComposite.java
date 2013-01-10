@@ -1,14 +1,14 @@
 package org.nees.illinois.replay.injection.composites;
 
-import org.nees.illinois.replay.injection.blocks.SimpleBlock;
+import org.nees.illinois.replay.injection.blocks.BlockI;
 
 import com.google.inject.Inject;
 
-public class SimpleComposite {
-	private final SimpleBlock block;
+public class SimpleComposite implements BlockI, CompI {
+	private final BlockI block;
 
 	@Inject
-	public SimpleComposite(SimpleBlock block) {
+	public SimpleComposite(BlockI block) {
 		super();
 		this.block = block;
 	}
@@ -16,11 +16,13 @@ public class SimpleComposite {
 	/**
 	 * @return the block
 	 */
-	public SimpleBlock getBlock() {
+	public BlockI getBlock() {
 		return block;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -28,5 +30,14 @@ public class SimpleComposite {
 		return "SimpleComposite [block=" + block + "]";
 	}
 
+	@Override
+	public String publish() {
+		return toString();
+	}
+
+	@Override
+	public String cpublish() {
+		return publish();
+	}
 
 }
