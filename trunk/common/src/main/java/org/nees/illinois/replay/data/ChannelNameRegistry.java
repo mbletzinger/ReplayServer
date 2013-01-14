@@ -5,13 +5,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 
 public class ChannelNameRegistry {
 
 	private long afterLastChannel = 1;
-
-	private final Map<String, String> names = new HashMap<String, String>();
+	
+	private final ConcurrentMap<String, String> names = new ConcurrentHashMap<String, String>();
 
 	public String addChannel(TableType table, String channel) {
 		String result = getId(channel);

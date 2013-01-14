@@ -7,11 +7,10 @@ import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.Engine;
-import org.restlet.ext.slf4j.Slf4jLoggerFacade;
 import org.restlet.service.StatusService;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 public class ReplayServerComponent extends Component {
 
@@ -19,7 +18,7 @@ public class ReplayServerComponent extends Component {
 
 	@Inject
 	public ReplayServerComponent(HostInfo hostinfo,
-			ReplayServerApplication app, DataUpdateI tdu, DataQueryI tdq) {
+			ReplayServerApplication app, Provider<DataUpdateI> tdu, Provider<DataQueryI> tdq) {
 		super();
 		this.hostinfo = hostinfo;
 		// Configure the log service

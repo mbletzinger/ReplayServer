@@ -1,13 +1,13 @@
 package org.nees.illinois.replay.data;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.log4j.Logger;
 
 public class QueryRegistry {
 
-	private final Map<String, QuerySpec> queries = new HashMap<String, QuerySpec>();
+	private final ConcurrentMap<String, QuerySpec> queries = new ConcurrentHashMap<String, QuerySpec>();
 	private final Logger log = Logger.getLogger(QueryRegistry.class);
 	public QuerySpec getQuery(String name) {
 		return queries.get(name);

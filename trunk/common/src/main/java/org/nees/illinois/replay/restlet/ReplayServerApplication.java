@@ -5,15 +5,22 @@ import org.restlet.Restlet;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 public class ReplayServerApplication extends Application {
 	private final String appRoot;
 	private final Class<? extends ServerResource> queryClass;
 	private final Class<? extends ServerResource> tableClass;
 	private final boolean tracing;
 
-	public ReplayServerApplication(String appRoot,
-			Class<? extends ServerResource> tableClass, Class<? extends ServerResource> queryClass,
-			boolean tracing) {
+	// Needed for Guice
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Inject
+	public ReplayServerApplication(@Named("appRoot") String appRoot,
+			@Named("TableResource") Class tableClass,
+			@Named("QueryResource") Class queryClass,
+			@Named("tracing") Boolean tracing) {
 		super();
 		this.appRoot = appRoot;
 		this.tableClass = tableClass;
@@ -34,16 +41,18 @@ public class ReplayServerApplication extends Application {
 		}
 		router.attach(appRoot + "/experiment/{experiment}/table/{table}",
 				tableClass);
-		router.attach(
-				appRoot + "/experiment/{experiment}/table/{table}/rate/{rate}",
+		router.attach(appRoot
+				+ "/experiment/{experiment}/table/{table}/rate/{rate}",
 				tableClass);
 		router.attach(appRoot + "/experiment/{experiment}/query/{query}",
 				queryClass);
 		router.attach(
-				appRoot + "/experiment/{experiment}/query/{query}/rate/{rate}/start/{start}",
+				appRoot
+						+ "/experiment/{experiment}/query/{query}/rate/{rate}/start/{start}",
 				queryClass);
 		router.attach(
-				appRoot + "/experiment/{experiment}/query/{query}/rate/{rate}/start/{start}/stop/{stop}",
+				appRoot
+						+ "/experiment/{experiment}/query/{query}/rate/{rate}/start/{start}/stop/{stop}",
 				queryClass);
 
 		return router;

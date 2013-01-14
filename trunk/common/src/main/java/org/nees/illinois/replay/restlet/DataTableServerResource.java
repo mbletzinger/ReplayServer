@@ -17,16 +17,19 @@ import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
+import com.google.inject.Provider;
+
 public class DataTableServerResource extends ServerResource implements
 		DataTableResource {
 //	private final Logger log = LoggerFactory
 //			.getLogger(DataTableServerResource.class);
 
-	private DataUpdateI updates;
-	private final List<RequiredAttrType> reqAttrs = new ArrayList<AttributeExtraction.RequiredAttrType>();
-	private final List<RequiredAttrType> reqAttrsWithRate = new ArrayList<AttributeExtraction.RequiredAttrType>();
 	private  AttributeExtraction extract;
-	
+
+	private final List<RequiredAttrType> reqAttrs = new ArrayList<AttributeExtraction.RequiredAttrType>();
+
+	private final List<RequiredAttrType> reqAttrsWithRate = new ArrayList<AttributeExtraction.RequiredAttrType>();
+	private DataUpdateI updates;
 	public DataTableServerResource() {
 		super();
 		reqAttrs.add(RequiredAttrType.Experiment);
@@ -34,15 +37,23 @@ public class DataTableServerResource extends ServerResource implements
 		reqAttrsWithRate.addAll(reqAttrs);
 		reqAttrsWithRate.add(RequiredAttrType.Rate);
 	}
-
 	/* (non-Javadoc)
 	 * @see org.restlet.resource.Resource#doInit()
 	 */
 	@Override
 	protected void doInit() throws ResourceException {
 		this.extract = new AttributeExtraction(getRequest().getAttributes());
-		this.updates = (DataUpdateI) getContext().getAttributes().get("updatesI");
+		@SuppressWarnings("unchecked")
+		Provider<DataUpdateI> provider = (Provider<DataUpdateI>) getContext().getAttributes().get("updatesI");
+		this.updates = provider.get();
 		super.doInit();
+	}
+	
+	/**
+	 * @return the updates
+	 */
+	public DataUpdateI getUpdates() {
+		return updates;
 	}
 
 	@Override
@@ -58,6 +69,13 @@ public class DataTableServerResource extends ServerResource implements
 		updates.setExperiment(experiment);
 		updates.createTable(tbl, list);
 
+	}
+
+	/**
+	 * @param updates the updates to set
+	 */
+	public void setUpdates(DataUpdateI updates) {
+		this.updates = updates;
 	}
 
 	@Override

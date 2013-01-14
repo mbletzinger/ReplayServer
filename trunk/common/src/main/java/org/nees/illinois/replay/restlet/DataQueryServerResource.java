@@ -7,6 +7,7 @@ import java.util.Map;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.data.DataQueryI;
+import org.nees.illinois.replay.data.DataUpdateI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
@@ -19,30 +20,35 @@ import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
+import com.google.inject.Provider;
+
 public class DataQueryServerResource extends ServerResource implements
 		DataQueryResource {
 	private  DataQueryI dquery;
-	
-//	private final Logger log = LoggerFactory
-//			.getLogger(DataQueryServerResource.class);
-	
-	private AttributeExtraction extract;
 
+	private AttributeExtraction extract;
 
 	public DataQueryServerResource() {
 		super();
 		
 	}
-
+	
+//	private final Logger log = LoggerFactory
+//			.getLogger(DataQueryServerResource.class);
+	
 	/* (non-Javadoc)
 	 * @see org.restlet.resource.Resource#doInit()
 	 */
 	@Override
 	protected void doInit() throws ResourceException {
+		@SuppressWarnings("unchecked")
+		Provider<DataQueryI> provider = (Provider<DataQueryI>) getContext().getAttributes().get("queryI");
+		dquery = provider.get();
 		extract = new AttributeExtraction(getRequest().getAttributes());
 		super.doInit();
 	}
-	
+
+
 	@Override
 	@Get("bin")
 	public Representation getBin() {
@@ -50,7 +56,7 @@ public class DataQueryServerResource extends ServerResource implements
 		DoubleMatrix2Representation dbl2rep = new DoubleMatrix2Representation(data.getData());
 		return dbl2rep.getRep();
 	}
-	
+
 	private DoubleMatrix getDm() {
 		final List<RequiredAttrType> reqAttrs= new ArrayList<AttributeExtraction.RequiredAttrType>();
 
@@ -99,6 +105,20 @@ public class DataQueryServerResource extends ServerResource implements
 
 	}
 	
+	/**
+	 * @return the dquery
+	 */
+	public DataQueryI getDquery() {
+		return dquery;
+	}
+	
+	@Override
+	@Get("txt")
+	public Representation getText() {
+		DoubleMatrix data = getDm();
+		return new StringRepresentation(data.toString().toCharArray());
+	}
+	
 	@Override
 	@Delete
 	public void removeList(String query) {
@@ -125,11 +145,11 @@ public class DataQueryServerResource extends ServerResource implements
 		this.dquery.setQuery(query, list);
 	}
 
-	@Override
-	@Get("txt")
-	public Representation getText() {
-		DoubleMatrix data = getDm();
-		return new StringRepresentation(data.toString().toCharArray());
+	/**
+	 * @param dquery the dquery to set
+	 */
+	public void setDquery(DataQueryI dquery) {
+		this.dquery = dquery;
 	}
 
 }
