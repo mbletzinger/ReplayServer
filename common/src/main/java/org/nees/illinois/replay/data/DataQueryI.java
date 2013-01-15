@@ -2,6 +2,8 @@ package org.nees.illinois.replay.data;
 
 import java.util.List;
 
+import org.nees.illinois.replay.registries.ExperimentRegistries;
+
 
 public interface DataQueryI {
 
@@ -19,7 +21,7 @@ public interface DataQueryI {
 
 	public boolean isQuery(String name);
 
-	public void setExperiment(String experiment);
+	public void setExperiment(ExperimentRegistries experiment);
 
-	public String getExperiment();
+	public ExperimentRegistries getExperiment();
 }

@@ -1,5 +1,6 @@
 package org.nees.illinois.replay.restlet;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,10 @@ public class AttributeExtraction {
 		this.reqAttrs = reqAttrs;
 	}
 
+	public String getExperiment() {
+		return extractString("experiment");
+	}
+	
 	public void extract(List<RequiredAttrType> required) {
 		boolean isStepNumber = required.contains(RequiredAttrType.StepNumber);
 		for (RequiredAttrType aType : required) {

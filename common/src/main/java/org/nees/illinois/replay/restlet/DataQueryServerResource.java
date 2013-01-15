@@ -7,10 +7,12 @@ import java.util.Map;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.data.DataQueryI;
-import org.nees.illinois.replay.data.DataUpdateI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
+import org.nees.illinois.replay.registries.ExperimentModule;
+import org.nees.illinois.replay.registries.ExperimentRegistries;
+import org.nees.illinois.replay.registries.ExperimentSessionManager;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -20,6 +22,7 @@ import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
+import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 public class DataQueryServerResource extends ServerResource implements
@@ -27,9 +30,12 @@ public class DataQueryServerResource extends ServerResource implements
 	private  DataQueryI dquery;
 
 	private AttributeExtraction extract;
+	private final ExperimentModule guiceMod;
 
-	public DataQueryServerResource() {
+	@Inject
+	public DataQueryServerResource(ExperimentModule guiceMod) {
 		super();
+		this.guiceMod = guiceMod; 
 		
 	}
 	
@@ -45,6 +51,9 @@ public class DataQueryServerResource extends ServerResource implements
 		Provider<DataQueryI> provider = (Provider<DataQueryI>) getContext().getAttributes().get("queryI");
 		dquery = provider.get();
 		extract = new AttributeExtraction(getRequest().getAttributes());
+		ExperimentSessionManager esm = new ExperimentSessionManager(getContext().getAttributes(), guiceMod);
+		ExperimentRegistries er = esm.getRegistries();
+		dquery.setExperiment(er);
 		super.doInit();
 	}
 
@@ -60,16 +69,12 @@ public class DataQueryServerResource extends ServerResource implements
 	private DoubleMatrix getDm() {
 		final List<RequiredAttrType> reqAttrs= new ArrayList<AttributeExtraction.RequiredAttrType>();
 
-		reqAttrs.add(RequiredAttrType.Experiment);
 		reqAttrs.add(RequiredAttrType.Rate);
 		reqAttrs.add(RequiredAttrType.Query);
 		extract.extract(reqAttrs);
 		Map<RequiredAttrType,Object> attrs = extract.getAttrs();
 		RateType rate = (RateType) attrs.get(RequiredAttrType.Rate);
-		String experiment = (String) attrs.get(RequiredAttrType.Experiment);
 		String query = (String) attrs.get(RequiredAttrType.Query);
-
-		dquery.setExperiment(experiment);
 
 		reqAttrs.clear();
 		reqAttrs.add(RequiredAttrType.Start);
@@ -131,16 +136,13 @@ public class DataQueryServerResource extends ServerResource implements
 	public void set(Representation channels) {
 		final List<RequiredAttrType> reqAttrs= new ArrayList<AttributeExtraction.RequiredAttrType>();
 
-		reqAttrs.add(RequiredAttrType.Experiment);
 		reqAttrs.add(RequiredAttrType.Query);
 		extract.extract(reqAttrs);
 		Map<RequiredAttrType,Object> attrs = extract.getAttrs();
-		String experiment = (String) attrs.get(RequiredAttrType.Experiment);
 		String query = (String) attrs.get(RequiredAttrType.Query);
 
 		Representation2ChannelList rep2cl = new Representation2ChannelList(
 				channels);
-		dquery.setExperiment(experiment);
 		List<String> list = rep2cl.getIl2cl().getChannels();
 		this.dquery.setQuery(query, list);
 	}

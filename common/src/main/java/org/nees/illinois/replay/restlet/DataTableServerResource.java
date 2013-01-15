@@ -10,6 +10,9 @@ import org.nees.illinois.replay.data.DataUpdateI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
+import org.nees.illinois.replay.registries.ExperimentModule;
+import org.nees.illinois.replay.registries.ExperimentRegistries;
+import org.nees.illinois.replay.registries.ExperimentSessionManager;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
@@ -17,6 +20,7 @@ import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
+import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 public class DataTableServerResource extends ServerResource implements
@@ -30,12 +34,15 @@ public class DataTableServerResource extends ServerResource implements
 
 	private final List<RequiredAttrType> reqAttrsWithRate = new ArrayList<AttributeExtraction.RequiredAttrType>();
 	private DataUpdateI updates;
-	public DataTableServerResource() {
+	private final ExperimentModule guiceMod;
+
+	@Inject
+	public DataTableServerResource(ExperimentModule guiceMod) {
 		super();
-		reqAttrs.add(RequiredAttrType.Experiment);
 		reqAttrs.add(RequiredAttrType.Table);
 		reqAttrsWithRate.addAll(reqAttrs);
 		reqAttrsWithRate.add(RequiredAttrType.Rate);
+		this.guiceMod = guiceMod; 
 	}
 	/* (non-Javadoc)
 	 * @see org.restlet.resource.Resource#doInit()
@@ -46,6 +53,9 @@ public class DataTableServerResource extends ServerResource implements
 		@SuppressWarnings("unchecked")
 		Provider<DataUpdateI> provider = (Provider<DataUpdateI>) getContext().getAttributes().get("updatesI");
 		this.updates = provider.get();
+		ExperimentSessionManager esm = new ExperimentSessionManager(getContext().getAttributes(), guiceMod);
+		ExperimentRegistries er = esm.getRegistries();
+		updates.setExperiment(er);
 		super.doInit();
 	}
 	
@@ -65,8 +75,6 @@ public class DataTableServerResource extends ServerResource implements
 		extract.extract(reqAttrs);
 		Map<RequiredAttrType,Object> attrs = extract.getAttrs();
 		TableType tbl = (TableType) attrs.get(RequiredAttrType.Table);
-		String experiment = (String) attrs.get(RequiredAttrType.Experiment);
-		updates.setExperiment(experiment);
 		updates.createTable(tbl, list);
 
 	}
@@ -89,8 +97,6 @@ public class DataTableServerResource extends ServerResource implements
 		Map<RequiredAttrType,Object> attrs = extract.getAttrs();
 		TableType tbl = (TableType) attrs.get(RequiredAttrType.Table);
 		RateType rate = (RateType) attrs.get(RequiredAttrType.Rate);
-		String experiment = (String) attrs.get(RequiredAttrType.Experiment);
-		updates.setExperiment(experiment);
 		updates.update(tbl, rate, dm.getData());
 	}
 

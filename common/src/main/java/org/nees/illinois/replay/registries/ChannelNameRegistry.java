@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.data;
+package org.nees.illinois.replay.registries;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import org.nees.illinois.replay.data.TableType;
 
 
 public class ChannelNameRegistry {
