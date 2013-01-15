@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.db.statement.ChannelInsertStatement;
 import org.nees.illinois.replay.db.statement.DbStatement;
+import org.nees.illinois.replay.registries.ChannelNameRegistry;
 
 public class DbChannelNameSynch {
 	private final String channelTable = "CHANNEL_NAMES";

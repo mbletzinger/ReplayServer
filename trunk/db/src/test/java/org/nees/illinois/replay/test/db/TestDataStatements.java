@@ -1,25 +1,31 @@
 package org.nees.illinois.replay.test.db;
 
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
-import org.testng.annotations.BeforeMethod;
-import org.testng.AssertJUnit;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
-import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.Mtx2Str;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
-import org.nees.illinois.replay.db.DerbyPools;
 import org.nees.illinois.replay.db.data.DbDataUpdates;
 import org.nees.illinois.replay.db.statement.DbStatement;
 import org.nees.illinois.replay.db.statement.DbTableSpecs;
+import org.nees.illinois.replay.registries.ChannelLookups;
+import org.nees.illinois.replay.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.registries.ExperimentModule;
+import org.nees.illinois.replay.registries.ExperimentRegistries;
+import org.nees.illinois.replay.test.db.utils.DbTestsModule;
 import org.nees.illinois.replay.test.utils.ChannelLists;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.testng.AssertJUnit;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 public class TestDataStatements {
 	private DbPools dbc;
@@ -30,25 +36,32 @@ public class TestDataStatements {
 	private ChannelNameRegistry cnr = new ChannelNameRegistry();
 
 	private final Logger log = Logger.getLogger(TestDataStatements.class);
-	private final String experiment = "HybridMasonry1";
+	private ExperimentRegistries er;
+	private DbDataUpdates dbu;
+	private ExperimentModule guiceMod = new DbTestsModule();
+	
 
 	@BeforeMethod
 	public void setUp() throws Exception {
-		dbc = new DerbyPools();
 		omContData = DataGenerator.initData(RateType.CONT, 20, 6, 0.5);
 		daqContData = DataGenerator.initData(RateType.CONT, 15, 5, 1);
 		omStepData = DataGenerator.initData(RateType.STEP, 20, 6, 0.5);
 		daqStepData = DataGenerator.initData(RateType.STEP, 15, 5,1);
+		guiceMod.setExperiment("HybridMasonry1");
+		Injector injector = Guice.createInjector(guiceMod);
+		er = injector.getInstance(ExperimentRegistries.class);
+		er.setLookups(injector.getProvider(ChannelLookups.class));
+		dbu = injector.getInstance(DbDataUpdates.class); 
+		dbu.setExperiment(er);
+		dbc = dbu.getPools();
 	}
 
 	@AfterMethod
 	public void tearDown() throws Exception {
 
-		DbDataUpdates dbu = new DbDataUpdates(dbc,cnr);
-		dbu.setExperiment(experiment);
 		dbu.removeTable(TableType.OM);
 		dbu.removeTable(TableType.DAQ);
-		DbStatement dbSt = dbc.createDbStatement(experiment);
+		DbStatement dbSt = dbc.createDbStatement(er.getExperiment());
 		dbSt.close();
 		dbc.close();
 	}
@@ -56,9 +69,7 @@ public class TestDataStatements {
 	@Test
 	public void testContDataUpdate() {
 		ChannelLists cl = new ChannelLists();
-		DbDataUpdates dbu = new DbDataUpdates(dbc,cnr);
-		dbu.setExperiment(experiment);
-		DbTableSpecs specs = new DbTableSpecs(cnr, experiment);
+		DbTableSpecs specs = new DbTableSpecs(cnr, er.getExperiment());
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		// log.debug("Adding data " +
 		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
@@ -79,9 +90,7 @@ public class TestDataStatements {
 	@Test
 	public void testStepDataUpdate() {
 		ChannelLists cl = new ChannelLists();
-		DbDataUpdates dbu = new DbDataUpdates(dbc, cnr);
-		dbu.setExperiment(experiment);
-		DbTableSpecs specs = new DbTableSpecs(cnr, experiment);
+		DbTableSpecs specs = new DbTableSpecs(cnr, er.getExperiment());
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		 log.debug("Adding data " +
 		 Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
@@ -100,7 +109,7 @@ public class TestDataStatements {
 	}
 
 	private void queryData(String tblName, double[][] expected) {
-		DbStatement dbSt = dbc.createDbStatement(experiment);
+		DbStatement dbSt = dbc.createDbStatement(er.getExperiment());
 		ResultSet rs = dbSt.query("SELECT * FROM " + tblName);
 		int columns = 0;
 		try {

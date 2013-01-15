@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.statement.DbTableSpecs;
+import org.nees.illinois.replay.registries.ChannelNameRegistry;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;

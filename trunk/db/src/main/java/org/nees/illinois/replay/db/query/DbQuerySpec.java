@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.illinois.replay.data.ChannelUpdates;
-import org.nees.illinois.replay.data.QuerySpec;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.statement.DbTableSpecs;
+import org.nees.illinois.replay.registries.ChannelLookups;
+import org.nees.illinois.replay.registries.QuerySpec;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DbQuerySpec extends QuerySpec {
 	private int[] query2selectMap;
@@ -18,7 +20,7 @@ public class DbQuerySpec extends QuerySpec {
 	private final List<DbSelect> select = new ArrayList<DbSelect>();
 	private final List<String> selectOrder = new ArrayList<String>();
 	private final DbTableSpecs specs;
-
+	private final Logger log = LoggerFactory.getLogger(DbQuerySpec.class);
 	public DbQuerySpec(List<String> channelOrder, String name,
 			DbTableSpecs specs, RateType rate) {
 		super(channelOrder, name, specs.getCnr(), rate);
@@ -29,6 +31,9 @@ public class DbQuerySpec extends QuerySpec {
 	private DbSelect createSelect(TableType table) {
 		List<String> sublist = new ArrayList<String>();
 		List<String> tableList = specs.getColumns(table);
+
+		log.debug("extracting selector order for " + table + " from" + tableList + " and " + queryOrder);
+
 		boolean empty = true;
 		for (String c : queryOrder) {
 			if (tableList.contains(c)) {
@@ -43,6 +48,7 @@ public class DbQuerySpec extends QuerySpec {
 
 		String tableName = specs.tableName(table, noc.getRate());
 		String result = "SELECT " + getHeaderQuery();
+		log.debug("selectOrder is " + sublist);
 		selectOrder.addAll(sublist);
 		for (String c : sublist) {
 			result += ", " + c;
@@ -140,7 +146,7 @@ public class DbQuerySpec extends QuerySpec {
 	/**
 	 * @return the creation
 	 */
-	public ChannelUpdates getSpecs() {
+	public ChannelLookups getSpecs() {
 		return specs;
 	}
 }
