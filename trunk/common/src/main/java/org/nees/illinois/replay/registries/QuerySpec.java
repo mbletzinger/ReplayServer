@@ -1,7 +1,10 @@
-package org.nees.illinois.replay.data;
+package org.nees.illinois.replay.registries;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.nees.illinois.replay.data.NumberOfColumns;
+import org.nees.illinois.replay.data.RateType;
 
 
 public class QuerySpec {

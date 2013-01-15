@@ -1,15 +1,22 @@
-package org.nees.illinois.replay.data;
+package org.nees.illinois.replay.registries;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nees.illinois.replay.data.TableType;
 
 
-public class ChannelUpdates {
+
+public class ChannelLookups {
 
 	private final ChannelNameRegistry cnr;
 
-	public ChannelUpdates(ChannelNameRegistry cnr) {
+	
+	public ChannelLookups() {
+		cnr = new ChannelNameRegistry();
+	}
+
+	public ChannelLookups(ChannelNameRegistry cnr) {
 		super();
 		this.cnr = cnr;
 	}
@@ -28,6 +35,12 @@ public class ChannelUpdates {
 			result.add(dc);
 		}
 		return result;
+	}
+	
+	public ChannelLookups clone() {
+		ChannelNameRegistry clone = new ChannelNameRegistry();
+		clone.init(cnr.getClone(), cnr.getAfterLastChannel());
+		return new ChannelLookups(clone);
 	}
 
 }

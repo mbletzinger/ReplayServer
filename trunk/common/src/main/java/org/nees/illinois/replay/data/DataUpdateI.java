@@ -2,6 +2,8 @@ package org.nees.illinois.replay.data;
 
 import java.util.List;
 
+import org.nees.illinois.replay.registries.ExperimentRegistries;
+
 public interface DataUpdateI {
 	public boolean createTable(TableType table, List<String> channels);
 
@@ -9,7 +11,7 @@ public interface DataUpdateI {
 
 	public boolean update(TableType table, RateType rate, double[][] data);
 
-	public void setExperiment(String experiment);
+	public void setExperiment(ExperimentRegistries experiment);
 
-	public String getExperiment();
+	public ExperimentRegistries getExperiment();
 }
