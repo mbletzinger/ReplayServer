@@ -5,21 +5,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.illinois.replay.data.ChannelNameRegistry;
-import org.nees.illinois.replay.data.ChannelUpdates;
 import org.nees.illinois.replay.data.NumberOfColumns;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
+import org.nees.illinois.replay.registries.ChannelLookups;
+import org.nees.illinois.replay.registries.ChannelNameRegistry;
 
-public class DbTableSpecs extends ChannelUpdates {
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
+public class DbTableSpecs extends ChannelLookups {
+
 	private final Map<TableType, List<String>> columns = new HashMap<TableType, List<String>>();
 
 	private String dbname;
-
 	public DbTableSpecs(ChannelNameRegistry cnr, String dbname) {
 		super(cnr);
 		this.dbname = dbname;
 	}
+
+	@Inject
+	public DbTableSpecs(@Named("dbname")String dbname) {
+		super();
+		this.dbname = dbname;
+	}
+
 	private String addHeaders(RateType rate) {
 		NumberOfColumns noc = new NumberOfColumns(1, rate);
 		String result = "";
@@ -35,6 +45,20 @@ public class DbTableSpecs extends ChannelUpdates {
 		List<String> list = new ArrayList<String>();
 		list.addAll(lookupChannels(table, channels));
 		columns.put(table, list);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.nees.illinois.replay.registries.ChannelLookups#clone()
+	 */
+	@Override
+	public ChannelLookups clone() {
+		ChannelNameRegistry clone = new ChannelNameRegistry();
+		clone.init(getCnr().getClone(), getCnr().getAfterLastChannel());
+		DbTableSpecs result = new DbTableSpecs(clone, dbname);
+		result.columns.putAll(columns);
+		return result;
 	}
 
 	public String createTableStatement(TableType table, RateType rate) {
