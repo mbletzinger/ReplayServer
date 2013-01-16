@@ -1,12 +1,12 @@
-package org.nees.mustsim.replay.test.data;
+package org.nees.illinois.replay.test.data;
 
 import java.util.List;
 
-import org.nees.illinois.replay.data.ChannelNameRegistry;
-import org.nees.illinois.replay.data.ChannelUpdates;
 import org.nees.illinois.replay.data.DataUpdateI;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
+import org.nees.illinois.replay.registries.ChannelLookups;
+import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,30 +14,36 @@ import com.google.inject.Inject;
 
 public class TestDataUpdates implements DataUpdateI {
 
-	private final ChannelUpdates cu;
+	private ChannelLookups cu;
 	
 	private double[][] data;
 
-	private String experiment;
+	private ExperimentRegistries er;
 
 	private final Logger log = LoggerFactory.getLogger(TestDataUpdates.class);
 
 	@Inject
-	public TestDataUpdates(ChannelNameRegistry cnr) {
+	public TestDataUpdates() {
 		super();
-		this.cu = new ChannelUpdates(cnr);
 	}
 
 	@Override
 	public boolean createTable(TableType table, List<String> channels) {
 
-		if(experiment == null) {// Check to make sure restlet code sets the experiment name
+		this.cu = er.getLookups();
+
+		if(er == null) {// Check to make sure restlet code sets the experiment name
+			log.error("Experiment is not set");
+			return false;
+		}
+
+		if(er.getExperiment() == null) {// Check to make sure restlet code sets the experiment name
 			log.error("Experiment name is not set");
 			return false;
 		}
 		
 		// Force a runtime error
-		if(experiment.contains("ERR")) {
+		if(er.getExperiment().contains("ERR")) {
 			throw new RuntimeException("Help me I died");
 		}
 
@@ -48,7 +54,7 @@ public class TestDataUpdates implements DataUpdateI {
 	/**
 	 * @return the cu
 	 */
-	public ChannelUpdates getCu() {
+	public ChannelLookups getCu() {
 		return cu;
 	}
 
@@ -60,8 +66,8 @@ public class TestDataUpdates implements DataUpdateI {
 	}
 
 	@Override
-	public String getExperiment() {
-		return experiment;
+	public ExperimentRegistries getExperiment() {
+		return er;
 	}
 
 	@Override
@@ -70,18 +76,18 @@ public class TestDataUpdates implements DataUpdateI {
 	}
 
 	@Override
-	public void setExperiment(String experiment) {
-		this.experiment = experiment;
+	public void setExperiment(ExperimentRegistries er) {
+		this.er = er;
 	}
 
 	@Override
 	public boolean update(TableType table, RateType rate, double[][] data) {
-		if(experiment == null) {// Check to make sure restlet code sets the experiment name
+		if(er == null) {// Check to make sure restlet code sets the experiment name
 			log.error("Experiment name is not set");
 			return false;
 		}
 		// Force a runtime error
-		if(experiment.contains("ERR")) {
+		if(er.getExperiment().contains("ERR")) {
 			throw new RuntimeException("Help me I died");
 		}
 		this.data = data;
