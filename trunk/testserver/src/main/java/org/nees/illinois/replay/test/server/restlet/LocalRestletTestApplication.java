@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test.server.restlet;
+package org.nees.illinois.replay.test.server.restlet;
 
 import org.nees.illinois.replay.restlet.DataQueryServerResource;
 import org.nees.illinois.replay.restlet.DataTableServerResource;
