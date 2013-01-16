@@ -20,45 +20,49 @@ import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
-import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 public class DataTableServerResource extends ServerResource implements
 		DataTableResource {
-//	private final Logger log = LoggerFactory
-//			.getLogger(DataTableServerResource.class);
+	// private final Logger log = LoggerFactory
+	// .getLogger(DataTableServerResource.class);
 
-	private  AttributeExtraction extract;
+	private AttributeExtraction extract;
 
 	private final List<RequiredAttrType> reqAttrs = new ArrayList<AttributeExtraction.RequiredAttrType>();
 
 	private final List<RequiredAttrType> reqAttrsWithRate = new ArrayList<AttributeExtraction.RequiredAttrType>();
 	private DataUpdateI updates;
-	private final ExperimentModule guiceMod;
+	private  ExperimentModule guiceMod;
 
-	@Inject
-	public DataTableServerResource(ExperimentModule guiceMod) {
+
+	public DataTableServerResource() {
 		super();
 		reqAttrs.add(RequiredAttrType.Table);
 		reqAttrsWithRate.addAll(reqAttrs);
 		reqAttrsWithRate.add(RequiredAttrType.Rate);
-		this.guiceMod = guiceMod; 
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.restlet.resource.Resource#doInit()
 	 */
 	@Override
 	protected void doInit() throws ResourceException {
 		this.extract = new AttributeExtraction(getRequest().getAttributes());
 		@SuppressWarnings("unchecked")
-		Provider<DataUpdateI> provider = (Provider<DataUpdateI>) getContext().getAttributes().get("updatesI");
+		Provider<DataUpdateI> provider = (Provider<DataUpdateI>) getContext()
+				.getAttributes().get("updatesI");
 		this.updates = provider.get();
-		ExperimentSessionManager esm = new ExperimentSessionManager(getContext().getAttributes(), guiceMod);
+		guiceMod = (ExperimentModule) getContext().getAttributes().get("guiceMod");
+		ExperimentSessionManager esm = new ExperimentSessionManager(
+				getContext().getAttributes(), getRequestAttributes(), guiceMod);
 		ExperimentRegistries er = esm.getRegistries();
 		updates.setExperiment(er);
 		super.doInit();
 	}
-	
+
 	/**
 	 * @return the updates
 	 */
@@ -73,14 +77,15 @@ public class DataTableServerResource extends ServerResource implements
 				channels);
 		List<String> list = rep2cl.getIl2cl().getChannels();
 		extract.extract(reqAttrs);
-		Map<RequiredAttrType,Object> attrs = extract.getAttrs();
+		Map<RequiredAttrType, Object> attrs = extract.getAttrs();
 		TableType tbl = (TableType) attrs.get(RequiredAttrType.Table);
 		updates.createTable(tbl, list);
 
 	}
 
 	/**
-	 * @param updates the updates to set
+	 * @param updates
+	 *            the updates to set
 	 */
 	public void setUpdates(DataUpdateI updates) {
 		this.updates = updates;
@@ -94,7 +99,7 @@ public class DataTableServerResource extends ServerResource implements
 		List<List<Double>> doubles = rep2dbl.getIn2dm().getNumbers();
 		DoubleMatrix dm = new DoubleMatrix(doubles, doubles.get(0).size());
 		extract.extract(reqAttrsWithRate);
-		Map<RequiredAttrType,Object> attrs = extract.getAttrs();
+		Map<RequiredAttrType, Object> attrs = extract.getAttrs();
 		TableType tbl = (TableType) attrs.get(RequiredAttrType.Table);
 		RateType rate = (RateType) attrs.get(RequiredAttrType.Rate);
 		updates.update(tbl, rate, dm.getData());

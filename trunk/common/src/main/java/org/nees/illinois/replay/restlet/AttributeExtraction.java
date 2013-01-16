@@ -20,13 +20,14 @@ public class AttributeExtraction {
 	};
 
 	final Map<RequiredAttrType, Object> attrs = new HashMap<RequiredAttrType, Object>();
-	final ConcurrentMap<String, Object> reqAttrs;
+	final Map<String, Object> reqAttrs;
 	private final Logger log = LoggerFactory
 			.getLogger(AttributeExtraction.class);
 
-	public AttributeExtraction(ConcurrentMap<String, Object> reqAttrs) {
+	public AttributeExtraction(Map<String, Object> reqAttrs) {
 		super();
 		this.reqAttrs = reqAttrs;
+		log.debug("Req attributes are " + reqAttrs);
 	}
 
 	public String getExperiment() {

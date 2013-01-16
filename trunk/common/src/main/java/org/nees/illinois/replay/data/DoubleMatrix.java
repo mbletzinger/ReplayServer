@@ -11,7 +11,7 @@ public class DoubleMatrix {
 
 	private final boolean[][] isNull;
 	
-	private final Logger log = LoggerFactory.getLogger(DoubleMatrix.class);
+//	private final Logger log = LoggerFactory.getLogger(DoubleMatrix.class);
 
 	public DoubleMatrix(List<List<Double>> idata, int columnSize) {
 		data = new double[idata.size()][columnSize];
@@ -20,7 +20,7 @@ public class DoubleMatrix {
 		for (List<Double> row : idata) {
 			int c = 0;
 			for (Double col : row) {
-				log.debug("Filling data[" + r + "][" + c + "]");
+//				log.debug("Filling data[" + r + "][" + c + "]");
 				if (col != null) {
 					data[r][c] = col;
 				} else {
