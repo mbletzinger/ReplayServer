@@ -28,45 +28,26 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.nees.mustsim.replay.test.server.utils.example;
+package org.nees.illinois.replay.test.server.utils.example;
 
-import org.restlet.Component;
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+public class Contact {
 
-/**
- * RESTful component containing the mail server application.
- */
-public class MailServerComponent extends Component {
+    private String profileRef;
 
-    /**
-     * Launches the mail server component.
-     * 
-     * @param args
-     *            The arguments.
-     * @throws Exception
-     */
-    public static void main(String[] args) throws Exception {
-        new MailServerComponent().start();
+    public Contact() {
     }
 
-    /**
-     * Constructor.
-     * 
-     * @throws Exception
-     */
-    public MailServerComponent() throws Exception {
-        // Set basic properties
-        setName("RESTful Mail Server component");
-        setDescription("Example for 'Restlet in Action' book");
-        setOwner("Noelios Technologies");
-        setAuthor("The Restlet Team");
-
-        // Adds a HTTP server connector
-        Server server = getServers().add(Protocol.HTTP, 8111);
-        server.getContext().getParameters().set("tracing", "false");
-
-        // Attach the application to the default virtual host
-        getDefaultHost().attachDefault(new MailServerApplication());
+    public Contact(String profileRef) {
+        super();
+        this.profileRef = profileRef;
     }
+
+    public String getProfileRef() {
+        return profileRef;
+    }
+
+    public void setProfileRef(String login) {
+        this.profileRef = login;
+    }
+
 }
