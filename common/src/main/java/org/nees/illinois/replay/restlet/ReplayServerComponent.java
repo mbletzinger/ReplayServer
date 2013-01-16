@@ -2,6 +2,7 @@ package org.nees.illinois.replay.restlet;
 
 import org.nees.illinois.replay.data.DataQueryI;
 import org.nees.illinois.replay.data.DataUpdateI;
+import org.nees.illinois.replay.registries.ExperimentModule;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
@@ -18,7 +19,7 @@ public class ReplayServerComponent extends Component {
 
 	@Inject
 	public ReplayServerComponent(HostInfo hostinfo,
-			ReplayServerApplication app, Provider<DataUpdateI> tdu, Provider<DataQueryI> tdq) {
+			ReplayServerApplication app, Provider<DataUpdateI> tdu, Provider<DataQueryI> tdq, ExperimentModule guiceMod) {
 		super();
 		this.hostinfo = hostinfo;
 		// Configure the log service
@@ -37,6 +38,7 @@ public class ReplayServerComponent extends Component {
 		Context cxt = getContext().createChildContext();
 		cxt.getAttributes().put("updatesI", tdu);
 		cxt.getAttributes().put("queryI", tdq);
+		cxt.getAttributes().put("guiceMod", guiceMod);
 		if (hostinfo.isTracing()) {
 			cxt.getParameters().set("tracing", "true");
 		}

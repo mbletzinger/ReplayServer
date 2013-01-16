@@ -22,7 +22,6 @@ import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
-import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 public class DataQueryServerResource extends ServerResource implements
@@ -30,12 +29,10 @@ public class DataQueryServerResource extends ServerResource implements
 	private  DataQueryI dquery;
 
 	private AttributeExtraction extract;
-	private final ExperimentModule guiceMod;
+	private  ExperimentModule guiceMod;
 
-	@Inject
-	public DataQueryServerResource(ExperimentModule guiceMod) {
+	public DataQueryServerResource() {
 		super();
-		this.guiceMod = guiceMod; 
 		
 	}
 	
@@ -50,8 +47,10 @@ public class DataQueryServerResource extends ServerResource implements
 		@SuppressWarnings("unchecked")
 		Provider<DataQueryI> provider = (Provider<DataQueryI>) getContext().getAttributes().get("queryI");
 		dquery = provider.get();
+		guiceMod = (ExperimentModule) getContext().getAttributes().get("guiceMod");
 		extract = new AttributeExtraction(getRequest().getAttributes());
-		ExperimentSessionManager esm = new ExperimentSessionManager(getContext().getAttributes(), guiceMod);
+		ExperimentSessionManager esm = new ExperimentSessionManager(
+				getContext().getAttributes(), getRequestAttributes(), guiceMod);
 		ExperimentRegistries er = esm.getRegistries();
 		dquery.setExperiment(er);
 		super.doInit();
