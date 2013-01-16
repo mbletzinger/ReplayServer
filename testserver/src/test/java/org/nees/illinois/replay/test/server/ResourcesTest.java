@@ -1,43 +1,63 @@
-package org.nees.mustsim.replay.test.server;
+package org.nees.illinois.replay.test.server;
 
 import static org.testng.AssertJUnit.assertTrue;
-import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.nees.illinois.replay.conversions.ChannelList2Representation;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
-import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
+import org.nees.illinois.replay.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.registries.ExperimentModule;
+import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.restlet.DataQueryServerResource;
 import org.nees.illinois.replay.restlet.DataTableServerResource;
+import org.nees.illinois.replay.test.data.TestDataQuery;
+import org.nees.illinois.replay.test.data.TestDataUpdates;
+import org.nees.illinois.replay.test.server.guice.ResourcesTestModule;
 import org.nees.illinois.replay.test.utils.ChannelLists;
-import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
-import org.nees.mustsim.replay.test.data.TestDataQuery;
-import org.nees.mustsim.replay.test.data.TestDataUpdates;
+import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Method;
 import org.testng.Assert;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Provider;
 @Test(groups = { "resources-test" })
 public class ResourcesTest {
 //	private final Logger log = LoggerFactory
 //			.getLogger(ResourcesTest.class);
+	private Provider<TestDataUpdates> tdu;
+	private Provider<TestDataQuery> tdq;
+	private DataTableServerResource dtsR;
+	private DataQueryServerResource dqsR;
+	private ExperimentModule guiceMod;
 
+	@BeforeTest
+	public void setup() {
+		Injector injector = Guice.createInjector(new ResourcesTestModule());
+		tdu = injector.getProvider(TestDataUpdates.class);
+		tdq = injector.getProvider(TestDataQuery.class);
+		dtsR = injector.getInstance(DataTableServerResource.class);
+		dqsR = injector.getInstance(DataQueryServerResource.class);
+		guiceMod = injector.getInstance(ExperimentModule.class);
+		
+	}
 	@Test
 	public void testResourcesOm() {
-		ChannelNameRegistry actualCnr = new ChannelNameRegistry();
 		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
-		TestDataUpdates tdu = new TestDataUpdates(actualCnr);
-		DataTableServerResource dtsR = new DataTableServerResource();
 		Context cxt = new Context();
 		cxt.getAttributes().put("updatesI", tdu);
+		cxt.getAttributes().put("guiceMod", guiceMod);
 
 		ChannelLists cl = new ChannelLists();
 		List<String> channels = cl.getChannels(ChannelListType.OM);
@@ -57,7 +77,9 @@ public class ResourcesTest {
 		dtsR.init(cxt, req, resp);
 		dtsR.handle();
 		assertTrue(resp.getStatus().isSuccess());
-		AssertJUnit.assertEquals(expectedCnr.toString(), actualCnr.toString());
+		cxt = dtsR.getContext();
+		ExperimentRegistries er = (ExperimentRegistries) cxt.getAttributes().get("HybridMasonry1.registries");
+		Assert.assertEquals(er.getLookups().getCnr().toString(), expectedCnr.toString());
 
 		int columns = channels.size();
 		double[][] dataD = DataGenerator.initData(RateType.CONT, 20, columns,
@@ -76,7 +98,7 @@ public class ResourcesTest {
 		dtsR.init(cxt, req, resp);
 		dtsR.handle();
 		assertTrue(resp.getStatus().isSuccess());
-		DataGenerator.compareData(dataD, tdu.getData());
+		DataGenerator.compareData(dataD, ((TestDataUpdates)dtsR.getUpdates()).getData());
 
 		dataD = DataGenerator.initData(RateType.STEP, 15, columns, 0.02);
 		dm2rep = new DoubleMatrix2Representation(dataD);
@@ -92,17 +114,15 @@ public class ResourcesTest {
 		dtsR.init(cxt, req, resp);
 		dtsR.handle();
 		assertTrue(resp.getStatus().isSuccess());
-		DataGenerator.compareData(dataD, tdu.getData());
+		DataGenerator.compareData(dataD, ((TestDataUpdates)dtsR.getUpdates()).getData());
 	}
 
 	@Test
 	public void testResourcesDaq() {
-		ChannelNameRegistry actualCnr = new ChannelNameRegistry();
 		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
-		TestDataUpdates tdu = new TestDataUpdates(actualCnr);
-		DataTableServerResource dtsR = new DataTableServerResource();
 		Context cxt = new Context();
 		cxt.getAttributes().put("updatesI", tdu);
+		cxt.getAttributes().put("guiceMod", guiceMod);
 
 		ChannelLists cl = new ChannelLists();
 		List<String> channels = cl.getChannels(ChannelListType.DAQ);
@@ -122,7 +142,9 @@ public class ResourcesTest {
 		dtsR.init(cxt, req, resp);
 		dtsR.handle();
 		assertTrue(resp.getStatus().isSuccess());
-		AssertJUnit.assertEquals(expectedCnr.toString(), actualCnr.toString());
+		cxt = dtsR.getContext();
+		ExperimentRegistries er = (ExperimentRegistries) cxt.getAttributes().get("HybridMasonry1.registries");
+		Assert.assertEquals(er.getLookups().getCnr().toString(), expectedCnr.toString());
 
 		int columns = channels.size();
 		double[][] dataD = DataGenerator.initData(RateType.CONT, 20, columns,
@@ -141,7 +163,7 @@ public class ResourcesTest {
 		dtsR.init(cxt, req, resp);
 		dtsR.handle();
 		assertTrue(resp.getStatus().isSuccess());
-		DataGenerator.compareData(dataD, tdu.getData());
+		DataGenerator.compareData(dataD, ((TestDataUpdates)dtsR.getUpdates()).getData());
 
 		dataD = DataGenerator.initData(RateType.STEP, 15, columns, 0.02);
 		dm2rep = new DoubleMatrix2Representation(dataD);
@@ -157,20 +179,16 @@ public class ResourcesTest {
 		dtsR.init(cxt, req, resp);
 		dtsR.handle();
 		assertTrue(resp.getStatus().isSuccess());
-		DataGenerator.compareData(dataD, tdu.getData());
+		DataGenerator.compareData(dataD, ((TestDataUpdates)dtsR.getUpdates()).getData());
 	}
 
 	@Test
 	public void testQueryResource() {
-		ChannelNameRegistry actualCnr = new ChannelNameRegistry();
 		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
-		TestDataUpdates tdu = new TestDataUpdates(actualCnr);
-		TestDataQuery tdq = new TestDataQuery(actualCnr);
-		DataTableServerResource dtsR = new DataTableServerResource();
-		DataQueryServerResource dqsR = new DataQueryServerResource();
 		Context cxt = new Context();
 		cxt.getAttributes().put("updatesI", tdu);
 		cxt.getAttributes().put("queryI", tdq);
+		cxt.getAttributes().put("guiceMod", guiceMod);
 
 		ChannelLists cl = new ChannelLists();
 		List<String> channels = cl.getChannels(ChannelListType.OM);
@@ -189,6 +207,10 @@ public class ResourcesTest {
 		Response resp = new Response(req);
 		dtsR.init(cxt, req, resp);
 		dtsR.handle();
+		cxt = dtsR.getContext();
+		ExperimentRegistries er = (ExperimentRegistries) cxt.getAttributes().get("HybridMasonry1.registries");
+		Assert.assertEquals(er.getLookups().getCnr().toString(), expectedCnr.toString());
+
 		channels = cl.getChannels(ChannelListType.DAQ);
 		cl2rep = new ChannelList2Representation(channels);
 		for (String c : channels) {
@@ -204,6 +226,9 @@ public class ResourcesTest {
 		resp = new Response(req);
 		dtsR.init(cxt, req, resp);
 		dtsR.handle();
+		cxt = dtsR.getContext();
+		er = (ExperimentRegistries) cxt.getAttributes().get("HybridMasonry1.registries");
+		Assert.assertEquals( er.getLookups().getCnr().toString(), expectedCnr.toString());
 
 		channels = cl.getChannels(ChannelListType.Query1);
 		cl2rep = new ChannelList2Representation(channels);
@@ -218,8 +243,10 @@ public class ResourcesTest {
 		dqsR.init(cxt, req, resp);
 		dqsR.handle();
 		assertTrue(resp.getStatus().isSuccess());
-		AssertJUnit.assertNotNull(tdq.getContQr().getQuery("Test Query Number 1"));
-
+		cxt = dtsR.getContext();
+		 er = (ExperimentRegistries) cxt.getAttributes().get("HybridMasonry1.registries");
+		Assert.assertEquals( er.getLookups().getCnr().toString(), expectedCnr.toString());
+		Assert.assertNotNull(er.getQueries().getQuery("Test Query Number 1", RateType.STEP));
 		channels = cl.getChannels(ChannelListType.Query2);
 		cl2rep = new ChannelList2Representation(channels);
 		req = new Request(Method.PUT,
@@ -233,7 +260,7 @@ public class ResourcesTest {
 		dqsR.init(cxt, req, resp);
 		dqsR.handle();
 		assertTrue(resp.getStatus().isSuccess());
-		AssertJUnit.assertNotNull(tdq.getContQr().getQuery("Test Query Number 2"));
+		Assert.assertNotNull(er.getQueries().getQuery("Test Query Number 2", RateType.CONT));
 
 	}
 }

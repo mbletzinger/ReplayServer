@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test.server;
+package org.nees.illinois.replay.test.server;
 
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -17,12 +17,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.nees.illinois.replay.data.ChannelNameRegistry;
 import org.nees.illinois.replay.restlet.ReplayServerApplication;
 import org.nees.illinois.replay.restlet.ReplayServerComponent;
-import org.nees.mustsim.replay.test.data.TestDataQuery;
-import org.nees.mustsim.replay.test.data.TestDataUpdates;
-import org.nees.mustsim.replay.test.server.guice.UriTestModule;
+import org.nees.illinois.replay.test.data.TestDataQuery;
+import org.nees.illinois.replay.test.data.TestDataUpdates;
+import org.nees.illinois.replay.test.server.guice.UriTestModule;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -79,9 +78,8 @@ public class CoolUriTest {
 	@Test
 	public void testCoolUris() {
 
-		ChannelNameRegistry cnr = new ChannelNameRegistry();
-		TestDataUpdates tdu = new TestDataUpdates(cnr);
-		TestDataQuery tdq = new TestDataQuery(cnr);
+		TestDataUpdates tdu = new TestDataUpdates();
+		TestDataQuery tdq = new TestDataQuery();
 		Context cxt = new Context();
 		cxt.getAttributes().put("updatesI", tdu);
 		cxt.getAttributes().put("queryI", tdq);

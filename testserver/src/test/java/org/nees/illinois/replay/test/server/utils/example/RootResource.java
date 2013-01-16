@@ -28,26 +28,21 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.nees.mustsim.replay.test.server.utils.example;
+package org.nees.illinois.replay.test.server.utils.example;
 
-public class Contact {
+import org.restlet.resource.Get;
 
-    private String profileRef;
+/**
+ * Root resource.
+ */
+public interface RootResource {
 
-    public Contact() {
-    }
-
-    public Contact(String profileRef) {
-        super();
-        this.profileRef = profileRef;
-    }
-
-    public String getProfileRef() {
-        return profileRef;
-    }
-
-    public void setProfileRef(String login) {
-        this.profileRef = login;
-    }
+    /**
+     * Represents the application root with a welcome message.
+     * 
+     * @return The root representation.
+     */
+    @Get("txt")
+    public String represent();
 
 }

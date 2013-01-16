@@ -1,4 +1,4 @@
-package org.nees.mustsim.replay.test.server;
+package org.nees.illinois.replay.test.server;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
@@ -12,10 +12,10 @@ import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.restlet.ReplayServerComponent;
 import org.nees.illinois.replay.restlet.client.DataQueryClient;
 import org.nees.illinois.replay.restlet.client.DataTableClient;
+import org.nees.illinois.replay.test.server.guice.LocalRestletTestModule;
 import org.nees.illinois.replay.test.utils.ChannelLists;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
-import org.nees.mustsim.replay.test.server.guice.LocalRestletTestModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
