@@ -21,6 +21,7 @@ import org.nees.illinois.replay.restlet.ReplayServerApplication;
 import org.nees.illinois.replay.restlet.ReplayServerComponent;
 import org.nees.illinois.replay.test.data.TestDataQuery;
 import org.nees.illinois.replay.test.data.TestDataUpdates;
+import org.nees.illinois.replay.test.server.guice.LocalRestletTestModule;
 import org.nees.illinois.replay.test.server.guice.UriTestModule;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -35,6 +36,7 @@ import org.testng.annotations.Test;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.util.Modules;
 @Test(groups = { "cool-uritest" })
 public class CoolUriTest {
 	private final Logger log = LoggerFactory.getLogger(CoolUriTest.class);
@@ -51,7 +53,7 @@ public class CoolUriTest {
 		addrs.add("/test1/data/experiment/HybridMasonry1/table/OM");
 		addrs.add("/test1/data/experiment/HybridMasonry1/table/OM/rate/CONT");
 		// Instantiate our Restlet component
-		injector = Guice.createInjector(new UriTestModule());
+		injector = Guice.createInjector(Modules.override(new LocalRestletTestModule()).with(new UriTestModule()));
 		component = injector.getInstance(ReplayServerComponent.class);
 		try {
 			component.start();

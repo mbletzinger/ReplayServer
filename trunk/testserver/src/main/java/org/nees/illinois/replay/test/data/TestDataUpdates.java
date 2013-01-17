@@ -42,11 +42,6 @@ public class TestDataUpdates implements DataUpdateI {
 			return false;
 		}
 		
-		// Force a runtime error
-		if(er.getExperiment().contains("ERR")) {
-			throw new RuntimeException("Help me I died");
-		}
-
 		cu.lookupChannels(table, channels);
 		return true;
 	}
@@ -85,10 +80,6 @@ public class TestDataUpdates implements DataUpdateI {
 		if(er == null) {// Check to make sure restlet code sets the experiment name
 			log.error("Experiment name is not set");
 			return false;
-		}
-		// Force a runtime error
-		if(er.getExperiment().contains("ERR")) {
-			throw new RuntimeException("Help me I died");
 		}
 		this.data = data;
 		return true;

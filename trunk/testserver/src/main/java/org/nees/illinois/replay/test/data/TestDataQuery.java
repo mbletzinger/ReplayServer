@@ -69,10 +69,6 @@ public class TestDataQuery implements DataQueryI {
 			log.error("Experiment name is not set");
 			return null;
 		}
-		// Force a runtime error
-		if (er.getExperiment().contains("ERR")) {
-			throw new RuntimeException("Help me I died");
-		}
 		QuerySpec qs = er.getQueries().getQuery(name, rate);
 		double[][] data = DataGenerator.initData(rate, rows, qs.getNoc()
 				.getNumber(true), 0.5);
@@ -93,10 +89,6 @@ public class TestDataQuery implements DataQueryI {
 											// the experiment name
 			log.error("Experiment name is not set");
 			return false;
-		}
-		// Force a runtime error
-		if (er.getExperiment().contains("ERR")) {
-			throw new RuntimeException("Help me I died");
 		}
 		ChannelNameRegistry cnr = er.getCnrClone();
 		er.getQueries().setQuery(name, RateType.CONT,
