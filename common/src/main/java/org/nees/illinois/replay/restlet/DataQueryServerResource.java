@@ -13,7 +13,9 @@ import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.registries.ExperimentModule;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.registries.ExperimentSessionManager;
+import org.nees.illinois.replay.registries.QuerySpec;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Delete;
@@ -26,69 +28,80 @@ import com.google.inject.Provider;
 
 public class DataQueryServerResource extends ServerResource implements
 		DataQueryResource {
-	private  DataQueryI dquery;
+	private DataQueryI dquery;
 
 	private AttributeExtraction extract;
-	private  ExperimentModule guiceMod;
+	private ExperimentModule guiceMod;
+	private ExperimentRegistries er;
 
 	public DataQueryServerResource() {
 		super();
-		
+
 	}
-	
-//	private final Logger log = LoggerFactory
-//			.getLogger(DataQueryServerResource.class);
-	
-	/* (non-Javadoc)
+
+	// private final Logger log = LoggerFactory
+	// .getLogger(DataQueryServerResource.class);
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.restlet.resource.Resource#doInit()
 	 */
 	@Override
 	protected void doInit() throws ResourceException {
 		@SuppressWarnings("unchecked")
-		Provider<DataQueryI> provider = (Provider<DataQueryI>) getContext().getAttributes().get("queryI");
+		Provider<DataQueryI> provider = (Provider<DataQueryI>) getContext()
+				.getAttributes().get("queryI");
 		dquery = provider.get();
-		guiceMod = (ExperimentModule) getContext().getAttributes().get("guiceMod");
+		guiceMod = (ExperimentModule) getContext().getAttributes().get(
+				"guiceMod");
 		extract = new AttributeExtraction(getRequest().getAttributes());
 		ExperimentSessionManager esm = new ExperimentSessionManager(
 				getContext().getAttributes(), getRequestAttributes(), guiceMod);
-		ExperimentRegistries er = esm.getRegistries();
+		er = esm.getRegistries(false);
 		dquery.setExperiment(er);
 		super.doInit();
 	}
 
-
 	@Override
 	@Get("bin")
-	public Representation getBin() {
+	public Representation getBin() throws ResourceException {
 		DoubleMatrix data = getDm();
-		DoubleMatrix2Representation dbl2rep = new DoubleMatrix2Representation(data.getData());
+		DoubleMatrix2Representation dbl2rep = new DoubleMatrix2Representation(
+				data.getData());
 		return dbl2rep.getRep();
 	}
 
-	private DoubleMatrix getDm() {
-		final List<RequiredAttrType> reqAttrs= new ArrayList<AttributeExtraction.RequiredAttrType>();
+	private DoubleMatrix getDm() throws ResourceException {
+		final List<RequiredAttrType> reqAttrs = new ArrayList<AttributeExtraction.RequiredAttrType>();
 
 		reqAttrs.add(RequiredAttrType.Rate);
 		reqAttrs.add(RequiredAttrType.Query);
 		extract.extract(reqAttrs);
-		Map<RequiredAttrType,Object> attrs = extract.getAttrs();
+		Map<RequiredAttrType, Object> attrs = extract.getAttrs();
 		RateType rate = (RateType) attrs.get(RequiredAttrType.Rate);
 		String query = (String) attrs.get(RequiredAttrType.Query);
 
+		QuerySpec spec = er.getQueries().getQuery(query, rate);
+		if (spec == null) {
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+					"Query \"" + query + "\" not recognized");
+		}
 		reqAttrs.clear();
 		reqAttrs.add(RequiredAttrType.Start);
 		reqAttrs.add(RequiredAttrType.Stop);
-		reqAttrs.add(rate.equals(RateType.STEP) ? RequiredAttrType.StepNumber : RequiredAttrType.Double);
+		reqAttrs.add(rate.equals(RateType.STEP) ? RequiredAttrType.StepNumber
+				: RequiredAttrType.Double);
 		extract.extract(reqAttrs);
 		attrs = extract.getAttrs();
-		
-		if(rate.equals(RateType.STEP)) {
+
+		if (rate.equals(RateType.STEP)) {
 			StepNumber strt = (StepNumber) attrs.get(RequiredAttrType.Start);
 			StepNumber stp = (StepNumber) attrs.get(RequiredAttrType.Stop);
 			DoubleMatrix data;
-			if(strt == null) {
+			if (strt == null) {
 				data = dquery.doQuery(query);
-			} else if(stp == null) {
+			} else if (stp == null) {
 				data = dquery.doQuery(query, strt);
 			} else {
 				data = dquery.doQuery(query, strt, stp);
@@ -98,9 +111,9 @@ public class DataQueryServerResource extends ServerResource implements
 		Double strt = (Double) attrs.get(RequiredAttrType.Start);
 		Double stp = (Double) attrs.get(RequiredAttrType.Stop);
 		DoubleMatrix data;
-		if(strt == null) {
+		if (strt == null) {
 			data = dquery.doQuery(query);
-		} else if(stp == null) {
+		} else if (stp == null) {
 			data = dquery.doQuery(query, strt);
 		} else {
 			data = dquery.doQuery(query, strt, stp);
@@ -108,21 +121,21 @@ public class DataQueryServerResource extends ServerResource implements
 		return data;
 
 	}
-	
+
 	/**
 	 * @return the dquery
 	 */
 	public DataQueryI getDquery() {
 		return dquery;
 	}
-	
+
 	@Override
 	@Get("txt")
-	public Representation getText() {
+	public Representation getText() throws ResourceException {
 		DoubleMatrix data = getDm();
 		return new StringRepresentation(data.toString().toCharArray());
 	}
-	
+
 	@Override
 	@Delete
 	public void removeList(String query) {
@@ -132,12 +145,12 @@ public class DataQueryServerResource extends ServerResource implements
 
 	@Override
 	@Put
-	public void set(Representation channels) {
-		final List<RequiredAttrType> reqAttrs= new ArrayList<AttributeExtraction.RequiredAttrType>();
+	public void set(Representation channels) throws ResourceException {
+		final List<RequiredAttrType> reqAttrs = new ArrayList<AttributeExtraction.RequiredAttrType>();
 
 		reqAttrs.add(RequiredAttrType.Query);
 		extract.extract(reqAttrs);
-		Map<RequiredAttrType,Object> attrs = extract.getAttrs();
+		Map<RequiredAttrType, Object> attrs = extract.getAttrs();
 		String query = (String) attrs.get(RequiredAttrType.Query);
 
 		Representation2ChannelList rep2cl = new Representation2ChannelList(
@@ -147,7 +160,8 @@ public class DataQueryServerResource extends ServerResource implements
 	}
 
 	/**
-	 * @param dquery the dquery to set
+	 * @param dquery
+	 *            the dquery to set
 	 */
 	public void setDquery(DataQueryI dquery) {
 		this.dquery = dquery;

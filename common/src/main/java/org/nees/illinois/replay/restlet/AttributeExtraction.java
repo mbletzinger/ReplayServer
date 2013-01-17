@@ -1,10 +1,8 @@
 package org.nees.illinois.replay.restlet;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
@@ -34,7 +32,7 @@ public class AttributeExtraction {
 		return extractString("experiment");
 	}
 	
-	public void extract(List<RequiredAttrType> required) {
+	public void extract(List<RequiredAttrType> required) throws ResourceException {
 		boolean isStepNumber = required.contains(RequiredAttrType.StepNumber);
 		for (RequiredAttrType aType : required) {
 			if (aType.equals(RequiredAttrType.Experiment)) {
@@ -166,8 +164,8 @@ public class AttributeExtraction {
 		try {
 			result = new StepNumber(str);
 		} catch (Exception e) {
-			log.error("Step \"" + str + "\" could not be parsed");
-			return null;
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "\""
+					+ str + " \" is not a valid step number");
 		}
 		return result;
 	}
@@ -184,8 +182,8 @@ public class AttributeExtraction {
 		try {
 			result = new Double(str);
 		} catch (Exception e) {
-			log.error("Double \"" + str + "\" could not be parsed");
-			return null;
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "\""
+					+ str + " \" is not a valid time value");
 		}
 		return result;
 	}
