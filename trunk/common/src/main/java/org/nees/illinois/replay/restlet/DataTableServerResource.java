@@ -14,6 +14,7 @@ import org.nees.illinois.replay.registries.ExperimentModule;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.registries.ExperimentSessionManager;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
+import org.restlet.data.Method;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
@@ -58,7 +59,8 @@ public class DataTableServerResource extends ServerResource implements
 		guiceMod = (ExperimentModule) getContext().getAttributes().get("guiceMod");
 		ExperimentSessionManager esm = new ExperimentSessionManager(
 				getContext().getAttributes(), getRequestAttributes(), guiceMod);
-		ExperimentRegistries er = esm.getRegistries();
+		boolean allowCreated = getRequest().getMethod().equals(Method.PUT);
+		ExperimentRegistries er = esm.getRegistries(allowCreated);
 		updates.setExperiment(er);
 		super.doInit();
 	}
@@ -72,7 +74,7 @@ public class DataTableServerResource extends ServerResource implements
 
 	@Override
 	@Put
-	public void set(Representation channels) {
+	public void set(Representation channels) throws ResourceException  {
 		Representation2ChannelList rep2cl = new Representation2ChannelList(
 				channels);
 		List<String> list = rep2cl.getIl2cl().getChannels();
@@ -93,7 +95,7 @@ public class DataTableServerResource extends ServerResource implements
 
 	@Override
 	@Post
-	public void update(Representation data) {
+	public void update(Representation data) throws ResourceException  {
 		Representation2DoubleMatrix rep2dbl = new Representation2DoubleMatrix(
 				data);
 		List<List<Double>> doubles = rep2dbl.getIn2dm().getNumbers();
