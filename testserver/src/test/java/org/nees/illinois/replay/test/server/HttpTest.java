@@ -1,23 +1,16 @@
 package org.nees.illinois.replay.test.server;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.nees.illinois.replay.conversions.InputStream2DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.restlet.ReplayServerComponent;
-import org.nees.illinois.replay.test.server.guice.LocalHttpTestModule;
+import org.nees.illinois.replay.test.server.guice.LocalRestletTestModule;
+import org.nees.illinois.replay.test.server.utils.HttpClientFunctions;
 import org.nees.illinois.replay.test.utils.ChannelLists;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
@@ -39,11 +32,12 @@ public class HttpTest {
 	private ReplayServerComponent component;
 	private String hostname;
 	private Injector injector;
+	private HttpClientFunctions http = new HttpClientFunctions();
 
 	@BeforeClass
 	public void setup() {
 		// Instantiate our Restlet component
-		injector = Guice.createInjector(new LocalHttpTestModule());
+		injector = Guice.createInjector(new LocalRestletTestModule());
 		component = injector.getInstance(ReplayServerComponent.class);
 		try {
 			component.start();
@@ -85,18 +79,9 @@ public class HttpTest {
 			HttpPut httpput = new HttpPut(hostname);
 			httpput.setEntity(cl2ent.getEnt());
 			String uriString = baseString + typ;
-			execute(httpput, uriString);
+			http.execute(httpput, uriString);
 		}
 
-		ChannelListType typ = ChannelListType.OM;
-		List<String> channels = cl.getChannels(typ);
-
-		ChannelList2HttpEntity cl2ent = new ChannelList2HttpEntity(channels);
-		HttpPut httpput = new HttpPut(hostname);
-		httpput.setEntity(cl2ent.getEnt());
-		String uriString = baseString + typ;
-		uriString = uriString.replace("HybridMasonry1", "HybridMasonryERR");
-		executeFail(httpput, uriString);
 	}
 
 	@Test(dependsOnMethods = { "testCreateTables" })
@@ -120,26 +105,15 @@ public class HttpTest {
 			DoubleMatrix2HttpEntity dm2ent = new DoubleMatrix2HttpEntity(dataD);
 			httppost.setEntity(dm2ent.getEnt());
 			String uriString = baseString + typ + "/rate/CONT";
-			execute(httppost, uriString);
+			http.execute(httppost, uriString);
 
 			dataD = DataGenerator.initData(RateType.STEP, 20, columns, 0.02);
 			httppost = new HttpPost(hostname);
 			dm2ent = new DoubleMatrix2HttpEntity(dataD);
 			httppost.setEntity(dm2ent.getEnt());
 			uriString = baseString + typ + "/rate/STEP";
-			execute(httppost, uriString);
+			http.execute(httppost, uriString);
 		}
-		ChannelListType typ = ChannelListType.OM;
-		List<String> channels = cl.getChannels(typ);
-		int columns = channels.size();
-		double[][] dataD = DataGenerator.initData(RateType.CONT, 20, columns,
-				0.02);
-		HttpPost httppost = new HttpPost(hostname);
-		DoubleMatrix2HttpEntity dm2ent = new DoubleMatrix2HttpEntity(dataD);
-		httppost.setEntity(dm2ent.getEnt());
-		String uriString = baseString + typ + "/rate/CONT";
-		uriString = uriString.replace("HybridMasonry1", "HybridMasonryERR");
-		executeFail(httppost, uriString);
 	}
 
 	@Test(dependsOnMethods = { "testUpdateTables" })
@@ -160,16 +134,8 @@ public class HttpTest {
 			HttpPut httpput = new HttpPut(hostname);
 			httpput.setEntity(cl2ent.getEnt());
 			String uriString = baseString + typ;
-			execute(httpput, uriString);
+			http.execute(httpput, uriString);
 		}
-		ChannelListType typ = ChannelListType.Query1;
-		List<String> channels = cl.getChannels(typ);
-		ChannelList2HttpEntity cl2ent = new ChannelList2HttpEntity(channels);
-		HttpPut httpput = new HttpPut(hostname);
-		httpput.setEntity(cl2ent.getEnt());
-		String uriString = baseString + typ;
-		uriString = uriString.replace("HybridMasonry1", "HybridMasonryERR");
-		executeFail(httpput, uriString);
 	}
 
 	@Test(dependsOnMethods = { "testPutQueries" })
@@ -186,7 +152,7 @@ public class HttpTest {
 
 			HttpGet httpget = new HttpGet(hostname);
 			String uriString = baseString + typ + "/rate/CONT/start/222.34";
-			HttpEntity ent = execute(httpget, uriString);
+			HttpEntity ent = http.execute(httpget, uriString);
 			InputStream2DoubleMatrix in2dm = null;
 			try {
 				in2dm = new InputStream2DoubleMatrix(ent.getContent());
@@ -198,64 +164,6 @@ public class HttpTest {
 			log.info("\"" + uriString + "\" retrieved " + in2dm.getMatrix());
 		}
 
-		ChannelListType typ = ChannelListType.Query1;
-		HttpGet httpget = new HttpGet(hostname);
-		String uriString = baseString + typ + "/rate/CONT/start/222.34";
-		HttpEntity ent = execute(httpget, uriString);
-		InputStream2DoubleMatrix in2dm = null;
-		try {
-			in2dm = new InputStream2DoubleMatrix(ent.getContent());
-		} catch (Exception e) {
-			log.error("Extracting entity from query \"" + uriString
-					+ "\" failed because ", e);
-			Assert.fail();
-		}
-		log.info("\"" + uriString + "\" retrieved " + in2dm.getMatrix());
-		uriString = uriString.replace("HybridMasonry1", "HybridMasonryERR");
-		executeFail(httpget, uriString);
 	}
 
-	private HttpEntity executeFail(HttpRequestBase request, String uriString) {
-		log.debug("executing " + uriString);
-		HttpResponse response = sendRequest(request, uriString);
-		log.debug("done with " + uriString);
-		Assert.assertEquals(response.getStatusLine().getStatusCode(), 500);
-		HttpEntity entity = response.getEntity();
-		return entity;
-	}
-
-	private HttpEntity execute(HttpRequestBase request, String uriString) {
-		log.debug("executing " + uriString);
-		HttpResponse response = sendRequest(request, uriString);
-		log.debug("done with  " + uriString);
-		Assert.assertEquals(response.getStatusLine().getStatusCode(), 200);
-		HttpEntity entity = response.getEntity();
-
-		Assert.assertNotNull(entity);
-		return entity;
-
-	}
-
-	private HttpResponse sendRequest(HttpRequestBase request, String uriString) {
-		HttpResponse response = null;
-		HttpClient httpclient = new DefaultHttpClient();
-		try {
-			request.setURI(new URI(uriString));
-		} catch (URISyntaxException e1) {
-			log.error("URI : " + uriString + " could not be parsed", e1);
-			Assert.fail();
-		}
-
-		try {
-			response = httpclient.execute(request);
-		} catch (ClientProtocolException e) {
-			log.error("Protocol failure for " + uriString, e);
-			Assert.fail();
-		} catch (IOException e) {
-			log.error("IO failure for " + uriString, e);
-			Assert.fail();
-		}
-		log.debug("Request " + request + " cause Response " + response);
-		return response;
-	}
 }

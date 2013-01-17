@@ -26,7 +26,6 @@ public class LocalRestletTestModule extends AbstractModule {
 		bind(Class.class).annotatedWith(Names.named("TableResource")).toInstance(DataTableServerResource.class);
 		bind(Class.class).annotatedWith(Names.named("QueryResource")).toInstance(DataQueryServerResource.class);
 		bind(HostInfo.class).toInstance(new HostInfo(8111, "localhost",true));
-		bind(ReplayServerApplication.class).to(LocalRestletTestApplication.class);
 		bind(DataUpdateI.class).to(TestDataUpdates.class);
 		bind(DataQueryI.class).to(TestDataQuery.class);
 		bind(ExperimentModule.class).to(TestServerModule.class);

@@ -1,9 +1,5 @@
 package org.nees.illinois.replay.test.server;
 
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.Test;
-import org.testng.annotations.BeforeClass;
-import org.testng.AssertJUnit;
 import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
@@ -18,7 +14,7 @@ import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.Assert;
+import org.testng.AssertJUnit;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -29,7 +25,7 @@ import com.google.inject.Injector;
 public class RestletClientTest {
 	private final Logger log = LoggerFactory.getLogger(RestletClientTest.class);
 	private ReplayServerComponent component;
-	private String hostname;
+	private String root;
 	private Injector injector;
 
 	@BeforeClass
@@ -43,7 +39,8 @@ public class RestletClientTest {
 			log.error("Component failed to start because ", e2);
 			AssertJUnit.fail();
 		}
-		hostname = component.getHostinfo().getAddress();
+		root = component.getHostinfo().getAddress();
+		root += "/test/data";
 	}
 
 	@AfterClass
@@ -63,7 +60,7 @@ public class RestletClientTest {
 	public void testCreateTables() {
 
 		ChannelLists cl = new ChannelLists();
-		DataTableClient dtc = new DataTableClient(hostname, "HybridMasonry1");
+		DataTableClient dtc = new DataTableClient(root, "HybridMasonry1");
 		
 		for (ChannelListType typ : ChannelListType.values()) {
 			if (typ.equals(ChannelListType.Query1)) {
@@ -78,7 +75,7 @@ public class RestletClientTest {
 	public void testUpdateTables() {
 
 		ChannelLists cl = new ChannelLists();
-		DataTableClient dtc = new DataTableClient(hostname, "HybridMasonry1");
+		DataTableClient dtc = new DataTableClient(root, "HybridMasonry1");
 		
 		for (ChannelListType typ : ChannelListType.values()) {
 			if (typ.equals(ChannelListType.Query1)) {
@@ -101,7 +98,7 @@ public class RestletClientTest {
 	public void testPutQueries() {
 
 		ChannelLists cl = new ChannelLists();
-		DataQueryClient dqc = new DataQueryClient(hostname, "HybridMasonry1");
+		DataQueryClient dqc = new DataQueryClient(root, "HybridMasonry1");
 
 		for (ChannelListType typ : ChannelListType.values()) {
 			if (typ.equals(ChannelListType.OM)
@@ -116,7 +113,7 @@ public class RestletClientTest {
 	@Test(dependsOnMethods = { "testPutQueries" })
 	public void testGetQueries() {
 
-		DataQueryClient dqc = new DataQueryClient(hostname, "HybridMasonry1");
+		DataQueryClient dqc = new DataQueryClient(root, "HybridMasonry1");
 
 		for (ChannelListType typ : ChannelListType.values()) {
 			if (typ.equals(ChannelListType.OM)
