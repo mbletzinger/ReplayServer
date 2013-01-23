@@ -3,20 +3,19 @@ package org.nees.illinois.replay.test.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.apache.log4j.Logger;
 import org.nees.illinois.replay.data.Mtx2Str;
-import org.nees.illinois.replay.data.RateType;
+import org.testng.Assert;
 
 public class DataGenerator {
 	private int recordNumber = 0;
 	private final int numberOfColumns;
 	private int[] stepNumber = new int[3];
 	private final double timeMultiplier;
-//	private static double startTime = (System.currentTimeMillis() / 1000L) ;
-	private static double startTime = 222.0 ;
-//	private final Logger log = Logger.getLogger(DataGenerator.class);
+	// private static double startTime = (System.currentTimeMillis() / 1000L) ;
+	private static double startTime = 222.0;
+
+	// private final Logger log = Logger.getLogger(DataGenerator.class);
 
 	public DataGenerator(int numberOfColumns, double timeMultiplier) {
 		super();
@@ -27,18 +26,16 @@ public class DataGenerator {
 		this.timeMultiplier = timeMultiplier;
 	}
 
-	public double[] genRecord(RateType rate) {
-		double[] result = genData(rate.equals(RateType.CONT) ? 1 : 4);
+	public double[] genRecord() {
+		double[] result = genData(4);
 		result[0] = startTime + (recordNumber * timeMultiplier);
-		if(rate.equals(RateType.STEP)) {
-			for( int s = 0; s < 3; s++) {
-				result[s + 1] = stepNumber[s];
-			}
-			incrementStep();
+		for (int s = 0; s < 3; s++) {
+			result[s + 1] = stepNumber[s];
 		}
+		incrementStep();
 		recordNumber++;
 		return result;
-		
+
 	}
 
 	private double[] genData(int start) {
@@ -48,7 +45,7 @@ public class DataGenerator {
 					* (c % 2 == 0 ? 1 : -1);
 		}
 		return result;
-		
+
 	}
 
 	private void incrementStep() {
@@ -61,58 +58,62 @@ public class DataGenerator {
 			stepNumber[1]++;
 			stepNumber[2] = 0;
 		}
-		stepNumber[2]+= timeMultiplier * 10;;
+		stepNumber[2] += timeMultiplier * 10;
+		;
 	}
 
 	public void reset() {
 		recordNumber = 0;
 	}
+
 	public static void compareData(double[][] expected, double[][] actual) {
-		Logger.getLogger(DataGenerator.class).info("Comparing " + Mtx2Str.matrix2String(expected) + "\nwith\n"
-				+ Mtx2Str.matrix2String(actual));
-		Assert.assertEquals(expected.length, actual.length);
-		Assert.assertEquals(expected[0].length, actual[0].length);
+		Logger.getLogger(DataGenerator.class).info(
+				"Comparing expected " + Mtx2Str.matrix2String(expected)
+						+ "\nwith actual\n" + Mtx2Str.matrix2String(actual));
+		Assert.assertEquals(actual.length, expected.length);
+		Assert.assertEquals(actual[0].length, expected[0].length);
 		for (int i = 0; i < expected.length; i++) {
 			for (int j = 0; j < expected[0].length; j++) {
-				Assert.assertEquals(expected[i][j], actual[i][j], 0.001);
+				Assert.assertEquals(actual[i][j], expected[i][j], 0.001);
 			}
 		}
 	}
 
-
-	public static double[][] initData(RateType rate, int row, int col, double timeMultiplier) {
+	public static double[][] initData(int row, int col,
+			double timeMultiplier) {
 		double[][] data = new double[row][col];
 		DataGenerator dg = new DataGenerator(col, timeMultiplier);
 		for (int r = 0; r < row; r++) {
-			data[r] = dg.genRecord(rate);
+			data[r] = dg.genRecord();
 		}
 		return data;
 	}
 
-	public static double [][] extract(double [][] data, int [] columns) {
-		double [][] result = new double[data.length][columns.length];
-		for(int r = 0; r < data.length; r++) {
+	public static double[][] extract(double[][] data, int[] columns) {
+		double[][] result = new double[data.length][columns.length];
+		for (int r = 0; r < data.length; r++) {
 			for (int c = 0; c < columns.length; c++) {
 				result[r][c] = data[r][columns[c]];
 			}
 		}
 		return result;
 	}
-	
-	public static double [][] append(double [][] before, double [][] after) {
-		double [][] result = new double[before.length][before[0].length + after[0].length];
+
+	public static double[][] append(double[][] before, double[][] after) {
+		double[][] result = new double[before.length][before[0].length
+				+ after[0].length];
 		for (int r = 0; r < before.length; r++) {
-			for(int b = 0; b < before[r].length;b++) {
+			for (int b = 0; b < before[r].length; b++) {
 				result[r][b] = before[r][b];
 			}
 			int b = before[r].length;
-			for (int a = 0; a < after[r].length;a++) {
-				result[r][b + a] = after[r][a]; 
+			for (int a = 0; a < after[r].length; a++) {
+				result[r][b + a] = after[r][a];
 			}
 		}
 		return result;
 	}
-	
+
 	public static List<List<Double>> toList(double[][] data) {
 		List<List<Double>> result = new ArrayList<List<Double>>();
 		for (int r = 0; r < data.length; r++) {

@@ -19,13 +19,13 @@ public class TestMerge {
 
 	@BeforeMethod
 	public void setUp() throws Exception {
-		double[][] dat = DataGenerator.initData(RateType.CONT, 20, 4, 0.7);
+		double[][] dat = DataGenerator.initData(20, 4, 0.7);
 		omContData = DataGenerator.toList(dat);
-		dat = DataGenerator.initData(RateType.CONT, 15, 3, 1.0);
+		dat = DataGenerator.initData(15, 3, 1.0);
 		daqContData = DataGenerator.toList(dat);
-		dat = DataGenerator.initData(RateType.STEP, 20, 4, 0.2);
+		dat = DataGenerator.initData(20, 4, 0.2);
 		omStepData = DataGenerator.toList(dat);
-		dat = DataGenerator.initData(RateType.STEP, 15, 3, 0.3);
+		dat = DataGenerator.initData(15, 3, 0.3);
 		daqStepData = DataGenerator.toList(dat);
 	}
 
@@ -39,7 +39,7 @@ public class TestMerge {
 		mset.merge(daqContData);
 		log.debug("DAQ only " + mset);
 		AssertJUnit.assertEquals(3, mset.getColumnSize(false));
-		AssertJUnit.assertEquals(4, mset.getColumnSize(true));
+		AssertJUnit.assertEquals(7, mset.getColumnSize(true));
 		List<List<Double>> result = mset.getRecords();
 		for (List<Double> r : result) {
 			log.info("Checking " + r );
@@ -49,13 +49,13 @@ public class TestMerge {
 		result = mset.getRecords();
 		log.debug("with OM " + mset);
 		AssertJUnit.assertEquals(7, mset.getColumnSize(false));
-		AssertJUnit.assertEquals(8, mset.getColumnSize(true));
+		AssertJUnit.assertEquals(11, mset.getColumnSize(true));
 		log.debug("DAQ Cont[" + daqcsz[0] + "][" + daqcsz[1] + "]");
 		log.debug("OM Cont[" + omcsz[0] + "][" + omcsz[1] + "]");
 
 		for (List<Double> r : result) {
 			log.info("Checking " + r );
-			AssertJUnit.assertEquals(daqcsz[1] + omcsz[1] - 1, r.size());
+			AssertJUnit.assertEquals(daqcsz[1] + omcsz[1] - 4, r.size());
 		}
 		mset = new MergeSet(RateType.STEP);
 		mset.merge(daqStepData);

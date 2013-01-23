@@ -53,7 +53,7 @@ public class TestStreamConversion {
 	
 	@Test
 	public void testDoubleMatrixConversion() {
-		double[][] data = DataGenerator.initData(RateType.CONT, 20, 6, 0.5);
+		double[][] data = DataGenerator.initData(20, 6, 0.5);
 		DoubleMatrix2Representation rep2os = new DoubleMatrix2Representation(data);
 		DoubleMatrix orig = new DoubleMatrix(DataGenerator.toList(data), data[0].length);
 		Representation2DoubleMatrix rep2dbl = new Representation2DoubleMatrix(rep2os.getRep());

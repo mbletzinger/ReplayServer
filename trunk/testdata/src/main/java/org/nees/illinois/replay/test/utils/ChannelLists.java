@@ -22,10 +22,12 @@ public class ChannelLists {
 		chnls.add("OM/Disp/LBCB1/Cartesian/D_LBCB1_RZ_5");
 		channels.put(ChannelListType.OM, chnls);
 		cl2tt.put(ChannelListType.OM, TableType.OM);
-		chnls.add("OM/CntrlSensor/D_West_Z_4");
-		chnls.add("OM/CntrlSensor/D_East_X_1");
-		chnls.add("OM/CntrlSensor/D_North_Y_2");
-		channels.put(ChannelListType.OM2, chnls);
+		List<String> chnls2 = new ArrayList<String>();
+		chnls2.addAll(chnls);
+		chnls2.add("OM/CntrlSensor/D_West_Z_4");
+		chnls2.add("OM/CntrlSensor/D_East_X_1");
+		chnls2.add("OM/CntrlSensor/D_North_Y_2");
+		channels.put(ChannelListType.OM2, chnls2);
 		cl2tt.put(ChannelListType.OM2, TableType.OM);
 
 
@@ -37,29 +39,34 @@ public class ChannelLists {
 		chnls.add("DAQ/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B23_5");
 		channels.put(ChannelListType.DAQ, chnls);
 		cl2tt.put(ChannelListType.DAQ, TableType.DAQ);
-		chnls.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL05K_W7_SG_K12_4");
-		chnls.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL06K_W7_SG_K13_2");
-		chnls.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL07K_W7_SG_K14_7");
-		chnls.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL08K_W7_SG_K18_9");
-		channels.put(ChannelListType.DAQ2, chnls);
+		chnls2.clear();
+		chnls2.addAll(chnls);
+		chnls2.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL05K_W7_SG_K12_4");
+		chnls2.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL06K_W7_SG_K13_2");
+		chnls2.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL07K_W7_SG_K14_7");
+		chnls2.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL08K_W7_SG_K18_9");
+		channels.put(ChannelListType.DAQ2, chnls2);
 		cl2tt.put(ChannelListType.DAQ2, TableType.DAQ);
-		chnls.add("OM/CntrlSensor/D_West_Z_4");
 
 		chnls = new ArrayList<String>();
 		chnls.add("OM/CntrlSensor/D_West_X_3");
 		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_X1_0");
 		channels.put(ChannelListType.Query1, chnls);
-		chnls.add("OM/CntrlSensor/D_West_Z_4");
-		channels.put(ChannelListType.Query3, chnls);
+		chnls2.clear();
+		chnls2.addAll(chnls);
+		chnls2.add("OM/CntrlSensor/D_West_Z_4");
+		channels.put(ChannelListType.Query3, chnls2);
 
 		chnls = new ArrayList<String>();
 		chnls.add("OM/CntrlSensor/D_West_X_3");
 		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_X1_0");
 		chnls.add("DAQ/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
 		channels.put(ChannelListType.Query2, chnls);
-		chnls.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL06K_W7_SG_K13_2");
-		chnls.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL07K_W7_SG_K14_7");
-		channels.put(ChannelListType.Query4, chnls);
+		chnls2.clear();
+		chnls2.addAll(chnls);
+		chnls2.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL06K_W7_SG_K13_2");
+		chnls2.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL07K_W7_SG_K14_7");
+		channels.put(ChannelListType.Query4, chnls2);
 
 	};
 	
