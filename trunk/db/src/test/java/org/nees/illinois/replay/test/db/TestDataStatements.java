@@ -29,10 +29,10 @@ import com.google.inject.Injector;
 
 public class TestDataStatements {
 	private DbPools dbc;
-	private double[][] omContData = new double[10][7];
-	private double[][] daqContData = new double[15][6];
-	private double[][] omStepData = new double[10][10];
-	private double[][] daqStepData = new double[15][9];
+	private double[][] omContData;
+	private double[][] daqContData;
+	private double[][] omStepData;
+	private double[][] daqStepData;
 	private ChannelNameRegistry cnr = new ChannelNameRegistry();
 
 	private final Logger log = Logger.getLogger(TestDataStatements.class);
@@ -43,10 +43,10 @@ public class TestDataStatements {
 
 	@BeforeMethod
 	public void setUp() throws Exception {
-		omContData = DataGenerator.initData(RateType.CONT, 20, 6, 0.5);
-		daqContData = DataGenerator.initData(RateType.CONT, 15, 5, 1);
-		omStepData = DataGenerator.initData(RateType.STEP, 20, 6, 0.5);
-		daqStepData = DataGenerator.initData(RateType.STEP, 15, 5,1);
+		omContData = DataGenerator.initData(20, 6, 0.5);
+		daqContData = DataGenerator.initData(15, 5, 1);
+		omStepData = DataGenerator.initData(20, 6, 0.5);
+		daqStepData = DataGenerator.initData(15, 5,1);
 		guiceMod.setExperiment("HybridMasonry1");
 		Injector injector = Guice.createInjector(guiceMod);
 		er = injector.getInstance(ExperimentRegistries.class);
@@ -71,8 +71,6 @@ public class TestDataStatements {
 		ChannelLists cl = new ChannelLists();
 		DbTableSpecs specs = new DbTableSpecs(cnr, er.getExperiment());
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
-		// log.debug("Adding data " +
-		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
 		dbu.update(TableType.OM, RateType.CONT, omContData);
 
 		String tblName = specs.tableName(TableType.OM, RateType.CONT);
