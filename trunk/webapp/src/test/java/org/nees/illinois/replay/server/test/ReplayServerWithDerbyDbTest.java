@@ -64,7 +64,7 @@ public class ReplayServerWithDerbyDbTest {
 	public void testCreateTables() {
 		ChannelLists cl = new ChannelLists();
 		DataTableClient dtc = new DataTableClient(hostname, "HybridMasonry1");
-		
+
 		for (ChannelListType typ : ChannelListType.values()) {
 			if (typ.equals(ChannelListType.Query1)) {
 				break;
@@ -86,7 +86,8 @@ public class ReplayServerWithDerbyDbTest {
 			}
 			DoubleMatrix result = dqc.getData(typ.name(), 224.23);
 			log.info("Received: " + result);
-			result = dqc.getData(typ.name(), new StepNumber(1.0, 22.0, 3.0), new StepNumber(3.0, 22.0, 1.0));
+			result = dqc.getData(typ.name(), new StepNumber(1.0, 22.0, 3.0),
+					new StepNumber(3.0, 22.0, 1.0));
 			log.info("Received: " + result);
 		}
 	}
@@ -112,7 +113,7 @@ public class ReplayServerWithDerbyDbTest {
 
 		ChannelLists cl = new ChannelLists();
 		DataTableClient dtc = new DataTableClient(hostname, "HybridMasonry1");
-		
+
 		for (ChannelListType typ : ChannelListType.values()) {
 			if (typ.equals(ChannelListType.Query1)) {
 				break;
@@ -121,11 +122,10 @@ public class ReplayServerWithDerbyDbTest {
 			List<String> channels = cl.getChannels(typ);
 
 			int columns = channels.size();
-			double[][] dataD = DataGenerator.initData(RateType.CONT, 20,
-					columns, 0.02);
+			double[][] dataD = DataGenerator.initData(20, columns, 0.02);
 			dtc.addData(cl.getTt(typ), RateType.CONT, new DoubleMatrix(dataD));
 
-			dataD = DataGenerator.initData(RateType.STEP, 20, columns, 0.02);
+			dataD = DataGenerator.initData(20, columns, 0.02);
 			dtc.addData(cl.getTt(typ), RateType.STEP, new DoubleMatrix(dataD));
 		}
 	}
