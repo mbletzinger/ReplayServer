@@ -8,8 +8,9 @@ import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.restlet.ReplayServerComponent;
 import org.nees.illinois.replay.restlet.client.DataQueryClient;
 import org.nees.illinois.replay.test.server.guice.LocalRestletTestModule;
+import org.nees.illinois.replay.test.server.utils.DatasetLoaderI;
 import org.nees.illinois.replay.test.server.utils.InjectedErrorsType;
-import org.nees.illinois.replay.test.server.utils.DataLoader;
+import org.nees.illinois.replay.test.server.utils.RestletLoader;
 import org.nees.illinois.replay.test.server.utils.DataQueryBadClient;
 import org.nees.illinois.replay.test.server.utils.DataTableBadClient;
 import org.nees.illinois.replay.test.utils.ChannelLists;
@@ -92,7 +93,7 @@ public class RestletErrorsClientTest {
 	@Test(dependsOnMethods = { "testCreateTables" })
 	public void testUpdateTables() {
 
-		DataLoader dl = new DataLoader(root, "HybridMasonry1", false);
+		DatasetLoaderI dl = new RestletLoader(root, "HybridMasonry1", false);
 		dl.createTables();
 
 		ChannelLists cl = new ChannelLists();
@@ -104,7 +105,7 @@ public class RestletErrorsClientTest {
 		List<String> channels = cl.getChannels(typ);
 
 		int columns = channels.size();
-		double[][] dataD = DataGenerator.initData(RateType.CONT, 20, columns,
+		double[][] dataD = DataGenerator.initData(20, columns,
 				0.02);
 
 		InjectedErrorsType[] btype = { InjectedErrorsType.BadTable,
@@ -122,7 +123,7 @@ public class RestletErrorsClientTest {
 				log.debug("Caught exception for " + t, e);
 				Assert.assertEquals(e.getStatus().getCode(), t.ExpectedCode());
 			}
-			dataD = DataGenerator.initData(RateType.STEP, 20, columns, 0.02);
+			dataD = DataGenerator.initData(20, columns, 0.02);
 			try {
 				dtc.addData(cl.getTt(typ), RateType.STEP, new DoubleMatrix(
 						dataD));
@@ -166,7 +167,7 @@ public class RestletErrorsClientTest {
 	@Test
 	public void testGetQueries() {
 
-		DataLoader dl = new DataLoader(root, "HybridMasonry1", false);
+		DatasetLoaderI dl = new RestletLoader(root, "HybridMasonry1", false);
 		dl.createTables();
 		dl.uploadData();
 		dl.createQueries();

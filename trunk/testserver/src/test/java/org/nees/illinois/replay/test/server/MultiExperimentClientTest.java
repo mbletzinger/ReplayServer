@@ -9,12 +9,13 @@ import org.nees.illinois.replay.restlet.ReplayServerComponent;
 import org.nees.illinois.replay.restlet.client.DataQueryClient;
 import org.nees.illinois.replay.restlet.client.DataTableClient;
 import org.nees.illinois.replay.test.server.guice.LocalRestletTestModule;
+import org.nees.illinois.replay.test.server.utils.DatasetLoaderI;
+import org.nees.illinois.replay.test.server.utils.RestletLoader;
 import org.nees.illinois.replay.test.utils.ChannelLists;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.Assert;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -24,8 +25,9 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 @Test(groups = { "restlet-client-test" })
-public class RestletClientTest {
-	private final Logger log = LoggerFactory.getLogger(RestletClientTest.class);
+public class MultiExperimentClientTest {
+	private final Logger log = LoggerFactory
+			.getLogger(MultiExperimentClientTest.class);
 	private ReplayServerComponent component;
 	private String root;
 	private Injector injector;
@@ -43,6 +45,10 @@ public class RestletClientTest {
 		}
 		root = component.getHostinfo().getAddress();
 		root += "/test/data";
+		DatasetLoaderI dl = new RestletLoader(root, "HybridMasonry1", false);
+		dl.createTables();
+		dl.uploadData();
+		dl.createQueries();
 	}
 
 	@AfterClass
@@ -115,26 +121,17 @@ public class RestletClientTest {
 	public void testGetQueries() {
 
 		DataQueryClient dqc = new DataQueryClient(root, "HybridMasonry1");
-		ChannelLists cl = new ChannelLists();
 
 		for (ChannelListType typ : ChannelListType.values()) {
 			if (typ.equals(ChannelListType.OM)
 					|| typ.equals(ChannelListType.DAQ)) {
 				continue;
 			}
-			if (typ.equals(ChannelListType.Query3)) {
-				break;
-			}
-			List<String> channels = cl.getChannels(typ);
-			log.debug("Channels for " + typ + " are " + channels);
 			DoubleMatrix result = dqc.getData(typ.name(), 224.23);
 			log.info("Received: " + result);
-			int[] sz = result.sizes();
-			Assert.assertEquals(sz[1], channels.size() + 4);
 			result = dqc.getData(typ.name(), new StepNumber(1.0, 22.0, 3.0),
 					new StepNumber(3.0, 22.0, 1.0));
 			log.info("Received: " + result);
-			Assert.assertEquals(sz[1], channels.size() + 4);
 		}
 	}
 

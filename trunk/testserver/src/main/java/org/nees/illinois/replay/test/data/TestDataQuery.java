@@ -9,7 +9,9 @@ import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.registries.QuerySpec;
-import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.nees.illinois.replay.test.server.utils.DatasetDirector;
+import org.nees.illinois.replay.test.server.utils.DatasetDirector.QueryTypes;
+import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +20,7 @@ import com.google.inject.Inject;
 public class TestDataQuery implements DataQueryI {
 
 	private ExperimentRegistries er;
+	private final DatasetDirector dd = new DatasetDirector();
 
 	private final Logger log = LoggerFactory.getLogger(TestDataQuery.class);
 
@@ -29,52 +32,33 @@ public class TestDataQuery implements DataQueryI {
 	@Override
 	public DoubleMatrix doQuery(String name) {
 		log.debug("Name query \"" + name + "\"");
-		return generate(name, 40, RateType.STEP);
+		return dd.generate(QueryTypes.Step, ChannelListType.valueOf(name));
 	}
 
 	@Override
 	public DoubleMatrix doQuery(String name, double start) {
 		log.debug("Name query \"" + name + "\" with start " + start);
-		return generate(name, 20, RateType.CONT);
+		return dd.generate(QueryTypes.ContWithStart, ChannelListType.valueOf(name));
 	}
 
 	@Override
 	public DoubleMatrix doQuery(String name, double start, double stop) {
 		log.debug("Name query \"" + name + "\" with start " + start
 				+ " & stop " + stop);
-		return generate(name, 10, RateType.CONT);
+		return dd.generate(QueryTypes.ContWithStop, ChannelListType.valueOf(name));
 	}
 
 	@Override
 	public DoubleMatrix doQuery(String name, StepNumber start) {
 		log.debug("Name query \"" + name + "\" with start step " + start);
-		return generate(name, 15, RateType.STEP);
+		return dd.generate(QueryTypes.StepWithStart, ChannelListType.valueOf(name));
 	}
 
 	@Override
 	public DoubleMatrix doQuery(String name, StepNumber start, StepNumber stop) {
 		log.debug("Name query \"" + name + "\" with start step " + start
 				+ " & stop step " + stop);
-		return generate(name, 5, RateType.STEP);
-	}
-
-	private DoubleMatrix generate(String name, int rows, RateType rate) {
-		if (er == null) {// Check to make sure restlet code sets the experiment
-							// name
-			log.error("Experiment name is not set");
-			return null;
-		}
-		if (er.getExperiment() == null) {// Check to make sure restlet code sets
-											// the experiment name
-			log.error("Experiment name is not set");
-			return null;
-		}
-		QuerySpec qs = er.getQueries().getQuery(name, rate);
-		double[][] data = DataGenerator.initData(rate, rows, qs.getNoc()
-				.getNumber(true), 0.5);
-		DoubleMatrix result = new DoubleMatrix(data);
-		return result;
-
+		return dd.generate(QueryTypes.StepWithStop, ChannelListType.valueOf(name));
 	}
 
 	@Override
