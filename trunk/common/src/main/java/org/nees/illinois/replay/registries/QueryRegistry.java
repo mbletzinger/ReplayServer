@@ -15,9 +15,9 @@ public class QueryRegistry {
 	}
 	public void setQuery(String name, RateType rate, QuerySpec dq) {
 		if (queries.containsKey(name)) {
-			log.info("Replacing Query \"" + name + "\"");
+			log.info("Replacing Query \"" + name + "_" + rate + "\"");
 		} else {
-			log.info("Adding Query \"" + name + "\"");
+			log.info("Adding Query \"" + name + "_" + rate + "\"");
 		}
 			queries.put(name+ "_" + rate, dq);
 	}

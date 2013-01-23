@@ -54,6 +54,7 @@ public class DoubleMatrix2OutputStream {
 	public void writeData(double[][] data, OutputStream aout) {
 
 		DataOutputStream dout = new DataOutputStream(aout);
+		log.debug("Writing to stream " + data.length + " x " + data[0].length);
 		try {
 			dout.writeInt(data.length);
 			dout.writeInt(data[0].length);

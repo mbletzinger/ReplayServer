@@ -8,8 +8,8 @@ import org.restlet.resource.ResourceException;
 
 public interface DataQueryResource {
 
-	@Get("txt")
-	public Representation getText() throws ResourceException;
+//	@Get("txt")
+//	public Representation getText() throws ResourceException;
 	
 	@Get("bin")
 	public Representation getBin() throws ResourceException;
