@@ -43,10 +43,10 @@ public class TestDbQuery {
 
 	@BeforeMethod
 	public void setUp() throws Exception {
-		omContData = DataGenerator.initData(RateType.CONT, 20, 6, 0.7);
-		daqContData = DataGenerator.initData(RateType.CONT, 15, 5, 1.0);
-		omStepData = DataGenerator.initData(RateType.STEP, 20, 6, 0.2);
-		daqStepData = DataGenerator.initData(RateType.STEP, 15, 5, 0.3);
+		omContData = DataGenerator.initData(20, 6, 0.7);
+		daqContData = DataGenerator.initData(15, 5, 1.0);
+		omStepData = DataGenerator.initData(20, 6, 0.2);
+		daqStepData = DataGenerator.initData(15, 5, 0.3);
 		guiceMod.setExperiment("HybridMasonry1");
 		Injector injector = Guice.createInjector(guiceMod);
 		er = injector.getInstance(ExperimentRegistries.class);
@@ -82,18 +82,18 @@ public class TestDbQuery {
 			List<DbSelect> selects = dbs.getSelect();
 			AssertJUnit.assertEquals(1, selects.size());
 			AssertJUnit.assertEquals(2, selects.get(0).getNumber(false));
-			AssertJUnit.assertEquals((r.equals(RateType.CONT) ? 3 : 6), selects
+			AssertJUnit.assertEquals(6, selects
 					.get(0).getNumber(true));
 			selects = dbs.getSelect(10.0);
 			AssertJUnit.assertEquals(1, selects.size());
 			AssertJUnit.assertEquals(2, selects.get(0).getNumber(false));
-			AssertJUnit.assertEquals((r.equals(RateType.CONT) ? 3 : 6), selects
+			AssertJUnit.assertEquals(6, selects
 					.get(0).getNumber(true));
 			AssertJUnit.assertTrue(selects.get(0).getSelect().contains("10.0"));
 			selects = dbs.getSelect(10.0, 900.85);
 			AssertJUnit.assertEquals(1, selects.size());
 			AssertJUnit.assertEquals(2, selects.get(0).getNumber(false));
-			AssertJUnit.assertEquals((r.equals(RateType.CONT) ? 3 : 6), selects
+			AssertJUnit.assertEquals(6, selects
 					.get(0).getNumber(true));
 			AssertJUnit.assertTrue(selects.get(0).getSelect().contains("10.0"));
 			AssertJUnit.assertTrue(selects.get(0).getSelect()
