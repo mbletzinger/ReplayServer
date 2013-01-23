@@ -23,6 +23,8 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Provider;
 
@@ -33,6 +35,8 @@ public class DataQueryServerResource extends ServerResource implements
 	private AttributeExtraction extract;
 	private ExperimentModule guiceMod;
 	private ExperimentRegistries er;
+	private final Logger log = LoggerFactory
+			.getLogger(DataQueryServerResource.class);
 
 	public DataQueryServerResource() {
 		super();
@@ -75,6 +79,7 @@ public class DataQueryServerResource extends ServerResource implements
 	private DoubleMatrix getDm() throws ResourceException {
 		final List<RequiredAttrType> reqAttrs = new ArrayList<AttributeExtraction.RequiredAttrType>();
 
+		log.debug("Query Resource handling " + getRequest().getMethod() + " with " + getRequest());
 		reqAttrs.add(RequiredAttrType.Rate);
 		reqAttrs.add(RequiredAttrType.Query);
 		extract.extract(reqAttrs);
@@ -129,12 +134,12 @@ public class DataQueryServerResource extends ServerResource implements
 		return dquery;
 	}
 
-	@Override
-	@Get("txt")
-	public Representation getText() throws ResourceException {
-		DoubleMatrix data = getDm();
-		return new StringRepresentation(data.toString().toCharArray());
-	}
+//	@Override
+//	@Get("txt")
+//	public Representation getText() throws ResourceException {
+//		DoubleMatrix data = getDm();
+//		return new StringRepresentation(data.toString().toCharArray());
+//	}
 
 	@Override
 	@Delete

@@ -39,6 +39,7 @@ public class InputStream2DoubleMatrix {
 		}
 		int rows = hdrs[0];
 		int columns = hdrs[1];
+		log.debug("Reading input " + rows + " x " + columns);
 		for (int r = 0; r < rows; r++) {
 			List<Double> row = new ArrayList<Double>();
 			numbers.add(row);
