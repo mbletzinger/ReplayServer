@@ -99,7 +99,7 @@ public class HttpTest {
 			List<String> channels = cl.getChannels(typ);
 
 			int columns = channels.size();
-			double[][] dataD = DataGenerator.initData(RateType.CONT, 20,
+			double[][] dataD = DataGenerator.initData(20,
 					columns, 0.02);
 			HttpPost httppost = new HttpPost(hostname);
 			DoubleMatrix2HttpEntity dm2ent = new DoubleMatrix2HttpEntity(dataD);
@@ -107,7 +107,7 @@ public class HttpTest {
 			String uriString = baseString + typ + "/rate/CONT";
 			http.execute(httppost, uriString);
 
-			dataD = DataGenerator.initData(RateType.STEP, 20, columns, 0.02);
+			dataD = DataGenerator.initData(20, columns, 0.02);
 			httppost = new HttpPost(hostname);
 			dm2ent = new DoubleMatrix2HttpEntity(dataD);
 			httppost.setEntity(dm2ent.getEnt());
