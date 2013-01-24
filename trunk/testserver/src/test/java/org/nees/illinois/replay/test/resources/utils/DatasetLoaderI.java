@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.test.server.utils;
+package org.nees.illinois.replay.test.resources.utils;
 
 public interface DatasetLoaderI {
 

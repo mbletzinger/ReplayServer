@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.test.server.utils;
+package org.nees.illinois.replay.test.resources.utils;
 
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -19,9 +19,9 @@ import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.restlet.DataQueryServerResource;
 import org.nees.illinois.replay.restlet.DataTableServerResource;
 import org.nees.illinois.replay.test.data.TestDataUpdates;
-import org.nees.illinois.replay.test.server.utils.DatasetDirector.ExperimentNames;
-import org.nees.illinois.replay.test.server.utils.DatasetDirector.QueryTypes;
-import org.nees.illinois.replay.test.server.utils.DatasetDirector.TimeSpec;
+import org.nees.illinois.replay.test.resources.utils.DatasetDirector.ExperimentNames;
+import org.nees.illinois.replay.test.resources.utils.DatasetDirector.QueryTypes;
+import org.nees.illinois.replay.test.resources.utils.DatasetDirector.TimeSpec;
 import org.nees.illinois.replay.test.utils.ChannelLists;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
