@@ -6,6 +6,7 @@ import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.restlet.client.DataQueryClient;
 import org.nees.illinois.replay.restlet.client.DataTableClient;
+import org.nees.illinois.replay.test.resources.utils.DatasetLoaderI;
 import org.nees.illinois.replay.test.utils.ChannelLists;
 import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;

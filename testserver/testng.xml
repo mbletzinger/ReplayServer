@@ -23,7 +23,7 @@
 			<class name="org.nees.illinois.replay.test.server.RestletClientTest" />
 			<class name="org.nees.illinois.replay.test.server.RestletErrorsClientTest" />
 			<class name="org.nees.illinois.replay.test.server.CoolUriTest"/>
-			<class name="org.nees.illinois.replay.test.server.ResourcesTest" />
+			<class name="org.nees.illinois.replay.test.resources.ResourcesTest" />
 			<class name="org.nees.illinois.replay.test.server.HttpTest" />
 		</classes>
 	</test> <!-- Test -->

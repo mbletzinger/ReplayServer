@@ -1,13 +1,13 @@
-package org.nees.illinois.replay.test.server;
+package org.nees.illinois.replay.test.resources;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.test.resources.utils.ResourceLoader;
+import org.nees.illinois.replay.test.resources.utils.DatasetDirector.ExperimentNames;
+import org.nees.illinois.replay.test.resources.utils.DatasetDirector.QueryTypes;
 import org.nees.illinois.replay.test.server.guice.ResourcesTestModule;
-import org.nees.illinois.replay.test.server.utils.DatasetDirector.ExperimentNames;
-import org.nees.illinois.replay.test.server.utils.DatasetDirector.QueryTypes;
-import org.nees.illinois.replay.test.server.utils.ResourceLoader;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
