@@ -3,7 +3,7 @@ package org.nees.illinois.replay.db;
 public class MySQLPools extends DbPools {
 
 	public MySQLPools() {
-		super("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/","mustsim","Erd12beben");
+		super("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/","replay","nees@mustsim08");
 	}
 
 	@Override
