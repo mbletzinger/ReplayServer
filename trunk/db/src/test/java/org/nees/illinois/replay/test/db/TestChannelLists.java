@@ -3,6 +3,7 @@ package org.nees.illinois.replay.test.db;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.DerbyPools;
+import org.nees.illinois.replay.db.MySQLPools;
 import org.nees.illinois.replay.db.data.DbChannelNameSynch;
 import org.nees.illinois.replay.db.statement.DbStatement;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
@@ -11,15 +12,22 @@ import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 public class TestChannelLists {
 	private DbPools dbc;
 	final String experiment = "HybridMasonry1";
 
+	@Parameters("db")
 	@BeforeClass
-	public void setUp() throws Exception {
-		dbc = new DerbyPools();
+	public void setUp(@Optional("derby") String db) throws Exception {
+		if(db.equals("mysql")) {
+			dbc = new MySQLPools();			
+		} else {
+			dbc = new DerbyPools();
+		}
 	}
 
 	@AfterClass

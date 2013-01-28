@@ -1,17 +1,20 @@
 package org.nees.illinois.replay.test.db;
 
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
-import org.testng.annotations.BeforeMethod;
-import org.testng.AssertJUnit;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.DerbyPools;
+import org.nees.illinois.replay.db.MySQLPools;
 import org.nees.illinois.replay.db.statement.DbStatement;
 import org.nees.illinois.replay.test.db.utils.TestPrepStatement;
+import org.testng.AssertJUnit;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
 
 public class TestDbStatement {
 	private DbPools dbc;
@@ -19,9 +22,14 @@ public class TestDbStatement {
 	private final Logger log = Logger.getLogger(TestDbStatement.class);
 	final String experiment = "HybridMasonry1";
 
+	@Parameters("db")
 	@BeforeMethod
-	public void setUp() throws Exception {
-		dbc = new DerbyPools();
+	public void setUp(@Optional("derby") String db) throws Exception {
+		if(db.equals("mysql")) {
+			dbc = new MySQLPools();			
+		} else {
+			dbc = new DerbyPools();
+		}
 		for (int i = 0; i < 5; i++) {
 			data[i][0] = i * 0.5 + .001;
 			data[i][1] = i * -0.02 + .001;

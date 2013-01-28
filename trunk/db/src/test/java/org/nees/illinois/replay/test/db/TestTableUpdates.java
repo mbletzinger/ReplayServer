@@ -1,9 +1,5 @@
 package org.nees.illinois.replay.test.db;
 
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
-import org.testng.annotations.BeforeMethod;
-import org.testng.AssertJUnit;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,6 +11,12 @@ import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.statement.DbTableSpecs;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
+import org.testng.AssertJUnit;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
@@ -23,10 +25,24 @@ public class TestTableUpdates {
 	private DbTableSpecs dbT;
 	private final Logger log = Logger.getLogger(TestTableUpdates.class);
 	private BoneCP connectionPool;
+	private String driver;
+	private String dbName;
+	private String connectionUrl;
 
-	@BeforeMethod
-	public void setUp() throws Exception {
-		dbT = new DbTableSpecs(new ChannelNameRegistry(), "HybridMasonry1");
+	@Parameters("db")
+	@BeforeClass
+	public void setUp(@Optional("derby") String db) throws Exception {
+		dbName = "HybridMasonry1";
+		if (db.equals("mysql")) {
+			driver = "com.mysql.jdbc.Driver";
+			connectionUrl = "jdbc:mysql://localhost:3306/" + dbName
+					+ ";create=true";
+		} else {
+			driver = "org.apache.derby.jdbc.ClientDriver";
+			connectionUrl = "jdbc:derby://localhost:1527/" + dbName
+					+ ";create=true";
+		}
+		dbT = new DbTableSpecs(new ChannelNameRegistry(), dbName);
 		List<String> channels = new ArrayList<String>();
 		channels.add("OM_Cmd_LBCB1_Actuator_C__LBCB1__X1");
 		channels.add("OM_Disp_LBCB1_Cartesian_D__LBCB1__RY");
@@ -39,9 +55,6 @@ public class TestTableUpdates {
 		channels.add("DAQ_StrainGauge_Steel_WestFlange_FirstFloor_SGWFF1WL03B__W7__SG__B3");
 
 		dbT.addTable(TableType.DAQ, channels);
-		String driver = "org.apache.derby.jdbc.ClientDriver";
-		String dbName = dbT.getDbname();
-		String connectionURL = "jdbc:derby://localhost:1527/" + dbName;
 		try {
 			// load the database driver (make sure this is in your classpath!)
 			Class.forName(driver);
@@ -52,7 +65,7 @@ public class TestTableUpdates {
 		}
 		// setup the connection pool
 		BoneCPConfig config = new BoneCPConfig();
-		config.setJdbcUrl(connectionURL); // jdbc url specific to your database,
+		config.setJdbcUrl(connectionUrl); // jdbc url specific to your database,
 											// eg jdbc:mysql://127.0.0.1/yourdb
 		config.setMinConnectionsPerPartition(5);
 		config.setMaxConnectionsPerPartition(10);

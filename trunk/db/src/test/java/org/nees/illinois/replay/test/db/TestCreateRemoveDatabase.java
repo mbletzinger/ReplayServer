@@ -1,24 +1,46 @@
 package org.nees.illinois.replay.test.db;
 
-import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.log4j.Logger;
+import org.testng.AssertJUnit;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
+
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
 public class TestCreateRemoveDatabase {
 	private final Logger log = Logger.getLogger(TestCreateRemoveDatabase.class);
+	private String driver;
+	private String dbName;
+	private String connectionUrl;
+	private String disconnectionUrl;
+
+	@Parameters("db")
+	@BeforeClass
+	public void setUp(@Optional("derby") String db) throws Exception {
+		dbName = "HybridMasonry1";
+		if (db.equals("mysql")) {
+			driver = "com.mysql.jdbc.Driver";
+			connectionUrl = "jdbc:mysql://localhost:3306/" + dbName
+					+ ";create=true";
+			disconnectionUrl = "jdbc:mysql:;shutdown=true";
+		} else {
+			driver = "org.apache.derby.jdbc.ClientDriver";
+			connectionUrl = "jdbc:derby://localhost:1527/" + dbName
+					+ ";create=true";
+			disconnectionUrl = "jdbc:derby:;shutdown=true";
+		}
+	}
 
 	@Test
 	public void createDatabase() {
-		String driver = "org.apache.derby.jdbc.ClientDriver";
-		String dbName = "HybridMasonry1";
-		String connectionURL = "jdbc:derby://localhost:1527/" + dbName + ";create=true";
 		try {
 			Class.forName(driver);
 		} catch (ClassNotFoundException e1) {
@@ -29,18 +51,18 @@ public class TestCreateRemoveDatabase {
 		log.info("driver loaded");
 		Connection connection = null;
 		try {
-			connection = DriverManager.getConnection(connectionURL);
+			connection = DriverManager.getConnection(connectionUrl);
 		} catch (SQLException e) {
-			log.error("connection failed because ",e);
+			log.error("connection failed because ", e);
 			AssertJUnit.fail();
 		}
-		
+
 		log.info("connected to database");
 		testWithStatement(connection);
-		
+
 		boolean gotSQLExc = false;
 		try {
-			DriverManager.getConnection("jdbc:derby:;shutdown=true");
+			DriverManager.getConnection(disconnectionUrl);
 		} catch (SQLException se) {
 			if (se.getSQLState().equals("XJ015")) {
 				gotSQLExc = true;
@@ -57,9 +79,6 @@ public class TestCreateRemoveDatabase {
 
 	@Test
 	public void createDatabasePool() {
-		String driver = "org.apache.derby.jdbc.ClientDriver";
-		String dbName = "HybridMasonry1";
-		String connectionURL = "jdbc:derby://localhost:1527/" + dbName;
 		try {
 			// load the database driver (make sure this is in your classpath!)
 			Class.forName(driver);
@@ -71,7 +90,7 @@ public class TestCreateRemoveDatabase {
 		Connection connection = null;
 		// setup the connection pool
 		BoneCPConfig config = new BoneCPConfig();
-		config.setJdbcUrl(connectionURL); // jdbc url specific to your database,
+		config.setJdbcUrl(connectionUrl); // jdbc url specific to your database,
 											// eg jdbc:mysql://127.0.0.1/yourdb
 		config.setMinConnectionsPerPartition(5);
 		config.setMaxConnectionsPerPartition(10);
@@ -127,6 +146,6 @@ public class TestCreateRemoveDatabase {
 			log.error("Remove table failed because ", e);
 			AssertJUnit.fail();
 		} // do something with the connection.
-		
-	}	
+
+	}
 }

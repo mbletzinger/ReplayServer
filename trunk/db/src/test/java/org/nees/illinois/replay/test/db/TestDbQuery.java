@@ -25,6 +25,8 @@ import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import com.google.inject.Guice;
@@ -39,10 +41,12 @@ public class TestDbQuery {
 	private final Logger log = Logger.getLogger(TestDbQuery.class);
 	private ExperimentRegistries er;
 	private DbDataUpdates dbu;
-	private ExperimentModule guiceMod = new DbTestsModule();
+	private ExperimentModule guiceMod;
 
+	@Parameters("db")
 	@BeforeMethod
-	public void setUp() throws Exception {
+	public void setUp(@Optional("derby") String db) throws Exception {
+		guiceMod = new DbTestsModule(db);
 		omContData = DataGenerator.initData(20, 6, 0.7);
 		daqContData = DataGenerator.initData(15, 5, 1.0);
 		omStepData = DataGenerator.initData(20, 6, 0.2);
