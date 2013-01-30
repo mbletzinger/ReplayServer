@@ -1,5 +1,6 @@
 package org.nees.illinois.replay.test.db;
 
+import java.sql.Connection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -18,7 +19,9 @@ import org.nees.illinois.replay.db.statement.DbTableSpecs;
 import org.nees.illinois.replay.registries.ChannelLookups;
 import org.nees.illinois.replay.registries.ExperimentModule;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
+import org.nees.illinois.replay.test.db.utils.DbManagement;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
+import org.nees.illinois.replay.test.db.utils.MySqlCreateRemoveDatabase;
 import org.nees.illinois.replay.test.utils.ChannelLists;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
@@ -42,6 +45,7 @@ public class TestDbQuery {
 	private ExperimentRegistries er;
 	private DbDataUpdates dbu;
 	private ExperimentModule guiceMod;
+	private boolean ismysql;
 
 	@Parameters("db")
 	@BeforeMethod
@@ -58,6 +62,14 @@ public class TestDbQuery {
 		dbu = injector.getInstance(DbDataUpdates.class);
 		dbu.setExperiment(er);
 		dbc = dbu.getPools();
+		ismysql = db.equals("mysql");
+		if (ismysql) {
+			DbManagement mscrdb = new MySqlCreateRemoveDatabase(
+					dbc, guiceMod.getExperiment());
+			Connection connection = mscrdb.generateConnection(false);
+			mscrdb.createDatabase(connection);
+			mscrdb.closeConnection(connection);
+		}
 	}
 
 	@AfterMethod
@@ -69,6 +81,13 @@ public class TestDbQuery {
 		DbStatement dbSt = dbc.createDbStatement(er.getExperiment());
 		dbSt.close();
 		dbc.close();
+		if (ismysql) {
+			DbManagement mscrdb = new MySqlCreateRemoveDatabase(
+					dbc, guiceMod.getExperiment());
+			Connection connection = mscrdb.generateConnection(false);
+			mscrdb.removeDatabase(connection);
+			mscrdb.closeConnection(connection);
+		}
 	}
 
 	@Test

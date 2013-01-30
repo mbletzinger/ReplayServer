@@ -8,22 +8,34 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.nees.illinois.replay.db.statement.DbStatement;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
-public abstract class DbPools {
+public class DbPools {
 	private final Map<String, BoneCP> connectionPools = new HashMap<String, BoneCP>();
+
 	private final String dbUrl;
+
 	private final String driver;
+
+	private final DbPoolFilters filters;
+
 	private final Logger log = Logger.getLogger(DbPools.class);
+
 	private final String logon;
 	private final String passwd;
 
-	public DbPools(String driver, String dbUrl, String logon, String passwd) {
+	@Inject
+	public DbPools(@Named("dbDriver") String driver,
+			@Named("dbUrl") String dbUrl, @Named("dbLogon") String logon,
+			@Named("dbPasswd") String passwd, DbPoolFilters filters) {
 		this.dbUrl = dbUrl;
 		this.driver = driver;
-		this.logon = logon;
-		this.passwd = passwd;
+		this.logon = logon.equals("NULL") ? null : logon;
+		this.passwd = passwd.equals("NULL") ? null : passwd;
+		this.filters = filters;
 	}
 
 	public void close() {
@@ -33,7 +45,7 @@ public abstract class DbPools {
 	}
 
 	private void createConnection(String experiment) {
-		String connectionUrl = filterUrl(dbUrl, experiment);
+		String connectionUrl = filters.filterUrl(dbUrl, experiment);
 		try {
 			// load the database driver (make sure this is in your classpath!)
 			Class.forName(driver);
@@ -55,6 +67,7 @@ public abstract class DbPools {
 			}
 		}
 		BoneCP pool = null;
+		log.debug("Creating pool for \"" + config.getJdbcUrl() + "\"");
 		try {
 			pool = new BoneCP(config);
 		} catch (SQLException e1) {
@@ -85,5 +98,39 @@ public abstract class DbPools {
 		return connection;
 	}
 
-	public abstract String filterUrl(String url, String experiment);
+	/**
+	 * @return the dbUrl
+	 */
+	public String getDbUrl() {
+		return dbUrl;
+	}
+
+	/**
+	 * @return the driver
+	 */
+	public String getDriver() {
+		return driver;
+	}
+
+	/**
+	 * @return the filters
+	 */
+	public DbPoolFilters getFilters() {
+		return filters;
+	}
+
+	/**
+	 * @return the logon
+	 */
+	public String getLogon() {
+		return logon;
+	}
+
+	/**
+	 * @return the passwd
+	 */
+	public String getPasswd() {
+		return passwd;
+	}
+
 }
