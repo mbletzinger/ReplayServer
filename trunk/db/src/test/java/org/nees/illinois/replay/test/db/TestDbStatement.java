@@ -1,13 +1,15 @@
 package org.nees.illinois.replay.test.db;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 import org.nees.illinois.replay.db.DbPools;
-import org.nees.illinois.replay.db.DerbyPools;
-import org.nees.illinois.replay.db.MySQLPools;
 import org.nees.illinois.replay.db.statement.DbStatement;
+import org.nees.illinois.replay.test.db.utils.DbManagement;
+import org.nees.illinois.replay.test.db.utils.DbTestsModule;
+import org.nees.illinois.replay.test.db.utils.MySqlCreateRemoveDatabase;
 import org.nees.illinois.replay.test.db.utils.TestPrepStatement;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterMethod;
@@ -16,20 +18,32 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 public class TestDbStatement {
 	private DbPools dbc;
 	private double[][] data = new double[5][2];
 	private final Logger log = Logger.getLogger(TestDbStatement.class);
 	final String experiment = "HybridMasonry1";
+	private boolean ismysql;
 
 	@Parameters("db")
 	@BeforeMethod
 	public void setUp(@Optional("derby") String db) throws Exception {
-		if(db.equals("mysql")) {
-			dbc = new MySQLPools();			
-		} else {
-			dbc = new DerbyPools();
+		DbTestsModule guiceMod = new DbTestsModule(db);
+		guiceMod.setExperiment("HybridMasonry1");
+		Injector injector = Guice.createInjector(guiceMod);
+		dbc = injector.getInstance(DbPools.class);
+		ismysql = db.equals("mysql");
+		if (ismysql) {
+			DbManagement mscrdb = new MySqlCreateRemoveDatabase(
+					dbc, guiceMod.getExperiment());
+			Connection connection = mscrdb.generateConnection(false);
+			mscrdb.createDatabase(connection);
+			mscrdb.closeConnection(connection);
 		}
+
 		for (int i = 0; i < 5; i++) {
 			data[i][0] = i * 0.5 + .001;
 			data[i][1] = i * -0.02 + .001;
@@ -42,6 +56,13 @@ public class TestDbStatement {
 		dbSt.noComplaints("DROP TABLE TestTable");
 		dbSt.close();
 		dbc.close();
+		if (ismysql) {
+			DbManagement mscrdb = new MySqlCreateRemoveDatabase(
+					dbc, experiment);
+			Connection connection = mscrdb.generateConnection(false);
+			mscrdb.removeDatabase(connection);
+			mscrdb.closeConnection(connection);
+		}
 	}
 
 	@Test

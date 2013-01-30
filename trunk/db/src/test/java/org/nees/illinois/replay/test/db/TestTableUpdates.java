@@ -9,8 +9,14 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
+import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.statement.DbTableSpecs;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.test.db.utils.DbManagement;
+import org.nees.illinois.replay.test.db.utils.DbTestsModule;
+import org.nees.illinois.replay.test.db.utils.DerbyCreateRemoveDatabase;
+import org.nees.illinois.replay.test.db.utils.MySqlCreateRemoveDatabase;
+import org.testng.Assert;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -18,6 +24,8 @@ import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
@@ -25,24 +33,28 @@ public class TestTableUpdates {
 	private DbTableSpecs dbT;
 	private final Logger log = Logger.getLogger(TestTableUpdates.class);
 	private BoneCP connectionPool;
-	private String driver;
-	private String dbName;
-	private String connectionUrl;
+	private DbManagement dbm;
+	private boolean ismysql;
 
 	@Parameters("db")
 	@BeforeClass
 	public void setUp(@Optional("derby") String db) throws Exception {
-		dbName = "HybridMasonry1";
-		if (db.equals("mysql")) {
-			driver = "com.mysql.jdbc.Driver";
-			connectionUrl = "jdbc:mysql://localhost:3306/" + dbName
-					+ ";create=true";
+		DbTestsModule guiceMod = new DbTestsModule(db);
+		String experiment = "HybridMasonry1";
+		guiceMod.setExperiment(experiment);
+		Injector injector = Guice.createInjector(guiceMod);
+		DbPools pools = injector.getInstance(DbPools.class);
+		String driver = pools.getDriver();
+		String connectionUrl = pools.getDbUrl();
+		String user = pools.getLogon();
+		String passwd = pools.getPasswd();
+		ismysql = db.equals("mysql");
+		if (ismysql) {
+			dbm = new MySqlCreateRemoveDatabase(pools, experiment);
 		} else {
-			driver = "org.apache.derby.jdbc.ClientDriver";
-			connectionUrl = "jdbc:derby://localhost:1527/" + dbName
-					+ ";create=true";
+			dbm = new DerbyCreateRemoveDatabase(pools, experiment);
 		}
-		dbT = new DbTableSpecs(new ChannelNameRegistry(), dbName);
+		dbT = new DbTableSpecs(new ChannelNameRegistry(), experiment);
 		List<String> channels = new ArrayList<String>();
 		channels.add("OM_Cmd_LBCB1_Actuator_C__LBCB1__X1");
 		channels.add("OM_Disp_LBCB1_Cartesian_D__LBCB1__RY");
@@ -60,21 +72,32 @@ public class TestTableUpdates {
 			Class.forName(driver);
 		} catch (Exception e) {
 			log.error("Driver " + driver + " did not load ", e);
-			AssertJUnit.fail();
+			Assert.fail();
 			return;
+		}
+		Connection connection = null;
+		if (ismysql) {
+			connection = dbm.generateConnection(false);
+			dbm.createDatabase(connection);
+			dbm.closeConnection(connection);
 		}
 		// setup the connection pool
 		BoneCPConfig config = new BoneCPConfig();
-		config.setJdbcUrl(connectionUrl); // jdbc url specific to your database,
-											// eg jdbc:mysql://127.0.0.1/yourdb
+		config.setJdbcUrl(connectionUrl + dbm.getExperiment()); // jdbc url specific to
+														// your database,
+		// eg jdbc:mysql://127.0.0.1/yourdb
 		config.setMinConnectionsPerPartition(5);
 		config.setMaxConnectionsPerPartition(10);
 		config.setPartitionCount(1);
+		if (user != null) {
+			config.setUsername(user);
+			config.setPassword(passwd);
+		}
 		try {
 			connectionPool = new BoneCP(config);
 		} catch (SQLException e1) {
 			log.error("Connection Pool failed to start ", e1);
-			AssertJUnit.fail();
+			Assert.fail();
 			return;
 		} // setup the connection pool
 
@@ -96,6 +119,11 @@ public class TestTableUpdates {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+		}
+		if (ismysql) {
+			connection = dbm.generateConnection(false);
+			dbm.removeDatabase(connection);
+			dbm.closeConnection(connection);
 		}
 	}
 

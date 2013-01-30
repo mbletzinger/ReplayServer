@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="DerbyDbSuite" parallel="false">
- <parameter name="db"  value="derby"/>
-   <test name="DerbyTest">
+<suite name="MySqlDbSuite" parallel="false">
+ <parameter name="db"  value="mysql"/>
+   <test name="MySqlTest">
     <classes>
       <class name="org.nees.illinois.replay.test.db.TestCreateRemoveDatabase"/>
       <class name="org.nees.illinois.replay.test.db.TestChannelLists"/>
@@ -11,5 +11,5 @@
       <class name="org.nees.illinois.replay.test.db.TestDbQuery"/>
       <class name="org.nees.illinois.replay.test.db.TestDbStatement"/>
     </classes>
-  </test> <!-- DerbyTest -->
-</suite> <!-- DerbyDbSuite -->
+  </test> <!-- MySqlTest -->
+</suite> <!-- MySqlDbSuite -->

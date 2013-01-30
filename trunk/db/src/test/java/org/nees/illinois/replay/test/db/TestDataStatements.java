@@ -1,5 +1,6 @@
 package org.nees.illinois.replay.test.db;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -15,7 +16,9 @@ import org.nees.illinois.replay.registries.ChannelLookups;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.registries.ExperimentModule;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
+import org.nees.illinois.replay.test.db.utils.DbManagement;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
+import org.nees.illinois.replay.test.db.utils.MySqlCreateRemoveDatabase;
 import org.nees.illinois.replay.test.utils.ChannelLists;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
@@ -41,7 +44,7 @@ public class TestDataStatements {
 	private ExperimentRegistries er;
 	private DbDataUpdates dbu;
 	private ExperimentModule guiceMod;
-	
+	private boolean ismysql;
 
 	@Parameters("db")
 	@BeforeMethod
@@ -50,14 +53,22 @@ public class TestDataStatements {
 		omContData = DataGenerator.initData(20, 6, 0.5);
 		daqContData = DataGenerator.initData(15, 5, 1);
 		omStepData = DataGenerator.initData(20, 6, 0.5);
-		daqStepData = DataGenerator.initData(15, 5,1);
+		daqStepData = DataGenerator.initData(15, 5, 1);
 		guiceMod.setExperiment("HybridMasonry1");
 		Injector injector = Guice.createInjector(guiceMod);
 		er = injector.getInstance(ExperimentRegistries.class);
 		er.setLookups(injector.getProvider(ChannelLookups.class));
-		dbu = injector.getInstance(DbDataUpdates.class); 
+		dbu = injector.getInstance(DbDataUpdates.class);
 		dbu.setExperiment(er);
 		dbc = dbu.getPools();
+		ismysql = db.equals("mysql");
+		if (ismysql) {
+			DbManagement mscrdb = new MySqlCreateRemoveDatabase(
+					dbc, guiceMod.getExperiment());
+			Connection connection = mscrdb.generateConnection(false);
+			mscrdb.createDatabase(connection);
+			mscrdb.closeConnection(connection);
+		}
 	}
 
 	@AfterMethod
@@ -68,6 +79,13 @@ public class TestDataStatements {
 		DbStatement dbSt = dbc.createDbStatement(er.getExperiment());
 		dbSt.close();
 		dbc.close();
+		if (ismysql) {
+			DbManagement mscrdb = new MySqlCreateRemoveDatabase(
+					dbc, guiceMod.getExperiment());
+			Connection connection = mscrdb.generateConnection(false);
+			mscrdb.removeDatabase(connection);
+			mscrdb.closeConnection(connection);
+		}
 	}
 
 	@Test
@@ -94,16 +112,16 @@ public class TestDataStatements {
 		ChannelLists cl = new ChannelLists();
 		DbTableSpecs specs = new DbTableSpecs(cnr, er.getExperiment());
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
-		 log.debug("Adding data " +
-		 Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
+		log.debug("Adding data "
+				+ Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
 		dbu.update(TableType.OM, RateType.STEP, omStepData);
 
 		String tblName = specs.tableName(TableType.OM, RateType.STEP);
 		queryData(tblName, omStepData);
 
 		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
-		 log.debug("Adding data " +
-		 Mtx2Str.matrix2String(Mtx2Str.timeOffset(omStepData)));
+		log.debug("Adding data "
+				+ Mtx2Str.matrix2String(Mtx2Str.timeOffset(omStepData)));
 		dbu.update(TableType.DAQ, RateType.STEP, daqStepData);
 
 		tblName = specs.tableName(TableType.DAQ, RateType.STEP);
