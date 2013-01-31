@@ -2,7 +2,6 @@ package org.nees.illinois.replay.test.resources.utils;
 
 import static org.testng.AssertJUnit.assertTrue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,10 +27,7 @@ import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
 import org.restlet.data.Method;
-import org.restlet.data.Preference;
 import org.restlet.representation.Representation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
