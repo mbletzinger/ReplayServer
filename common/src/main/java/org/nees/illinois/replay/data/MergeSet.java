@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MergeSet {
 	private final List<MergeRecord> accum = new ArrayList<MergeRecord>();
-	private final Logger log = Logger.getLogger(MergeSet.class);
+	private final Logger log = LoggerFactory.getLogger(MergeSet.class);
 	private final RateType rate;
+
 	public MergeSet(RateType rate) {
 		super();
 		this.rate = rate;
 	}
+
 	public int getColumnSize(boolean withTime) {
 		return accum.get(0).getNoc().getNumber(withTime);
 	}
@@ -26,13 +29,14 @@ public class MergeSet {
 		}
 		return result;
 	}
+
 	public void merge(List<List<Double>> toMerge) {
 		List<MergeRecord> tmr = new ArrayList<MergeRecord>();
 		for (List<Double> r : toMerge) {
 			tmr.add(new MergeRecord(rate, r));
 		}
 		String msg = "Merging ";
-		for ( MergeRecord mr : tmr) {
+		for (MergeRecord mr : tmr) {
 			msg += "\n\t[" + mr + "]";
 		}
 		log.debug(msg);
@@ -40,7 +44,7 @@ public class MergeSet {
 			accum.addAll(tmr);
 			return;
 		}
-		
+
 		int tsz = tmr.get(0).size();
 		int asz = accum.get(0).size();
 
@@ -69,14 +73,17 @@ public class MergeSet {
 		}
 
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		String result = "";
-		for ( MergeRecord r : accum) {
-			result += "\n\t[" + r + "]";  
+		for (MergeRecord r : accum) {
+			result += "\n\t[" + r + "]";
 		}
 		return result;
 	}
