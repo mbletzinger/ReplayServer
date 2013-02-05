@@ -2,8 +2,8 @@ package org.nees.illinois.replay.db.statement;
 
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
 import org.nees.illinois.replay.data.Mtx2Str;
+import org.slf4j.LoggerFactory;
 
 public class DataInsertStatement extends PrepStatement {
 	public static DataInsertStatement getStatement(String dataTableName,
@@ -17,7 +17,7 @@ public class DataInsertStatement extends PrepStatement {
 	}
 
 	public DataInsertStatement(String dataTableName, String statement) {
-		super(statement, Logger.getLogger(DataInsertStatement.class));
+		super(statement, LoggerFactory.getLogger(DataInsertStatement.class));
 	}
 
 	public boolean add(double[] data) {

@@ -6,7 +6,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
@@ -16,6 +15,8 @@ import org.nees.illinois.replay.test.db.utils.DbManagement;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
 import org.nees.illinois.replay.test.db.utils.DerbyCreateRemoveDatabase;
 import org.nees.illinois.replay.test.db.utils.MySqlCreateRemoveDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterMethod;
@@ -31,7 +32,7 @@ import com.jolbox.bonecp.BoneCPConfig;
 
 public class TestTableUpdates {
 	private DbTableSpecs dbT;
-	private final Logger log = Logger.getLogger(TestTableUpdates.class);
+	private final Logger log = LoggerFactory.getLogger(TestTableUpdates.class);
 	private BoneCP connectionPool;
 	private DbManagement dbm;
 	private boolean ismysql;
@@ -83,8 +84,9 @@ public class TestTableUpdates {
 		}
 		// setup the connection pool
 		BoneCPConfig config = new BoneCPConfig();
-		config.setJdbcUrl(connectionUrl + dbm.getExperiment()); // jdbc url specific to
-														// your database,
+		config.setJdbcUrl(connectionUrl + dbm.getExperiment()); // jdbc url
+																// specific to
+		// your database,
 		// eg jdbc:mysql://127.0.0.1/yourdb
 		config.setMinConnectionsPerPartition(5);
 		config.setMaxConnectionsPerPartition(10);

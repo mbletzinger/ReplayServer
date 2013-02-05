@@ -1,16 +1,16 @@
 package org.nees.illinois.replay.test.db;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.log4j.Logger;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.test.db.utils.DbManagement;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
 import org.nees.illinois.replay.test.db.utils.DerbyCreateRemoveDatabase;
 import org.nees.illinois.replay.test.db.utils.MySqlCreateRemoveDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Optional;
@@ -23,7 +23,7 @@ import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
 public class TestCreateRemoveDatabase {
-	private final Logger log = Logger
+	private final Logger log = LoggerFactory
 			.getLogger(TestCreateRemoveDatabase.class);
 	private String driver;
 	private String connectionUrl;
@@ -89,8 +89,9 @@ public class TestCreateRemoveDatabase {
 		}
 		// setup the connection pool
 		BoneCPConfig config = new BoneCPConfig();
-		config.setJdbcUrl(connectionUrl + dbm.getExperiment()); // jdbc url specific to
-														// your database,
+		config.setJdbcUrl(connectionUrl + dbm.getExperiment()); // jdbc url
+																// specific to
+		// your database,
 		// eg jdbc:mysql://127.0.0.1/yourdb
 		config.setMinConnectionsPerPartition(5);
 		config.setMaxConnectionsPerPartition(10);

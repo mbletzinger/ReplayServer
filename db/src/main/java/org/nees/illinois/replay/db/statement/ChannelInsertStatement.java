@@ -2,12 +2,12 @@ package org.nees.illinois.replay.db.statement;
 
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ChannelInsertStatement extends PrepStatement {
 
 	public ChannelInsertStatement(String channelTableName) {
-		super("INSERT INTO " + channelTableName + " VALUES (?, ?)", Logger.getLogger(ChannelInsertStatement.class));
+		super("INSERT INTO " + channelTableName + " VALUES (?, ?)", LoggerFactory.getLogger(ChannelInsertStatement.class));
 	}
 	public boolean add(String name, String id) {
 		try {
