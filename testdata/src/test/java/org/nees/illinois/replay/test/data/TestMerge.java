@@ -1,21 +1,22 @@
 package org.nees.illinois.replay.test.data;
 
-import org.testng.annotations.Test;
-import org.testng.annotations.BeforeMethod;
-import org.testng.AssertJUnit;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.nees.illinois.replay.data.MergeSet;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testng.AssertJUnit;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 public class TestMerge {
 	private List<List<Double>> omContData;
 	private List<List<Double>> daqContData;
 	private List<List<Double>> omStepData;
 	private List<List<Double>> daqStepData;
-	private final Logger log = Logger.getLogger(TestMerge.class);
+	private final Logger log = LoggerFactory.getLogger(TestMerge.class);
 
 	@BeforeMethod
 	public void setUp() throws Exception {
@@ -42,7 +43,7 @@ public class TestMerge {
 		AssertJUnit.assertEquals(7, mset.getColumnSize(true));
 		List<List<Double>> result = mset.getRecords();
 		for (List<Double> r : result) {
-			log.info("Checking " + r );
+			log.info("Checking " + r);
 			AssertJUnit.assertEquals(daqcsz[1], r.size());
 		}
 		mset.merge(omContData);
@@ -54,7 +55,7 @@ public class TestMerge {
 		log.debug("OM Cont[" + omcsz[0] + "][" + omcsz[1] + "]");
 
 		for (List<Double> r : result) {
-			log.info("Checking " + r );
+			log.info("Checking " + r);
 			AssertJUnit.assertEquals(daqcsz[1] + omcsz[1] - 4, r.size());
 		}
 		mset = new MergeSet(RateType.STEP);
@@ -64,7 +65,7 @@ public class TestMerge {
 		AssertJUnit.assertEquals(3, mset.getColumnSize(false));
 		AssertJUnit.assertEquals(7, mset.getColumnSize(true));
 		for (List<Double> r : result) {
-			log.info("Checking " + r );
+			log.info("Checking " + r);
 			AssertJUnit.assertEquals(daqssz[1], r.size());
 		}
 		mset.merge(omStepData);
@@ -73,7 +74,7 @@ public class TestMerge {
 		AssertJUnit.assertEquals(7, mset.getColumnSize(false));
 		AssertJUnit.assertEquals(11, mset.getColumnSize(true));
 		for (List<Double> r : result) {
-			log.info("Checking " + r );
+			log.info("Checking " + r);
 			AssertJUnit.assertEquals(daqssz[1] + omssz[1] - 4, r.size());
 		}
 

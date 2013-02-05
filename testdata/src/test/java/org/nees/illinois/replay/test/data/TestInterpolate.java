@@ -1,21 +1,22 @@
 package org.nees.illinois.replay.test.data;
 
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
-import org.testng.annotations.BeforeMethod;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.MatrixFix;
 import org.nees.illinois.replay.test.utils.DoubleMatrixGenerator;
 import org.nees.illinois.replay.test.utils.DoubleMatrixGenerator.ColumnTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 public class TestInterpolate {
-	private final Logger log = Logger.getLogger(TestInterpolate.class);
+	private final Logger log = LoggerFactory.getLogger(TestInterpolate.class);
 	private DoubleMatrixGenerator dmg = new DoubleMatrixGenerator(10, 0.02);
-	
+
 	@BeforeMethod
 	public void setUp() throws Exception {
 	}
@@ -35,12 +36,13 @@ public class TestInterpolate {
 		log.debug("Actual: " + actual);
 		MatrixFix iplt = new MatrixFix(actual);
 		iplt.fix();
-		log.debug("Fixed: " + actual);		
+		log.debug("Fixed: " + actual);
 		List<List<Double>> expectedL = dmg.generate(spec, true);
 		DoubleMatrix expected = new DoubleMatrix(expectedL, spec.size());
-//		log.debug("Expected: " + expected);
+		// log.debug("Expected: " + expected);
 		dmg.compareList2Doubles(expected, actual);
 	}
+
 	@Test
 	public void testEmpty() {
 		List<ColumnTypes> spec = new ArrayList<DoubleMatrixGenerator.ColumnTypes>();
@@ -52,12 +54,13 @@ public class TestInterpolate {
 		log.debug("Actual: " + actual);
 		MatrixFix iplt = new MatrixFix(actual);
 		iplt.fix();
-		log.debug("Fixed: " + actual);		
+		log.debug("Fixed: " + actual);
 		List<List<Double>> expectedL = dmg.generate(spec, true);
 		DoubleMatrix expected = new DoubleMatrix(expectedL, spec.size());
-//		log.debug("Expected: " + expected);
+		// log.debug("Expected: " + expected);
 		dmg.compareList2Doubles(expected, actual);
 	}
+
 	@Test
 	public void testNulls() {
 		List<ColumnTypes> spec = new ArrayList<DoubleMatrixGenerator.ColumnTypes>();
@@ -72,12 +75,13 @@ public class TestInterpolate {
 		log.debug("Actual: " + actual);
 		MatrixFix iplt = new MatrixFix(actual);
 		iplt.fix();
-		log.debug("Fixed: " + actual);				
+		log.debug("Fixed: " + actual);
 		List<List<Double>> expectedL = dmg.generate(spec, true);
 		DoubleMatrix expected = new DoubleMatrix(expectedL, spec.size());
-//		log.debug("Expected: " + expected);
+		// log.debug("Expected: " + expected);
 		dmg.compareList2Doubles(expected, actual);
 	}
+
 	@Test
 	public void testExtrapolate() {
 		List<ColumnTypes> spec = new ArrayList<DoubleMatrixGenerator.ColumnTypes>();
@@ -93,7 +97,7 @@ public class TestInterpolate {
 		log.debug("Actual: " + actual);
 		MatrixFix iplt = new MatrixFix(actual);
 		iplt.fix();
-		log.debug("Fixed: " + actual);				
+		log.debug("Fixed: " + actual);
 		List<List<Double>> expectedL = dmg.generate(spec, true);
 		DoubleMatrix expected = new DoubleMatrix(expectedL, spec.size());
 		log.debug("Expected: " + expected);
