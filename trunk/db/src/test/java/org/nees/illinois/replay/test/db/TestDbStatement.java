@@ -4,13 +4,14 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.statement.DbStatement;
 import org.nees.illinois.replay.test.db.utils.DbManagement;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
 import org.nees.illinois.replay.test.db.utils.MySqlCreateRemoveDatabase;
 import org.nees.illinois.replay.test.db.utils.TestPrepStatement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -24,7 +25,7 @@ import com.google.inject.Injector;
 public class TestDbStatement {
 	private DbPools dbc;
 	private double[][] data = new double[5][2];
-	private final Logger log = Logger.getLogger(TestDbStatement.class);
+	private final Logger log = LoggerFactory.getLogger(TestDbStatement.class);
 	final String experiment = "HybridMasonry1";
 	private boolean ismysql;
 
@@ -37,8 +38,8 @@ public class TestDbStatement {
 		dbc = injector.getInstance(DbPools.class);
 		ismysql = db.equals("mysql");
 		if (ismysql) {
-			DbManagement mscrdb = new MySqlCreateRemoveDatabase(
-					dbc, guiceMod.getExperiment());
+			DbManagement mscrdb = new MySqlCreateRemoveDatabase(dbc,
+					guiceMod.getExperiment());
 			Connection connection = mscrdb.generateConnection(false);
 			mscrdb.createDatabase(connection);
 			mscrdb.closeConnection(connection);
@@ -57,8 +58,7 @@ public class TestDbStatement {
 		dbSt.close();
 		dbc.close();
 		if (ismysql) {
-			DbManagement mscrdb = new MySqlCreateRemoveDatabase(
-					dbc, experiment);
+			DbManagement mscrdb = new MySqlCreateRemoveDatabase(dbc, experiment);
 			Connection connection = mscrdb.generateConnection(false);
 			mscrdb.removeDatabase(connection);
 			mscrdb.closeConnection(connection);
@@ -86,7 +86,7 @@ public class TestDbStatement {
 		for (int i = 0; i < 5; i++) {
 			prep.add(data[i][0], data[i][1]);
 		}
-		int [] result = prep.execute();
+		int[] result = prep.execute();
 		AssertJUnit.assertNotNull(result);
 		dbSt.execute("DROP TABLE TestTable");
 		dbSt.close();
@@ -117,7 +117,7 @@ public class TestDbStatement {
 			}
 			String rStr1 = "Result = [";
 			String rStr2 = "              [";
-			for ( int k = 0; k < 5; k++) {
+			for (int k = 0; k < 5; k++) {
 				rStr1 += (k == 0 ? "" : ", ") + result[k][0];
 				rStr2 += (k == 0 ? "" : ", ") + result[k][1];
 			}
@@ -145,7 +145,8 @@ public class TestDbStatement {
 		prep.execute();
 		ResultSet rs = dbSt.query("SELECT * FROM " + tblName);
 		double[][] result = new double[5][2];
-		log.info("result size is [" + result.length + "][" + result[0].length + "]");
+		log.info("result size is [" + result.length + "][" + result[0].length
+				+ "]");
 		int r = 0;
 		try {
 			while (rs.next()) {

@@ -5,15 +5,17 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.nees.illinois.replay.db.statement.ChannelInsertStatement;
 import org.nees.illinois.replay.db.statement.DbStatement;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DbChannelNameSynch {
 	private final String channelTable = "CHANNEL_NAMES";
 	private final DbStatement db;
-	private final Logger log = Logger.getLogger(DbChannelNameSynch.class);
+	private final Logger log = LoggerFactory
+			.getLogger(DbChannelNameSynch.class);
 	private final ChannelNameRegistry cnr;
 	private final String afterLastChannel = "AfterLastChannel";
 
@@ -24,7 +26,8 @@ public class DbChannelNameSynch {
 	}
 
 	public void createTable() {
-		db.execute("CREATE TABLE " + channelTable + "(name varchar(100), id varchar(50))");
+		db.execute("CREATE TABLE " + channelTable
+				+ "(name varchar(100), id varchar(50))");
 	}
 
 	private Map<String, String> getValues() {
@@ -65,8 +68,7 @@ public class DbChannelNameSynch {
 		for (String n : reg.keySet()) {
 			prep.add(n, reg.get(n));
 		}
-		prep.add(afterLastChannel,
-				Long.toString(cnr.getAfterLastChannel()));
+		prep.add(afterLastChannel, Long.toString(cnr.getAfterLastChannel()));
 		if (prep.execute() == null) {
 			log.error("Channel name synchronize failed");
 			return;

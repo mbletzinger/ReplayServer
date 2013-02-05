@@ -3,7 +3,6 @@ package org.nees.illinois.replay.test.db;
 import java.sql.Connection;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.Mtx2Str;
 import org.nees.illinois.replay.data.RateType;
@@ -25,6 +24,8 @@ import org.nees.illinois.replay.test.db.utils.MySqlCreateRemoveDatabase;
 import org.nees.illinois.replay.test.utils.ChannelLists;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -41,7 +42,7 @@ public class TestDbQuery {
 	private double[][] daqContData = new double[15][6];
 	private double[][] omStepData = new double[20][10];
 	private double[][] daqStepData = new double[15][9];
-	private final Logger log = Logger.getLogger(TestDbQuery.class);
+	private final Logger log = LoggerFactory.getLogger(TestDbQuery.class);
 	private ExperimentRegistries er;
 	private DbDataUpdates dbu;
 	private ExperimentModule guiceMod;
@@ -64,8 +65,8 @@ public class TestDbQuery {
 		dbc = dbu.getPools();
 		ismysql = db.equals("mysql");
 		if (ismysql) {
-			DbManagement mscrdb = new MySqlCreateRemoveDatabase(
-					dbc, guiceMod.getExperiment());
+			DbManagement mscrdb = new MySqlCreateRemoveDatabase(dbc,
+					guiceMod.getExperiment());
 			Connection connection = mscrdb.generateConnection(false);
 			mscrdb.createDatabase(connection);
 			mscrdb.closeConnection(connection);
@@ -82,8 +83,8 @@ public class TestDbQuery {
 		dbSt.close();
 		dbc.close();
 		if (ismysql) {
-			DbManagement mscrdb = new MySqlCreateRemoveDatabase(
-					dbc, guiceMod.getExperiment());
+			DbManagement mscrdb = new MySqlCreateRemoveDatabase(dbc,
+					guiceMod.getExperiment());
 			Connection connection = mscrdb.generateConnection(false);
 			mscrdb.removeDatabase(connection);
 			mscrdb.closeConnection(connection);
@@ -105,19 +106,16 @@ public class TestDbQuery {
 			List<DbSelect> selects = dbs.getSelect();
 			AssertJUnit.assertEquals(1, selects.size());
 			AssertJUnit.assertEquals(2, selects.get(0).getNumber(false));
-			AssertJUnit.assertEquals(6, selects
-					.get(0).getNumber(true));
+			AssertJUnit.assertEquals(6, selects.get(0).getNumber(true));
 			selects = dbs.getSelect(10.0);
 			AssertJUnit.assertEquals(1, selects.size());
 			AssertJUnit.assertEquals(2, selects.get(0).getNumber(false));
-			AssertJUnit.assertEquals(6, selects
-					.get(0).getNumber(true));
+			AssertJUnit.assertEquals(6, selects.get(0).getNumber(true));
 			AssertJUnit.assertTrue(selects.get(0).getSelect().contains("10.0"));
 			selects = dbs.getSelect(10.0, 900.85);
 			AssertJUnit.assertEquals(1, selects.size());
 			AssertJUnit.assertEquals(2, selects.get(0).getNumber(false));
-			AssertJUnit.assertEquals(6, selects
-					.get(0).getNumber(true));
+			AssertJUnit.assertEquals(6, selects.get(0).getNumber(true));
 			AssertJUnit.assertTrue(selects.get(0).getSelect().contains("10.0"));
 			AssertJUnit.assertTrue(selects.get(0).getSelect()
 					.contains("900.85"));

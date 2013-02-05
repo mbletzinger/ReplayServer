@@ -5,8 +5,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.nees.illinois.replay.db.statement.DbStatement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -22,7 +23,7 @@ public class DbPools {
 
 	private final DbPoolFilters filters;
 
-	private final Logger log = Logger.getLogger(DbPools.class);
+	private final Logger log = LoggerFactory.getLogger(DbPools.class);
 
 	private final String logon;
 	private final String passwd;

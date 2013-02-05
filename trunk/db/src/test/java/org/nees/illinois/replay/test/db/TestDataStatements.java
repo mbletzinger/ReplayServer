@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
 import org.nees.illinois.replay.data.Mtx2Str;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
@@ -22,6 +21,8 @@ import org.nees.illinois.replay.test.db.utils.MySqlCreateRemoveDatabase;
 import org.nees.illinois.replay.test.utils.ChannelLists;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -40,7 +41,8 @@ public class TestDataStatements {
 	private double[][] daqStepData;
 	private ChannelNameRegistry cnr = new ChannelNameRegistry();
 
-	private final Logger log = Logger.getLogger(TestDataStatements.class);
+	private final Logger log = LoggerFactory
+			.getLogger(TestDataStatements.class);
 	private ExperimentRegistries er;
 	private DbDataUpdates dbu;
 	private ExperimentModule guiceMod;
@@ -63,8 +65,8 @@ public class TestDataStatements {
 		dbc = dbu.getPools();
 		ismysql = db.equals("mysql");
 		if (ismysql) {
-			DbManagement mscrdb = new MySqlCreateRemoveDatabase(
-					dbc, guiceMod.getExperiment());
+			DbManagement mscrdb = new MySqlCreateRemoveDatabase(dbc,
+					guiceMod.getExperiment());
 			Connection connection = mscrdb.generateConnection(false);
 			mscrdb.createDatabase(connection);
 			mscrdb.closeConnection(connection);
@@ -80,8 +82,8 @@ public class TestDataStatements {
 		dbSt.close();
 		dbc.close();
 		if (ismysql) {
-			DbManagement mscrdb = new MySqlCreateRemoveDatabase(
-					dbc, guiceMod.getExperiment());
+			DbManagement mscrdb = new MySqlCreateRemoveDatabase(dbc,
+					guiceMod.getExperiment());
 			Connection connection = mscrdb.generateConnection(false);
 			mscrdb.removeDatabase(connection);
 			mscrdb.closeConnection(connection);

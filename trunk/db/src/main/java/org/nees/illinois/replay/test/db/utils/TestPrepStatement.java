@@ -2,13 +2,13 @@ package org.nees.illinois.replay.test.db.utils;
 
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
 import org.nees.illinois.replay.db.statement.PrepStatement;
+import org.slf4j.LoggerFactory;
 
 public class TestPrepStatement extends PrepStatement {
 
 	public TestPrepStatement(String dbTableName) {
-		super("INSERT INTO " + dbTableName + "  VALUES(?,?)", Logger.getLogger(TestPrepStatement.class));
+		super("INSERT INTO " + dbTableName + "  VALUES(?,?)", LoggerFactory.getLogger(TestPrepStatement.class));
 	}
 	public boolean add(double x1, double x2) {
 		try {
