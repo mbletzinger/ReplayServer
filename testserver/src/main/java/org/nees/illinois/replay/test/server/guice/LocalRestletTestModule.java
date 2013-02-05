@@ -6,10 +6,8 @@ import org.nees.illinois.replay.registries.ExperimentModule;
 import org.nees.illinois.replay.restlet.DataQueryServerResource;
 import org.nees.illinois.replay.restlet.DataTableServerResource;
 import org.nees.illinois.replay.restlet.HostInfo;
-import org.nees.illinois.replay.restlet.ReplayServerApplication;
 import org.nees.illinois.replay.test.data.TestDataQuery;
 import org.nees.illinois.replay.test.data.TestDataUpdates;
-import org.nees.illinois.replay.test.server.restlet.LocalRestletTestApplication;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
