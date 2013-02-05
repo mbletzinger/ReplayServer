@@ -3,8 +3,8 @@ package org.nees.illinois.replay.test.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.nees.illinois.replay.data.Mtx2Str;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 
 public class DataGenerator {
@@ -67,7 +67,7 @@ public class DataGenerator {
 	}
 
 	public static void compareData(double[][] expected, double[][] actual) {
-		Logger.getLogger(DataGenerator.class).info(
+		LoggerFactory.getLogger(DataGenerator.class).info(
 				"Comparing expected " + Mtx2Str.matrix2String(expected)
 						+ "\nwith actual\n" + Mtx2Str.matrix2String(actual));
 		Assert.assertEquals(actual.length, expected.length);
