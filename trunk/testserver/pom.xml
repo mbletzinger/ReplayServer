@@ -14,11 +14,6 @@
 			<version>2.5</version>
 		</dependency>
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
-		</dependency>
-		<dependency>
 			<groupId>org.nees.illinois.replay.testdata</groupId>
 			<artifactId>ReplayServerTestData</artifactId>
 			<version>0.0.1</version>

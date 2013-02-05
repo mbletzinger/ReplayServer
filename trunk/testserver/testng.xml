@@ -17,6 +17,9 @@
 				<group
 					name="restlet-errors-client-test"
 					depends-on="restlet-client-test.*" />
+				<group
+					name="http-test"
+					depends-on="resources-test.*" />
 			</dependencies>
 		</groups>
 		<classes>

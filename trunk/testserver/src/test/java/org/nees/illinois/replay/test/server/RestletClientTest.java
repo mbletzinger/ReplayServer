@@ -34,6 +34,8 @@ public class RestletClientTest {
 	public void setup() {
 		// Instantiate our Restlet component
 		injector = Guice.createInjector(new LocalRestletTestModule());
+		System.setProperty("org.restlet.engine.loggerFacadeClass",
+				"org.restlet.ext.slf4j.Slf4jLoggerFacade");
 		component = injector.getInstance(ReplayServerComponent.class);
 		try {
 			component.start();
