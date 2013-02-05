@@ -1,13 +1,14 @@
 package org.nees.illinois.replay.data;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MatrixFix {
 	private enum ColScanType {
 		Early, Empty, Full, Gaps, Late
 	}
 
-	private final Logger log = Logger.getLogger(MatrixFix.class);
+	private final Logger log = LoggerFactory.getLogger(MatrixFix.class);
 	private final DoubleMatrix matrix;
 
 	public MatrixFix(DoubleMatrix indata) {

@@ -9,6 +9,8 @@ import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.service.StatusService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -16,16 +18,19 @@ import com.google.inject.Provider;
 public class ReplayServerComponent extends Component {
 
 	private final HostInfo hostinfo;
+	private final Logger log = LoggerFactory
+			.getLogger(ReplayServerComponent.class);
 
 	@Inject
 	public ReplayServerComponent(HostInfo hostinfo,
-			ReplayServerApplication app, Provider<DataUpdateI> tdu, Provider<DataQueryI> tdq, ExperimentModule guiceMod) {
+			ReplayServerApplication app, Provider<DataUpdateI> tdu,
+			Provider<DataQueryI> tdq, ExperimentModule guiceMod) {
 		super();
 		this.hostinfo = hostinfo;
 		// Configure the log service
 		System.setProperty("org.restlet.engine.loggerFacadeClass",
 				"org.restlet.ext.slf4j.Slf4jLoggerFacade");
-
+		log.debug("Set system property for facade");
 		StatusService status = new ReplayErrorService();
 		setStatusService(status);
 		app.setStatusService(status);
