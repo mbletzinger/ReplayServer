@@ -12,10 +12,7 @@ public class DataGenerator {
 	private final int numberOfColumns;
 	private int[] stepNumber = new int[3];
 	private final double timeMultiplier;
-	// private static double startTime = (System.currentTimeMillis() / 1000L) ;
 	private static double startTime = 222.0;
-
-	// private final Logger log = Logger.getLogger(DataGenerator.class);
 
 	public DataGenerator(int numberOfColumns, double timeMultiplier) {
 		super();
