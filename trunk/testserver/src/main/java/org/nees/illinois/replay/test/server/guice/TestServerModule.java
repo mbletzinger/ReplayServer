@@ -1,7 +1,6 @@
 package org.nees.illinois.replay.test.server.guice;
 
 import org.nees.illinois.replay.data.DataUpdateI;
-import org.nees.illinois.replay.registries.ChannelLookups;
 import org.nees.illinois.replay.registries.ExperimentModule;
 import org.nees.illinois.replay.test.data.TestDataUpdates;
 
