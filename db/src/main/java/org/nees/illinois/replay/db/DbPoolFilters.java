@@ -1,5 +1,9 @@
 package org.nees.illinois.replay.db;
 
-public interface DbPoolFilters {
-	public String filterUrl(String url, String experiment);
+public class DbPoolFilters {
+
+	public DbPoolFilters() {
+		// TODO Auto-generated constructor stub
+	}
+
 }
