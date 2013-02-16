@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.AssertJUnit;
 
 import com.google.inject.Inject;
 
@@ -33,7 +32,7 @@ public class DerbyDbOps implements DbOperationsI {
 		}
 		if (!gotSQLExc) {
 			log.error("Database did not shut down normally");
-			AssertJUnit.fail();
+			throw new SQLException();
 		} else {
 			log.info("Database shut down normally");
 		}
