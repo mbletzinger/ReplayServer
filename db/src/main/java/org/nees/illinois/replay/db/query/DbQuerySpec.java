@@ -31,7 +31,10 @@ public class DbQuerySpec extends QuerySpec {
 	private DbSelect createSelect(TableType table) {
 		List<String> sublist = new ArrayList<String>();
 		List<String> tableList = specs.getColumns(table);
-
+		if(tableList.isEmpty()) {
+			log.debug("No channels for " + table + " are specified");
+			return null;
+		}
 		log.debug("extracting selector order for " + table + " from" + tableList + " and " + queryOrder);
 
 		boolean empty = true;

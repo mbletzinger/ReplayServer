@@ -17,42 +17,45 @@ import com.jolbox.bonecp.BoneCPConfig;
 public class DbPools {
 	private final Map<String, BoneCP> connectionPools = new HashMap<String, BoneCP>();
 
-	private final String dbUrl;
-
-	private final String driver;
-
-	private final DbPoolFilters filters;
+	private final DbInfo info;
 
 	private final Logger log = LoggerFactory.getLogger(DbPools.class);
 
-	private final String logon;
-	private final String passwd;
+	private final DbOperationsI ops;
 
 	@Inject
-	public DbPools(@Named("dbDriver") String driver,
-			@Named("dbUrl") String dbUrl, @Named("dbLogon") String logon,
-			@Named("dbPasswd") String passwd, DbPoolFilters filters) {
-		this.dbUrl = dbUrl;
-		this.driver = driver;
-		this.logon = logon.equals("NULL") ? null : logon;
-		this.passwd = passwd.equals("NULL") ? null : passwd;
-		this.filters = filters;
+	public DbPools(DbInfo info, DbOperationsI filters) {
+		this.info = info;
+		this.ops = filters;
 	}
 
 	public void close() {
 		for (BoneCP c : connectionPools.values()) {
 			c.shutdown();
 		}
+		connectionPools.clear();
 	}
 
-	private void createConnection(String experiment) {
-		String connectionUrl = filters.filterUrl(dbUrl, experiment);
+	private void createConnection(String experiment, boolean createDb) {
+		String connectionUrl = ops.filterUrl(info.getConnectionUrl(),
+				experiment);
 		try {
 			// load the database driver (make sure this is in your classpath!)
-			Class.forName(driver);
+			Class.forName(info.getDriver());
 		} catch (Exception e) {
-			log.error("Driver " + driver + " did not load ", e);
+			log.error("Driver " + info.getDriver() + " did not load ", e);
 			return;
+		}
+		if (createDb) {
+			try {
+				boolean exist = ops.isDatabase(experiment);
+				if (exist == false) {
+					ops.createDatabase(experiment);
+				}
+			} catch (Exception e) {
+				log.error("Could not create db " + experiment + " because ", e);
+				return;
+			}
 		}
 		// setup the connection pool
 		BoneCPConfig config = new BoneCPConfig();
@@ -61,10 +64,10 @@ public class DbPools {
 		config.setMinConnectionsPerPartition(5);
 		config.setMaxConnectionsPerPartition(10);
 		config.setPartitionCount(1);
-		if (logon != null) {
-			config.setUsername(logon);
-			if (passwd != null) {
-				config.setPassword(passwd);
+		if (info.getUser() != null) {
+			config.setUsername(info.getUser());
+			if (info.getPasswd() != null) {
+				config.setPassword(info.getPasswd());
 			}
 		}
 		BoneCP pool = null;
@@ -78,18 +81,18 @@ public class DbPools {
 		connectionPools.put(experiment, pool);
 	}
 
-	public DbStatement createDbStatement(String experiment) {
-		Connection connection = fetchConnection(experiment);
+	public DbStatement createDbStatement(String experiment, boolean createDb) {
+		Connection connection = fetchConnection(experiment, createDb);
 		if (connection == null) {
 			return null;
 		}
 		return new DbStatement(connection);
 	}
 
-	public Connection fetchConnection(String experiment) {
+	public Connection fetchConnection(String experiment, boolean createDb) {
 		Connection connection = null;
 		if (connectionPools.containsKey(experiment) == false) {
-			createConnection(experiment);
+			createConnection(experiment, createDb);
 		}
 		try {
 			connection = connectionPools.get(experiment).getConnection();
@@ -100,38 +103,17 @@ public class DbPools {
 	}
 
 	/**
-	 * @return the dbUrl
+	 * @return the info
 	 */
-	public String getDbUrl() {
-		return dbUrl;
+	public DbInfo getInfo() {
+		return info;
 	}
 
 	/**
-	 * @return the driver
+	 * @return the ops
 	 */
-	public String getDriver() {
-		return driver;
-	}
-
-	/**
-	 * @return the filters
-	 */
-	public DbPoolFilters getFilters() {
-		return filters;
-	}
-
-	/**
-	 * @return the logon
-	 */
-	public String getLogon() {
-		return logon;
-	}
-
-	/**
-	 * @return the passwd
-	 */
-	public String getPasswd() {
-		return passwd;
+	public DbOperationsI getOps() {
+		return ops;
 	}
 
 }

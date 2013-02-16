@@ -4,11 +4,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.junit.AfterClass;
+import org.nees.illinois.replay.db.DbInfo;
+import org.nees.illinois.replay.db.DbOperationsI;
 import org.nees.illinois.replay.db.DbPools;
-import org.nees.illinois.replay.test.db.utils.DbManagement;
+import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.db.utils.DerbyCreateRemoveDatabase;
-import org.nees.illinois.replay.test.db.utils.MySqlCreateRemoveDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -23,51 +24,29 @@ import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
 public class TestCreateRemoveDatabase {
+	private String connectionUrl;
+	private DbOperationsI dbm;
+	private final DerbyDbControl ddbc = new DerbyDbControl();
+	private String driver;
+	private String experiment;
+	private boolean ismysql;
 	private final Logger log = LoggerFactory
 			.getLogger(TestCreateRemoveDatabase.class);
-	private String driver;
-	private String connectionUrl;
-	private String user;
 	private String passwd;
-	private String experiment;
-	private DbManagement dbm;
-	private boolean ismysql;
-
-	@Parameters("db")
-	@BeforeClass
-	public void setUp(@Optional("derby") String db) throws Exception {
-		DbTestsModule guiceMod = new DbTestsModule(db);
-		experiment = "HybridMasonry1";
-		guiceMod.setExperiment(experiment);
-		Injector injector = Guice.createInjector(guiceMod);
-		DbPools pools = injector.getInstance(DbPools.class);
-		driver = pools.getDriver();
-		connectionUrl = pools.getDbUrl();
-		user = pools.getLogon();
-		passwd = pools.getPasswd();
-		ismysql = db.equals("mysql");
-		if (ismysql) {
-			dbm = new MySqlCreateRemoveDatabase(pools, experiment);
-		} else {
-			dbm = new DerbyCreateRemoveDatabase(pools, experiment);
-		}
-	}
+	private String user;
 
 	@Test
-	public void createDatabase() {
+	public void createDatabase() throws Exception {
 		Connection connection = null;
 		if (ismysql) {
-			connection = dbm.generateConnection(false);
-			dbm.createDatabase(connection);
-			dbm.closeConnection(connection);
+			dbm.createDatabase(experiment);
 		}
+		dbm.setExperiment(experiment);
 		connection = dbm.generateConnection(true);
 		testWithStatement(connection);
 		dbm.closeConnection(connection);
 		if (ismysql) {
-			connection = dbm.generateConnection(false);
-			dbm.removeDatabase(connection);
-			dbm.closeConnection(connection);
+			dbm.removeDatabase(experiment);
 		}
 	}
 
@@ -83,14 +62,18 @@ public class TestCreateRemoveDatabase {
 		}
 		Connection connection = null;
 		if (ismysql) {
-			connection = dbm.generateConnection(false);
-			dbm.createDatabase(connection);
-			dbm.closeConnection(connection);
+			try {
+				dbm.createDatabase(experiment);
+			} catch (Exception e) {
+				log.error("Create database failed because ", e);
+				Assert.fail();
+			}
 		}
 		// setup the connection pool
 		BoneCPConfig config = new BoneCPConfig();
-		config.setJdbcUrl(connectionUrl + dbm.getExperiment()); // jdbc url
-																// specific to
+		config.setJdbcUrl(dbm.filterUrl(connectionUrl, "HybridMasonry1")); // jdbc
+																			// url
+		// specific to
 		// your database,
 		// eg jdbc:mysql://127.0.0.1/yourdb
 		config.setMinConnectionsPerPartition(5);
@@ -125,13 +108,44 @@ public class TestCreateRemoveDatabase {
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				log.error("shutdown failed because ", e);
+				Assert.fail();
 			}
 		}
 		if (ismysql) {
-			connection = dbm.generateConnection(false);
-			dbm.removeDatabase(connection);
-			dbm.closeConnection(connection);
+			try {
+				dbm.removeDatabase("HybridMasonry1");
+			} catch (Exception e) {
+				log.error("Database removal failed because ", e);
+				Assert.fail();
+			}
+		}
+	}
+
+	@Parameters("db")
+	@BeforeClass
+	public void setUp(@Optional("derby") String db) throws Exception {
+		DbTestsModule guiceMod = new DbTestsModule(db);
+		experiment = "HybridMasonry1";
+		guiceMod.setExperiment(experiment);
+		Injector injector = Guice.createInjector(guiceMod);
+		DbPools pools = injector.getInstance(DbPools.class);
+		DbInfo info = pools.getInfo();
+		dbm = pools.getOps();
+		driver = info.getDriver();
+		connectionUrl = info.getConnectionUrl();
+		user = info.getUser();
+		passwd = info.getPasswd();
+		ismysql = db.equals("mysql");
+		if (ismysql == false) {
+			ddbc.startDerby();
+		}
+	}
+
+	@AfterClass
+	public void teardown() {
+		if (ismysql == false) {
+			ddbc.stopDerby();
 		}
 	}
 

@@ -25,7 +25,7 @@ public class DbTableSpecs extends ChannelLookups {
 	}
 
 	@Inject
-	public DbTableSpecs(@Named("dbname")String dbname) {
+	public DbTableSpecs(@Named("experiment")String dbname) {
 		super();
 		this.dbname = dbname;
 	}

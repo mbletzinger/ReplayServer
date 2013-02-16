@@ -1,6 +1,5 @@
 package org.nees.illinois.replay.test.db;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -15,16 +14,17 @@ import org.nees.illinois.replay.registries.ChannelLookups;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.registries.ExperimentModule;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
-import org.nees.illinois.replay.test.db.utils.DbManagement;
+import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.db.utils.MySqlCreateRemoveDatabase;
 import org.nees.illinois.replay.test.utils.ChannelLists;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
@@ -34,12 +34,13 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class TestDataStatements {
-	private DbPools dbc;
+	private DbPools pools;
 	private double[][] omContData;
 	private double[][] daqContData;
 	private double[][] omStepData;
 	private double[][] daqStepData;
 	private ChannelNameRegistry cnr = new ChannelNameRegistry();
+	private final DerbyDbControl ddbc = new DerbyDbControl();
 
 	private final Logger log = LoggerFactory
 			.getLogger(TestDataStatements.class);
@@ -62,14 +63,15 @@ public class TestDataStatements {
 		er.setLookups(injector.getProvider(ChannelLookups.class));
 		dbu = injector.getInstance(DbDataUpdates.class);
 		dbu.setExperiment(er);
-		dbc = dbu.getPools();
+		pools = dbu.getPools();
+	}
+	
+	@Parameters("db")
+	@BeforeClass
+	public void setup1(@Optional("derby") String db) {
 		ismysql = db.equals("mysql");
-		if (ismysql) {
-			DbManagement mscrdb = new MySqlCreateRemoveDatabase(dbc,
-					guiceMod.getExperiment());
-			Connection connection = mscrdb.generateConnection(false);
-			mscrdb.createDatabase(connection);
-			mscrdb.closeConnection(connection);
+		if (ismysql == false) {
+			ddbc.startDerby();
 		}
 	}
 
@@ -78,15 +80,14 @@ public class TestDataStatements {
 
 		dbu.removeTable(TableType.OM);
 		dbu.removeTable(TableType.DAQ);
-		DbStatement dbSt = dbc.createDbStatement(er.getExperiment());
-		dbSt.close();
-		dbc.close();
-		if (ismysql) {
-			DbManagement mscrdb = new MySqlCreateRemoveDatabase(dbc,
-					guiceMod.getExperiment());
-			Connection connection = mscrdb.generateConnection(false);
-			mscrdb.removeDatabase(connection);
-			mscrdb.closeConnection(connection);
+		pools.getOps().removeDatabase("HybridMasonry1");
+		pools.close();
+	}
+	
+	@AfterClass
+	public void teardown1() {
+		if (ismysql == false) {
+			ddbc.stopDerby();
 		}
 	}
 
@@ -131,13 +132,15 @@ public class TestDataStatements {
 	}
 
 	private void queryData(String tblName, double[][] expected) {
-		DbStatement dbSt = dbc.createDbStatement(er.getExperiment());
+		DbStatement dbSt = pools.createDbStatement(er.getExperiment(),false);
 		ResultSet rs = dbSt.query("SELECT * FROM " + tblName);
 		int columns = 0;
 		try {
 			columns = rs.getMetaData().getColumnCount();
 		} catch (SQLException e) {
 			log.error("ResultSet has no metadata because ", e);
+			dbSt.closeQuery(rs);
+			dbSt.close();
 			AssertJUnit.fail();
 		}
 		AssertJUnit.assertEquals(expected[0].length, columns);
@@ -153,8 +156,12 @@ public class TestDataStatements {
 			}
 		} catch (SQLException e) {
 			log.error("Result Set fetch failed because ", e);
+			dbSt.closeQuery(rs);
+			dbSt.close();
 			AssertJUnit.fail();
 		}
 		DataGenerator.compareData(expected, rsData);
+		dbSt.closeQuery(rs);
+		dbSt.close();
 	}
 }

@@ -9,7 +9,6 @@ import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.statement.DataInsertStatement;
 import org.nees.illinois.replay.db.statement.DbStatement;
 import org.nees.illinois.replay.db.statement.DbTableSpecs;
-import org.nees.illinois.replay.registries.ChannelLookups;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
 
 import com.google.inject.Inject;
@@ -31,12 +30,13 @@ public class DbDataUpdates implements DataUpdateI {
 	public boolean createTable(TableType table, List<String> channels) {
 		boolean result = true;
 		specs = (DbTableSpecs) er.getLookups();
-		DbStatement dbSt = pools.createDbStatement(specs.getDbname());
+		DbStatement dbSt = pools.createDbStatement(specs.getDbname(), true);
 		specs.addTable(table, channels);
 		for (RateType r : RateType.values()) {
 			String statement = specs.createTableStatement(table, r);
 			result = result && dbSt.execute(statement);
 		}
+		dbSt.close();
 		return result;
 	}
 
@@ -63,10 +63,11 @@ public class DbDataUpdates implements DataUpdateI {
 	public boolean removeTable(TableType table) {
 		boolean result = true;
 		this.specs = (DbTableSpecs) er.getLookupsClone();
-		DbStatement dbSt = pools.createDbStatement(specs.getDbname());
+		DbStatement dbSt = pools.createDbStatement(specs.getDbname(),false);
 		for (RateType r : RateType.values()) {
 			dbSt.execute("DROP TABLE " + specs.tableName(table, r));
 		}
+		dbSt.close();
 		return result;
 	}
 
@@ -83,11 +84,12 @@ public class DbDataUpdates implements DataUpdateI {
 	public boolean update(TableType table, RateType rate, double[][] data) {
 		boolean result = true;
 		this.specs = (DbTableSpecs) er.getLookupsClone();
-		DbStatement dbSt = pools.createDbStatement(specs.getDbname());
+		DbStatement dbSt = pools.createDbStatement(specs.getDbname(),false);
 		DataInsertStatement prep = DataInsertStatement.getStatement(
 				specs.tableName(table, rate), data[0].length);
 		result = dbSt.createPrepStatement(prep);
 		if (result == false) {
+			dbSt.close();
 			return result;
 		}
 		for (int r = 0; r < data.length; r++) {
@@ -95,6 +97,7 @@ public class DbDataUpdates implements DataUpdateI {
 		}
 		int[] records = prep.execute();
 		result = records.length > 0;
+		dbSt.close();
 		return result;
 	}
 }
