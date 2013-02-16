@@ -4,8 +4,6 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeSuite;
 
 public class DerbyDbControl {
 	/**
@@ -17,7 +15,6 @@ public class DerbyDbControl {
 	private boolean localStart = false;
 	private FileWithContentDelete derbyData;
 
-	@BeforeSuite
 	public void startDerby() {
 		if (isRunning()) {
 			log.info("Derby server already started");
@@ -32,7 +29,6 @@ public class DerbyDbControl {
 		localStart = true;
 	}
 
-	@AfterSuite
 	public void stopDerby() {
 		if (localStart) {
 			ProcessManagement pm = new ProcessManagement(derbyHome
