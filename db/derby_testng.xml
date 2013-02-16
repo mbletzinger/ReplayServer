@@ -4,6 +4,8 @@
  <parameter name="db"  value="derby"/>
    <test name="DerbyTest">
     <classes>
+      <class name="org.nees.illinois.replay.test.db.derby.process.DerbyDbControl"/>
+      <class name="org.nees.illinois.replay.test.db.TestCreateRemoveDatabase"/>
       <class name="org.nees.illinois.replay.test.db.TestCreateRemoveDatabase"/>
       <class name="org.nees.illinois.replay.test.db.TestChannelLists"/>
       <class name="org.nees.illinois.replay.test.db.TestDataStatements"/>
