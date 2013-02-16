@@ -8,18 +8,18 @@ import java.util.List;
 
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
+import org.nees.illinois.replay.db.DbInfo;
+import org.nees.illinois.replay.db.DbOperationsI;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.statement.DbTableSpecs;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
-import org.nees.illinois.replay.test.db.utils.DbManagement;
+import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.db.utils.DerbyCreateRemoveDatabase;
-import org.nees.illinois.replay.test.db.utils.MySqlCreateRemoveDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.AssertJUnit;
-import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
@@ -34,8 +34,9 @@ public class TestTableUpdates {
 	private DbTableSpecs dbT;
 	private final Logger log = LoggerFactory.getLogger(TestTableUpdates.class);
 	private BoneCP connectionPool;
-	private DbManagement dbm;
+	private DbOperationsI ops;
 	private boolean ismysql;
+	private final DerbyDbControl ddbc = new DerbyDbControl();
 
 	@Parameters("db")
 	@BeforeClass
@@ -45,15 +46,14 @@ public class TestTableUpdates {
 		guiceMod.setExperiment(experiment);
 		Injector injector = Guice.createInjector(guiceMod);
 		DbPools pools = injector.getInstance(DbPools.class);
-		String driver = pools.getDriver();
-		String connectionUrl = pools.getDbUrl();
-		String user = pools.getLogon();
-		String passwd = pools.getPasswd();
+		DbInfo info = pools.getInfo();
+		String driver = info.getDriver();
+		String connectionUrl = info.getConnectionUrl();
+		String user = info.getUser();
+		String passwd = info.getPasswd();
 		ismysql = db.equals("mysql");
-		if (ismysql) {
-			dbm = new MySqlCreateRemoveDatabase(pools, experiment);
-		} else {
-			dbm = new DerbyCreateRemoveDatabase(pools, experiment);
+		if (ismysql == false) {
+			ddbc.startDerby();
 		}
 		dbT = new DbTableSpecs(new ChannelNameRegistry(), experiment);
 		List<String> channels = new ArrayList<String>();
@@ -76,15 +76,11 @@ public class TestTableUpdates {
 			Assert.fail();
 			return;
 		}
-		Connection connection = null;
-		if (ismysql) {
-			connection = dbm.generateConnection(false);
-			dbm.createDatabase(connection);
-			dbm.closeConnection(connection);
-		}
+		ops = pools.getOps();
 		// setup the connection pool
 		BoneCPConfig config = new BoneCPConfig();
-		config.setJdbcUrl(connectionUrl + dbm.getExperiment()); // jdbc url
+		ops.createDatabase(experiment);
+		config.setJdbcUrl(ops.filterUrl(connectionUrl,ops.getExperiment())); // jdbc url
 																// specific to
 		// your database,
 		// eg jdbc:mysql://127.0.0.1/yourdb
@@ -105,7 +101,7 @@ public class TestTableUpdates {
 
 	}
 
-	@AfterMethod
+	@AfterClass
 	public void teardown() {
 		Connection connection = fetchConnection();
 		for (RateType r : RateType.values()) {
@@ -115,18 +111,22 @@ public class TestTableUpdates {
 					connection);
 		}
 		connectionPool.shutdown(); // shutdown connection pool.
+		try {
+			ops.removeDatabase(ops.getExperiment());
+		} catch (Exception e1) {
+			log.error("Db removal failed because ", e1);
+		}
 		if (connection != null) {
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				log.error("Connection close failed because ", e);
 			}
 		}
-		if (ismysql) {
-			connection = dbm.generateConnection(false);
-			dbm.removeDatabase(connection);
-			dbm.closeConnection(connection);
+		if (ismysql == false) {
+			ddbc.stopDerby();
 		}
+
 	}
 
 	private Connection fetchConnection() {

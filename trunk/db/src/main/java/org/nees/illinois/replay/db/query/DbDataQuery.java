@@ -27,7 +27,7 @@ public class DbDataQuery implements DataQueryI {
 
 	private DoubleMatrix doQuery(QueryType qtype, String name, double start,
 			double stop) {
-		DbStatement dbSt = pools.createDbStatement(experiment.getExperiment());
+		DbStatement dbSt = pools.createDbStatement(experiment.getExperiment(),false);
 		DbQuerySpec dbSpec;
 		dbSpec = (DbQuerySpec) experiment.getQueries().getQuery(name, RateType.CONT);
 		DbQueryStatements dbQuerySt = new DbQueryStatements(dbSt, dbSpec);
@@ -36,7 +36,7 @@ public class DbDataQuery implements DataQueryI {
 
 	private DoubleMatrix doQuery(QueryType qtype, String name,
 			StepNumber start, StepNumber stop) {
-		DbStatement dbSt = pools.createDbStatement(experiment.getExperiment());
+		DbStatement dbSt = pools.createDbStatement(experiment.getExperiment(),false);
 		DbQuerySpec dbSpec;
 		dbSpec = (DbQuerySpec) experiment.getQueries().getQuery(name, RateType.STEP);
 		DbQueryStatements dbQuerySt = new DbQueryStatements(dbSt, dbSpec);

@@ -16,6 +16,7 @@ public class DbTestsModule extends ExperimentModule {
 	
 	public DbTestsModule(String db) {
 		this.db = db;
+		setExperiment("Dummy1");
 	}
 
 	@Override
@@ -26,7 +27,6 @@ public class DbTestsModule extends ExperimentModule {
 			install(new DerbyModule());
 		}
 		bind(DataUpdateI.class).to(DbDataUpdates.class);
-		bind(String.class).annotatedWith(Names.named("dbname")).toInstance(getExperiment());
 		bind(ChannelLookups.class).to(DbTableSpecs.class);
 		bind(String.class).annotatedWith(Names.named("experiment")).toInstance(getExperiment());
 	}

@@ -1,20 +1,19 @@
 package org.nees.illinois.replay.test.db;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.statement.DbStatement;
-import org.nees.illinois.replay.test.db.utils.DbManagement;
+import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.db.utils.MySqlCreateRemoveDatabase;
 import org.nees.illinois.replay.test.db.utils.TestPrepStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -23,28 +22,27 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class TestDbStatement {
-	private DbPools dbc;
 	private double[][] data = new double[5][2];
-	private final Logger log = LoggerFactory.getLogger(TestDbStatement.class);
+	private DbPools pools;
+	private final DerbyDbControl ddbc = new DerbyDbControl();
 	final String experiment = "HybridMasonry1";
+	DbTestsModule guiceMod;
 	private boolean ismysql;
+	private final Logger log = LoggerFactory.getLogger(TestDbStatement.class);
 
 	@Parameters("db")
-	@BeforeMethod
-	public void setUp(@Optional("derby") String db) throws Exception {
-		DbTestsModule guiceMod = new DbTestsModule(db);
+	@BeforeClass
+	public void setUp(@Optional("db") String db) throws Exception {
+		guiceMod = new DbTestsModule(db);
 		guiceMod.setExperiment("HybridMasonry1");
 		Injector injector = Guice.createInjector(guiceMod);
-		dbc = injector.getInstance(DbPools.class);
+		pools = injector.getInstance(DbPools.class);
 		ismysql = db.equals("mysql");
-		if (ismysql) {
-			DbManagement mscrdb = new MySqlCreateRemoveDatabase(dbc,
-					guiceMod.getExperiment());
-			Connection connection = mscrdb.generateConnection(false);
-			mscrdb.createDatabase(connection);
-			mscrdb.closeConnection(connection);
+		if (ismysql == false) {
+			ddbc.startDerby();
 		}
-
+		pools.getOps().createDatabase(experiment);
+		
 		for (int i = 0; i < 5; i++) {
 			data[i][0] = i * 0.5 + .001;
 			data[i][1] = i * -0.02 + .001;
@@ -53,33 +51,28 @@ public class TestDbStatement {
 
 	@AfterMethod
 	public void tearDown() throws Exception {
-		DbStatement dbSt = dbc.createDbStatement(experiment);
+		DbStatement dbSt = pools.createDbStatement(experiment,false);
 		dbSt.noComplaints("DROP TABLE TestTable");
 		dbSt.close();
-		dbc.close();
-		if (ismysql) {
-			DbManagement mscrdb = new MySqlCreateRemoveDatabase(dbc, experiment);
-			Connection connection = mscrdb.generateConnection(false);
-			mscrdb.removeDatabase(connection);
-			mscrdb.closeConnection(connection);
-		}
 	}
 
-	@Test
-	public void testExecute() {
-		DbStatement dbSt = dbc.createDbStatement(experiment);
-		boolean result = dbSt
-				.execute("CREATE TABLE TestTable (col1 double, col2 double)");
-		AssertJUnit.assertTrue(result);
-		result = dbSt.execute("DROP TABLE TestTable");
-		AssertJUnit.assertTrue(result);
-		dbSt.close();
+	@AfterClass
+	public void teardown1() {
+		try {
+			pools.getOps().removeDatabase("HybridMasonry1");
+		} catch (Exception e) {
+			log.error("Database remove failed because ", e);
+			AssertJUnit.fail();
+		}
+		if (ismysql == false) {
+			ddbc.stopDerby();
+		}
 	}
 
 	@Test
 	public void testCreatePrepStatement() {
 		String tblName = "TestTable";
-		DbStatement dbSt = dbc.createDbStatement(experiment);
+		DbStatement dbSt = pools.createDbStatement(experiment,true);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
 		TestPrepStatement prep = new TestPrepStatement(tblName);
 		dbSt.createPrepStatement(prep);
@@ -93,9 +86,20 @@ public class TestDbStatement {
 	}
 
 	@Test
+	public void testExecute() {
+		DbStatement dbSt = pools.createDbStatement(experiment,true);
+		boolean result = dbSt
+				.execute("CREATE TABLE TestTable (col1 double, col2 double)");
+		AssertJUnit.assertTrue(result);
+		result = dbSt.execute("DROP TABLE TestTable");
+		AssertJUnit.assertTrue(result);
+		dbSt.close();
+	}
+
+	@Test
 	public void testQuery1() {
 		String tblName = "TestTable";
-		DbStatement dbSt = dbc.createDbStatement(experiment);
+		DbStatement dbSt = pools.createDbStatement(experiment,false);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
 		double[][] result = new double[5][2];
 		for (int i = 0; i < 5; i++) {
@@ -135,7 +139,7 @@ public class TestDbStatement {
 	@Test
 	public void testQuery2() {
 		String tblName = "TestTable";
-		DbStatement dbSt = dbc.createDbStatement(experiment);
+		DbStatement dbSt = pools.createDbStatement(experiment,false);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
 		TestPrepStatement prep = new TestPrepStatement(tblName);
 		dbSt.createPrepStatement(prep);
