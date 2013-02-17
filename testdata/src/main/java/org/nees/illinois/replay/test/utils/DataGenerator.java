@@ -64,7 +64,7 @@ public class DataGenerator {
 	}
 
 	public static void compareData(double[][] expected, double[][] actual) {
-		LoggerFactory.getLogger(DataGenerator.class).info(
+		LoggerFactory.getLogger(DataGenerator.class).debug(
 				"Comparing expected " + Mtx2Str.matrix2String(expected)
 						+ "\nwith actual\n" + Mtx2Str.matrix2String(actual));
 		Assert.assertEquals(actual.length, expected.length);
