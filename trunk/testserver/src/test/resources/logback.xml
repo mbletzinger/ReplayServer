@@ -32,16 +32,16 @@
 	</appender>
 	<logger
 		name="org.nees.illinois.replay.test"
-		level="DEBUG" />
+		level="INFO" />
 	<logger
 		name="org.nees.illinois"
 		level="INFO" />
 	<logger
 		name="org.nees.illinois.replay.db"
-		level="DEBUG" />
+		level="INFO" />
 	<logger
 		name="org.restlet"
-		level="DEBUG" />
+		level="INFO" />
 	<root level="ERROR">
 		<appender-ref ref="FILE" />
 		<appender-ref ref="A1" />
