@@ -7,16 +7,16 @@ import org.nees.illinois.replay.data.TableType;
 
 
 
-public class ChannelLookups {
+public class ChannelNameManagement {
 
 	private final ChannelNameRegistry cnr;
 
 	
-	public ChannelLookups() {
+	public ChannelNameManagement() {
 		cnr = new ChannelNameRegistry();
 	}
 
-	public ChannelLookups(ChannelNameRegistry cnr) {
+	public ChannelNameManagement(ChannelNameRegistry cnr) {
 		super();
 		this.cnr = cnr;
 	}
@@ -37,10 +37,10 @@ public class ChannelLookups {
 		return result;
 	}
 	
-	public ChannelLookups clone() {
+	public ChannelNameManagement clone() {
 		ChannelNameRegistry clone = new ChannelNameRegistry();
 		clone.init(cnr.getClone(), cnr.getAfterLastChannel());
-		return new ChannelLookups(clone);
+		return new ChannelNameManagement(clone);
 	}
 
 }

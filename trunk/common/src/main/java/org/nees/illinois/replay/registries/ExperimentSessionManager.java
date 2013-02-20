@@ -38,7 +38,7 @@ public class ExperimentSessionManager {
 				guiceMod.setExperiment(experiment);
 				Injector injector = Guice.createInjector(guiceMod);
 				er = injector.getInstance(ExperimentRegistries.class);
-				er.setLookups(injector.getProvider(ChannelLookups.class));
+				er.setLookups(injector.getProvider(ChannelNameManagement.class));
 				cxtAttrs.put(key, er);
 				} else {
 					throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "\"" + experiment + "\" is not an experiment");

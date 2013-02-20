@@ -6,7 +6,7 @@ import com.google.inject.name.Named;
 
 
 public class ExperimentRegistries {
-	private ChannelLookups lookups;
+	private ChannelNameManagement chnlNamesMgmt;
 
 	private final String experiment;
 
@@ -18,28 +18,28 @@ public class ExperimentRegistries {
 		this.experiment = experiment;
 	}
 
-	public void setLookups(Provider<ChannelLookups> plookups) {
-		lookups = plookups.get();
+	public void setLookups(Provider<ChannelNameManagement> plookups) {
+		chnlNamesMgmt = plookups.get();
 	}
 	/**
 	 * @return the lookups
 	 */
-	public  ChannelLookups getLookups() {
-		return lookups;
+	public  ChannelNameManagement getChnlNamesMgmt() {
+		return chnlNamesMgmt;
 	}
 	/**
 	 * @return the cnr clone
 	 */
 	public  ChannelNameRegistry getCnrClone() {
 		ChannelNameRegistry clone = new ChannelNameRegistry();
-		clone.init(lookups.getCnr().getClone(), lookups.getCnr().getAfterLastChannel());
+		clone.init(chnlNamesMgmt.getCnr().getClone(), chnlNamesMgmt.getCnr().getAfterLastChannel());
 		return clone;
 	}
 	/**
 	 * @return the lookups clone
 	 */
-	public  ChannelLookups getLookupsClone() {
-		return lookups.clone();
+	public  ChannelNameManagement getLookupsClone() {
+		return chnlNamesMgmt.clone();
 	}
 	/**
 	 * @return the experiment

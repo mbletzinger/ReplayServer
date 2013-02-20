@@ -30,6 +30,10 @@ public class MergeSet {
 		return result;
 	}
 
+	public boolean isEmpty() {
+		return accum.isEmpty();
+	}
+
 	public void merge(List<List<Double>> toMerge) {
 		List<MergeRecord> tmr = new ArrayList<MergeRecord>();
 		for (List<Double> r : toMerge) {
