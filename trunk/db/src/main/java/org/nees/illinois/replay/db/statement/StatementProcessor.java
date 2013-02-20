@@ -8,11 +8,11 @@ import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DbStatement {
+public class StatementProcessor {
 	private final Connection connection;
-	private final Logger log = LoggerFactory.getLogger(DbStatement.class);
+	private final Logger log = LoggerFactory.getLogger(StatementProcessor.class);
 
-	public DbStatement(Connection connection) {
+	public StatementProcessor(Connection connection) {
 		super();
 		this.connection = connection;
 	}
@@ -33,7 +33,7 @@ public class DbStatement {
 		}
 	}
 
-	public boolean createPrepStatement(PrepStatement prep) {
+	public boolean createPrepStatement(PrepStatementProcessor prep) {
 		return prep.create(connection);
 	}
 
@@ -93,7 +93,7 @@ public class DbStatement {
 	}
 
 	public ResultSet query(String statement) {
-		// log.debug("Querying " + statement);
+		log.debug("Querying " + statement);
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {

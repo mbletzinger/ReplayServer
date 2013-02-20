@@ -8,9 +8,9 @@ import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.data.DbDataUpdates;
-import org.nees.illinois.replay.db.statement.DbStatement;
-import org.nees.illinois.replay.db.statement.DbTableSpecs;
-import org.nees.illinois.replay.registries.ChannelLookups;
+import org.nees.illinois.replay.db.statement.StatementProcessor;
+import org.nees.illinois.replay.db.statement.DbTablesMap;
+import org.nees.illinois.replay.registries.ChannelNameManagement;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.registries.ExperimentModule;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
@@ -49,10 +49,8 @@ public class TestDataStatements {
 	private ExperimentModule guiceMod;
 	private boolean ismysql;
 
-	@Parameters("db")
 	@BeforeMethod
-	public void setUp(@Optional("derby") String db) throws Exception {
-		guiceMod = new DbTestsModule(db);
+	public void setUp() throws Exception {
 		omContData = DataGenerator.initData(20, 6, 0.5);
 		daqContData = DataGenerator.initData(15, 5, 1);
 		omStepData = DataGenerator.initData(20, 6, 0.5);
@@ -60,15 +58,17 @@ public class TestDataStatements {
 		guiceMod.setExperiment("HybridMasonry1");
 		Injector injector = Guice.createInjector(guiceMod);
 		er = injector.getInstance(ExperimentRegistries.class);
-		er.setLookups(injector.getProvider(ChannelLookups.class));
+		er.setLookups(injector.getProvider(ChannelNameManagement.class));
 		dbu = injector.getInstance(DbDataUpdates.class);
 		dbu.setExperiment(er);
 		pools = dbu.getPools();
+		pools.getOps().createDatabase("HybridMasonry1");
 	}
 	
 	@Parameters("db")
 	@BeforeClass
-	public void setup1(@Optional("derby") String db) {
+	public void setup1(@Optional("mysql") String db) {
+		guiceMod = new DbTestsModule(db);
 		ismysql = db.equals("mysql");
 		if (ismysql == false) {
 			ddbc.startDerby();
@@ -94,7 +94,7 @@ public class TestDataStatements {
 	@Test
 	public void testContDataUpdate() {
 		ChannelLists cl = new ChannelLists();
-		DbTableSpecs specs = new DbTableSpecs(cnr, er.getExperiment());
+		DbTablesMap specs = new DbTablesMap(cnr, er.getExperiment());
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		dbu.update(TableType.OM, RateType.CONT, omContData);
 
@@ -113,7 +113,7 @@ public class TestDataStatements {
 	@Test
 	public void testStepDataUpdate() {
 		ChannelLists cl = new ChannelLists();
-		DbTableSpecs specs = new DbTableSpecs(cnr, er.getExperiment());
+		DbTablesMap specs = new DbTablesMap(cnr, er.getExperiment());
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		log.debug("Adding data "
 				+ Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
@@ -132,7 +132,7 @@ public class TestDataStatements {
 	}
 
 	private void queryData(String tblName, double[][] expected) {
-		DbStatement dbSt = pools.createDbStatement(er.getExperiment(),false);
+		StatementProcessor dbSt = pools.createDbStatement(er.getExperiment(),false);
 		ResultSet rs = dbSt.query("SELECT * FROM " + tblName);
 		int columns = 0;
 		try {

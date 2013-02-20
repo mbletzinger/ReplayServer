@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import org.slf4j.LoggerFactory;
 
-public class ChannelInsertStatement extends PrepStatement {
+public class ChannelInsertStatement extends PrepStatementProcessor {
 
 	public ChannelInsertStatement(String channelTableName) {
 		super("INSERT INTO " + channelTableName + " VALUES (?, ?)", LoggerFactory.getLogger(ChannelInsertStatement.class));

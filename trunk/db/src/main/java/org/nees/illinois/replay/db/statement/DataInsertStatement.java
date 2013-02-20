@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import org.nees.illinois.replay.data.Mtx2Str;
 import org.slf4j.LoggerFactory;
 
-public class DataInsertStatement extends PrepStatement {
+public class DataInsertStatement extends PrepStatementProcessor {
 	public static DataInsertStatement getStatement(String dataTableName,
 			int numberOfChannels) {
 		String statement = "INSERT INTO " + dataTableName + " VALUES (";

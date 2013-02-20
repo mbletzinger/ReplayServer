@@ -1,7 +1,6 @@
 package org.nees.illinois.replay.db;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,6 +39,7 @@ public class MySqlDbOps implements DbOperationsI {
 			closeConnection(connection);
 			throw e;
 		}
+		log.info("DB " + experiment + " created");
 		closeConnection(connection);
 	}
 
@@ -128,6 +128,7 @@ public class MySqlDbOps implements DbOperationsI {
 			closeConnection(connection);
 			throw e;
 		}
+		log.info("DB " + experiment + " removed");
 		closeConnection(connection);
 	}
 

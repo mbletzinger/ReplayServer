@@ -11,7 +11,7 @@ import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbInfo;
 import org.nees.illinois.replay.db.DbOperationsI;
 import org.nees.illinois.replay.db.DbPools;
-import org.nees.illinois.replay.db.statement.DbTableSpecs;
+import org.nees.illinois.replay.db.statement.DbTablesMap;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
@@ -31,7 +31,7 @@ import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
 public class TestTableUpdates {
-	private DbTableSpecs dbT;
+	private DbTablesMap dbT;
 	private final Logger log = LoggerFactory.getLogger(TestTableUpdates.class);
 	private BoneCP connectionPool;
 	private DbOperationsI ops;
@@ -55,7 +55,7 @@ public class TestTableUpdates {
 		if (ismysql == false) {
 			ddbc.startDerby();
 		}
-		dbT = new DbTableSpecs(new ChannelNameRegistry(), experiment);
+		dbT = new DbTablesMap(new ChannelNameRegistry(), experiment);
 		List<String> channels = new ArrayList<String>();
 		channels.add("OM_Cmd_LBCB1_Actuator_C__LBCB1__X1");
 		channels.add("OM_Disp_LBCB1_Cartesian_D__LBCB1__RY");
@@ -77,6 +77,7 @@ public class TestTableUpdates {
 			return;
 		}
 		ops = pools.getOps();
+		ops.setExperiment(experiment);
 		// setup the connection pool
 		BoneCPConfig config = new BoneCPConfig();
 		ops.createDatabase(experiment);
@@ -110,7 +111,6 @@ public class TestTableUpdates {
 			executeStatement("DROP TABLE " + dbT.tableName(TableType.DAQ, r),
 					connection);
 		}
-		connectionPool.shutdown(); // shutdown connection pool.
 		try {
 			ops.removeDatabase(ops.getExperiment());
 		} catch (Exception e1) {
@@ -123,6 +123,8 @@ public class TestTableUpdates {
 				log.error("Connection close failed because ", e);
 			}
 		}
+
+		connectionPool.shutdown(); // shutdown connection pool.
 		if (ismysql == false) {
 			ddbc.stopDerby();
 		}
@@ -178,6 +180,12 @@ public class TestTableUpdates {
 		executeStatement(result, connection);
 		result = dbT.createTableStatement(TableType.DAQ, RateType.STEP);
 		executeStatement(result, connection);
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			log.error("Connection close failed because ", e);
+			AssertJUnit.fail();
+		}
 	}
 
 }
