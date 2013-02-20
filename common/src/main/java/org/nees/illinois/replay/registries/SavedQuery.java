@@ -7,13 +7,13 @@ import org.nees.illinois.replay.data.NumberOfColumns;
 import org.nees.illinois.replay.data.RateType;
 
 
-public class QuerySpec {
+public class SavedQuery {
 
 	protected final String name;
 	protected final NumberOfColumns noc;
 	protected final List<String> queryOrder;
 
-	public QuerySpec(List<String> channelOrder, String name,
+	public SavedQuery(List<String> channelOrder, String name,
 			ChannelNameRegistry cnr, RateType rate) {
 		super();
 		this.queryOrder = new ArrayList<String>();

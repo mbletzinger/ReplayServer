@@ -13,7 +13,7 @@ import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.registries.ExperimentModule;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.registries.ExperimentSessionManager;
-import org.nees.illinois.replay.registries.QuerySpec;
+import org.nees.illinois.replay.registries.SavedQuery;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
@@ -37,6 +37,10 @@ public class DataQueryServerResource extends ServerResource implements
 	private ExperimentRegistries er;
 	private final Logger log = LoggerFactory
 			.getLogger(DataQueryServerResource.class);
+	private Map<RequiredAttrType, Object> attrs;
+	private RateType rate;
+	private String query;
+
 
 	public DataQueryServerResource() {
 		super();
@@ -71,6 +75,10 @@ public class DataQueryServerResource extends ServerResource implements
 	@Get("bin")
 	public Representation getBin() throws ResourceException {
 		DoubleMatrix data = getDm();
+		if (data == null) {
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+					"Query \"" + query + "\" returned an empty dataset");
+		}
 		DoubleMatrix2Representation dbl2rep = new DoubleMatrix2Representation(
 				data.getData());
 		return dbl2rep.getRep();
@@ -83,11 +91,11 @@ public class DataQueryServerResource extends ServerResource implements
 		reqAttrs.add(RequiredAttrType.Rate);
 		reqAttrs.add(RequiredAttrType.Query);
 		extract.extract(reqAttrs);
-		Map<RequiredAttrType, Object> attrs = extract.getAttrs();
-		RateType rate = (RateType) attrs.get(RequiredAttrType.Rate);
-		String query = (String) attrs.get(RequiredAttrType.Query);
+		attrs = extract.getAttrs();
+		rate = (RateType) attrs.get(RequiredAttrType.Rate);
+		query = (String) attrs.get(RequiredAttrType.Query);
 
-		QuerySpec spec = er.getQueries().getQuery(query, rate);
+		SavedQuery spec = er.getQueries().getQuery(query, rate);
 		if (spec == null) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
 					"Query \"" + query + "\" not recognized");
@@ -155,8 +163,8 @@ public class DataQueryServerResource extends ServerResource implements
 
 		reqAttrs.add(RequiredAttrType.Query);
 		extract.extract(reqAttrs);
-		Map<RequiredAttrType, Object> attrs = extract.getAttrs();
-		String query = (String) attrs.get(RequiredAttrType.Query);
+		attrs = extract.getAttrs();
+		query = (String) attrs.get(RequiredAttrType.Query);
 
 		Representation2ChannelList rep2cl = new Representation2ChannelList(
 				channels);
