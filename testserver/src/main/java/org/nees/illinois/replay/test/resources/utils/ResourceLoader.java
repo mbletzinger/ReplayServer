@@ -39,8 +39,36 @@ import com.google.inject.Injector;
 import com.google.inject.Provider;
 
 public class ResourceLoader implements DatasetLoaderI {
-	private final String appRoot;
+	/**
+	 * @return the cl
+	 */
+	public ChannelLists getCl() {
+		return cl;
+	}
 
+	/**
+	 * @return the uploadRows
+	 */
+	public int getUploadRows() {
+		return uploadRows;
+	}
+
+	/**
+	 * @return the dqsR
+	 */
+	public DataQueryServerResource getDqsR() {
+		return dqsR;
+	}
+
+	/**
+	 * @return the dtsR
+	 */
+	public DataTableServerResource getDtsR() {
+		return dtsR;
+	}
+
+	private final String appRoot;
+	
 	private final ChannelLists cl = new ChannelLists();
 
 	private final Context cxt;
@@ -75,7 +103,7 @@ public class ResourceLoader implements DatasetLoaderI {
 		Context context = dqsR.getContext();
 		ExperimentRegistries er = (ExperimentRegistries) context
 				.getAttributes().get(experiment + ".registries");
-		dd.checkExpectedCnr(experiment, er.getLookups().getCnr());
+		dd.checkExpectedCnr(experiment, er.getChnlNamesMgmt().getCnr());
 	}
 
 	public void checkDataset(ChannelListType typ) {
@@ -102,7 +130,7 @@ public class ResourceLoader implements DatasetLoaderI {
 		Context context = dtsR.getContext();
 		ExperimentRegistries er = (ExperimentRegistries) context
 				.getAttributes().get(experiment + ".registries");
-		dd.checkExpectedCnr(experiment, er.getLookups().getCnr());
+		dd.checkExpectedCnr(experiment, er.getChnlNamesMgmt().getCnr());
 	}
 
 	@Override

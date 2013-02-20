@@ -5,7 +5,7 @@ import java.util.List;
 import org.nees.illinois.replay.data.DataUpdateI;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
-import org.nees.illinois.replay.registries.ChannelLookups;
+import org.nees.illinois.replay.registries.ChannelNameManagement;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,7 @@ import com.google.inject.Inject;
 
 public class TestDataUpdates implements DataUpdateI {
 
-	private ChannelLookups cu;
+	private ChannelNameManagement cu;
 	
 	private double[][] data;
 
@@ -30,7 +30,7 @@ public class TestDataUpdates implements DataUpdateI {
 	@Override
 	public boolean createTable(TableType table, List<String> channels) {
 
-		this.cu = er.getLookups();
+		this.cu = er.getChnlNamesMgmt();
 
 		if(er == null) {// Check to make sure restlet code sets the experiment name
 			log.error("Experiment is not set");
@@ -49,7 +49,7 @@ public class TestDataUpdates implements DataUpdateI {
 	/**
 	 * @return the cu
 	 */
-	public ChannelLookups getCu() {
+	public ChannelNameManagement getCu() {
 		return cu;
 	}
 
