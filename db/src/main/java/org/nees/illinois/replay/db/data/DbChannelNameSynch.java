@@ -6,20 +6,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nees.illinois.replay.db.statement.ChannelInsertStatement;
-import org.nees.illinois.replay.db.statement.DbStatement;
+import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DbChannelNameSynch {
 	private final String channelTable = "CHANNEL_NAMES";
-	private final DbStatement db;
+	private final StatementProcessor db;
 	private final Logger log = LoggerFactory
 			.getLogger(DbChannelNameSynch.class);
 	private final ChannelNameRegistry cnr;
 	private final String afterLastChannel = "AfterLastChannel";
 
-	public DbChannelNameSynch(ChannelNameRegistry cnr, DbStatement db) {
+	public DbChannelNameSynch(ChannelNameRegistry cnr, StatementProcessor db) {
 		super();
 		this.cnr = cnr;
 		this.db = db;

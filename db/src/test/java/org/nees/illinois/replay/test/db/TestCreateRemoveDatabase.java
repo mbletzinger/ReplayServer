@@ -71,7 +71,7 @@ public class TestCreateRemoveDatabase {
 		}
 		// setup the connection pool
 		BoneCPConfig config = new BoneCPConfig();
-		config.setJdbcUrl(dbm.filterUrl(connectionUrl, "HybridMasonry1")); // jdbc
+		config.setJdbcUrl(dbm.filterUrl(connectionUrl, experiment)); // jdbc
 																			// url
 		// specific to
 		// your database,
@@ -114,7 +114,7 @@ public class TestCreateRemoveDatabase {
 		}
 		if (ismysql) {
 			try {
-				dbm.removeDatabase("HybridMasonry1");
+				dbm.removeDatabase(experiment);
 			} catch (Exception e) {
 				log.error("Database removal failed because ", e);
 				Assert.fail();

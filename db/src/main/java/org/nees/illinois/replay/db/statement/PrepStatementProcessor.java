@@ -6,12 +6,12 @@ import java.sql.SQLException;
 
 import org.slf4j.Logger;
 
-public abstract class PrepStatement {
+public abstract class PrepStatementProcessor {
 	protected final Logger log;
 	private final String prepped;
 	protected PreparedStatement statement;
 
-	public PrepStatement(String prepped, Logger log) {
+	public PrepStatementProcessor(String prepped, Logger log) {
 		super();
 		this.prepped = prepped;
 		this.log = log;

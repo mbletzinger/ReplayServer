@@ -7,8 +7,8 @@ import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.statement.DataInsertStatement;
-import org.nees.illinois.replay.db.statement.DbStatement;
-import org.nees.illinois.replay.db.statement.DbTableSpecs;
+import org.nees.illinois.replay.db.statement.StatementProcessor;
+import org.nees.illinois.replay.db.statement.DbTablesMap;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
 
 import com.google.inject.Inject;
@@ -19,7 +19,7 @@ public class DbDataUpdates implements DataUpdateI {
 
 	private final DbPools pools;
 
-	private  DbTableSpecs specs;
+	private  DbTablesMap specs;
 	@Inject
 	public DbDataUpdates(DbPools pools) {
 		super();
@@ -29,8 +29,8 @@ public class DbDataUpdates implements DataUpdateI {
 	@Override
 	public boolean createTable(TableType table, List<String> channels) {
 		boolean result = true;
-		specs = (DbTableSpecs) er.getLookups();
-		DbStatement dbSt = pools.createDbStatement(specs.getDbname(), true);
+		specs = (DbTablesMap) er.getChnlNamesMgmt();
+		StatementProcessor dbSt = pools.createDbStatement(specs.getDbname(), true);
 		specs.addTable(table, channels);
 		for (RateType r : RateType.values()) {
 			String statement = specs.createTableStatement(table, r);
@@ -55,15 +55,15 @@ public class DbDataUpdates implements DataUpdateI {
 	/**
 	 * @return the specs
 	 */
-	public DbTableSpecs getSpecs() {
+	public DbTablesMap getSpecs() {
 		return specs;
 	}
 
 	@Override
 	public boolean removeTable(TableType table) {
 		boolean result = true;
-		this.specs = (DbTableSpecs) er.getLookupsClone();
-		DbStatement dbSt = pools.createDbStatement(specs.getDbname(),false);
+		this.specs = (DbTablesMap) er.getLookupsClone();
+		StatementProcessor dbSt = pools.createDbStatement(specs.getDbname(),false);
 		for (RateType r : RateType.values()) {
 			dbSt.execute("DROP TABLE " + specs.tableName(table, r));
 		}
@@ -83,8 +83,8 @@ public class DbDataUpdates implements DataUpdateI {
 	@Override
 	public boolean update(TableType table, RateType rate, double[][] data) {
 		boolean result = true;
-		this.specs = (DbTableSpecs) er.getLookupsClone();
-		DbStatement dbSt = pools.createDbStatement(specs.getDbname(),false);
+		this.specs = (DbTablesMap) er.getLookupsClone();
+		StatementProcessor dbSt = pools.createDbStatement(specs.getDbname(),false);
 		DataInsertStatement prep = DataInsertStatement.getStatement(
 				specs.tableName(table, rate), data[0].length);
 		result = dbSt.createPrepStatement(prep);

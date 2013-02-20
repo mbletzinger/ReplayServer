@@ -2,10 +2,10 @@ package org.nees.illinois.replay.test.db.utils;
 
 import java.sql.SQLException;
 
-import org.nees.illinois.replay.db.statement.PrepStatement;
+import org.nees.illinois.replay.db.statement.PrepStatementProcessor;
 import org.slf4j.LoggerFactory;
 
-public class TestPrepStatement extends PrepStatement {
+public class TestPrepStatement extends PrepStatementProcessor {
 
 	public TestPrepStatement(String dbTableName) {
 		super("INSERT INTO " + dbTableName + "  VALUES(?,?)", LoggerFactory.getLogger(TestPrepStatement.class));

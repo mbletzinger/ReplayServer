@@ -15,9 +15,9 @@ public class DerbyModule extends AbstractModule {
 	protected void configure() {
 		bind(String.class).annotatedWith(Names.named("dbDriver")).toInstance("org.apache.derby.jdbc.ClientDriver");
 		bind(String.class).annotatedWith(Names.named("dbUrl")).toInstance("jdbc:derby://localhost:1527/" );
-//		bind(String.class).annotatedWith(Names.named("dbUrl")).toInstance("jdbc:derby://localhost:1527" + home + "/");
 		bind(String.class).annotatedWith(Names.named("dbLogon")).toInstance("foo");
 		bind(String.class).annotatedWith(Names.named("dbPasswd")).toInstance("bar");
+		bind(String.class).annotatedWith(Names.named("experiment")).toInstance("dummyExperiment");
 		bind(DbOperationsI.class).to(DerbyDbOps.class);
 	}
 

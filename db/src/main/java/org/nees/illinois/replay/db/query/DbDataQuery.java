@@ -7,9 +7,9 @@ import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.db.DbPools;
-import org.nees.illinois.replay.db.query.DbQueryStatements.QueryType;
-import org.nees.illinois.replay.db.statement.DbStatement;
-import org.nees.illinois.replay.db.statement.DbTableSpecs;
+import org.nees.illinois.replay.db.query.DbQueryProcessor.QueryType;
+import org.nees.illinois.replay.db.statement.StatementProcessor;
+import org.nees.illinois.replay.db.statement.DbTablesMap;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
 
 import com.google.inject.Inject;
@@ -27,19 +27,19 @@ public class DbDataQuery implements DataQueryI {
 
 	private DoubleMatrix doQuery(QueryType qtype, String name, double start,
 			double stop) {
-		DbStatement dbSt = pools.createDbStatement(experiment.getExperiment(),false);
-		DbQuerySpec dbSpec;
-		dbSpec = (DbQuerySpec) experiment.getQueries().getQuery(name, RateType.CONT);
-		DbQueryStatements dbQuerySt = new DbQueryStatements(dbSt, dbSpec);
+		StatementProcessor dbSt = pools.createDbStatement(experiment.getExperiment(),false);
+		TableQueriesList dbSpec;
+		dbSpec = (TableQueriesList) experiment.getQueries().getQuery(name, RateType.CONT);
+		DbQueryProcessor dbQuerySt = new DbQueryProcessor(dbSt, dbSpec);
 		return dbQuerySt.getData(qtype, start, stop);
 	}
 
 	private DoubleMatrix doQuery(QueryType qtype, String name,
 			StepNumber start, StepNumber stop) {
-		DbStatement dbSt = pools.createDbStatement(experiment.getExperiment(),false);
-		DbQuerySpec dbSpec;
-		dbSpec = (DbQuerySpec) experiment.getQueries().getQuery(name, RateType.STEP);
-		DbQueryStatements dbQuerySt = new DbQueryStatements(dbSt, dbSpec);
+		StatementProcessor dbSt = pools.createDbStatement(experiment.getExperiment(),false);
+		TableQueriesList dbSpec;
+		dbSpec = (TableQueriesList) experiment.getQueries().getQuery(name, RateType.STEP);
+		DbQueryProcessor dbQuerySt = new DbQueryProcessor(dbSt, dbSpec);
 		return dbQuerySt.getData(qtype, start, stop);
 	}
 
@@ -76,10 +76,10 @@ public class DbDataQuery implements DataQueryI {
 	@Override
 	public boolean setQuery(String name, List<String> channels) {
 		// DbTableSpecs is getting a clone because query tables are either added or removed; never changed.
-		DbTableSpecs specs = new DbTableSpecs(experiment.getCnrClone(), experiment.getExperiment());
-		DbQuerySpec dq = new DbQuerySpec(channels, name, specs, RateType.CONT);
+		DbTablesMap specs = (DbTablesMap) experiment.getChnlNamesMgmt().clone();
+		TableQueriesList dq = new TableQueriesList(channels, name, specs, RateType.CONT);
 		experiment.getQueries().setQuery(name, RateType.CONT, dq);
-		dq = new DbQuerySpec(channels, name, specs, RateType.STEP);
+		dq = new TableQueriesList(channels, name, specs, RateType.STEP);
 		experiment.getQueries().setQuery(name, RateType.STEP, dq);
 		return true;
 	}

@@ -5,15 +5,16 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nees.illinois.replay.db.statement.DbStatement;
+import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
+import com.google.inject.Singleton;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
+@Singleton
 public class DbPools {
 	private final Map<String, BoneCP> connectionPools = new HashMap<String, BoneCP>();
 
@@ -22,7 +23,7 @@ public class DbPools {
 	private final Logger log = LoggerFactory.getLogger(DbPools.class);
 
 	private final DbOperationsI ops;
-
+	
 	@Inject
 	public DbPools(DbInfo info, DbOperationsI filters) {
 		this.info = info;
@@ -81,12 +82,12 @@ public class DbPools {
 		connectionPools.put(experiment, pool);
 	}
 
-	public DbStatement createDbStatement(String experiment, boolean createDb) {
+	public StatementProcessor createDbStatement(String experiment, boolean createDb) {
 		Connection connection = fetchConnection(experiment, createDb);
 		if (connection == null) {
 			return null;
 		}
-		return new DbStatement(connection);
+		return new StatementProcessor(connection);
 	}
 
 	public Connection fetchConnection(String experiment, boolean createDb) {
