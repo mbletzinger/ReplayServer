@@ -8,7 +8,7 @@ import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
-import org.nees.illinois.replay.registries.QuerySpec;
+import org.nees.illinois.replay.registries.SavedQuery;
 import org.nees.illinois.replay.test.resources.utils.DatasetDirector;
 import org.nees.illinois.replay.test.resources.utils.DatasetDirector.QueryTypes;
 import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
@@ -76,9 +76,9 @@ public class TestDataQuery implements DataQueryI {
 		}
 		ChannelNameRegistry cnr = er.getCnrClone();
 		er.getQueries().setQuery(name, RateType.CONT,
-				new QuerySpec(channels, name, cnr, RateType.CONT));
+				new SavedQuery(channels, name, cnr, RateType.CONT));
 		er.getQueries().setQuery(name, RateType.STEP,
-				new QuerySpec(channels, name, cnr, RateType.STEP));
+				new SavedQuery(channels, name, cnr, RateType.STEP));
 		return true;
 	}
 
