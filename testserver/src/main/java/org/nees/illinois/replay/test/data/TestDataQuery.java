@@ -9,9 +9,9 @@ import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.registries.SavedQuery;
-import org.nees.illinois.replay.test.resources.utils.DatasetDirector;
-import org.nees.illinois.replay.test.resources.utils.DatasetDirector.QueryTypes;
-import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.DatasetDirector;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.DatasetDirector.QueryTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

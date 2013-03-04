@@ -7,9 +7,9 @@ import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.restlet.client.DataQueryClient;
 import org.nees.illinois.replay.restlet.client.DataTableClient;
 import org.nees.illinois.replay.test.resources.utils.DatasetLoaderI;
-import org.nees.illinois.replay.test.utils.ChannelLists;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
 import org.nees.illinois.replay.test.utils.DataGenerator;
-import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
 
 public class RestletLoader implements DatasetLoaderI {
 
@@ -33,7 +33,7 @@ public class RestletLoader implements DatasetLoaderI {
 	 */
 	@Override
 	public void createQueries() {
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		DataQueryClient dqc = new DataQueryClient(hostname, experiment);
 		if (secondExperiment) {
 			createQuery(cl, dqc, ChannelListType.Query3);
@@ -44,13 +44,13 @@ public class RestletLoader implements DatasetLoaderI {
 		}
 	}
 
-	private void createQuery(ChannelLists cl, DataQueryClient dqc,
+	private void createQuery(ChannelDataTestingLists cl, DataQueryClient dqc,
 			ChannelListType typ) {
 		List<String> channels = cl.getChannels(typ);
 		dqc.setQuery(typ.name(), channels);
 	}
 
-	private void createTable(ChannelLists cl, DataTableClient dtc,
+	private void createTable(ChannelDataTestingLists cl, DataTableClient dtc,
 			ChannelListType typ) {
 		List<String> channels = cl.getChannels(typ);
 		dtc.createTable(cl.getTt(typ), channels);
@@ -64,7 +64,7 @@ public class RestletLoader implements DatasetLoaderI {
 	 */
 	@Override
 	public void createTables() {
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		DataTableClient dtc = new DataTableClient(hostname, experiment);
 		if (secondExperiment) {
 			createTable(cl, dtc, ChannelListType.OM2);
@@ -129,7 +129,7 @@ public class RestletLoader implements DatasetLoaderI {
 	 */
 	@Override
 	public void uploadData() {
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		DataTableClient dtc = new DataTableClient(hostname, experiment);
 		if (secondExperiment) {
 			uploadDataTable(cl, dtc, ChannelListType.OM2);
@@ -140,7 +140,7 @@ public class RestletLoader implements DatasetLoaderI {
 		}
 	}
 
-	private void uploadDataTable(ChannelLists cl, DataTableClient dtc,
+	private void uploadDataTable(ChannelDataTestingLists cl, DataTableClient dtc,
 			ChannelListType typ) {
 		List<String> channels = cl.getChannels(typ);
 

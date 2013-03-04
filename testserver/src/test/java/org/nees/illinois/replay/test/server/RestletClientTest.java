@@ -9,8 +9,8 @@ import org.nees.illinois.replay.restlet.ReplayServerComponent;
 import org.nees.illinois.replay.restlet.client.DataQueryClient;
 import org.nees.illinois.replay.restlet.client.DataTableClient;
 import org.nees.illinois.replay.test.server.guice.LocalRestletTestModule;
-import org.nees.illinois.replay.test.utils.ChannelLists;
-import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +63,7 @@ public class RestletClientTest {
 	@Test
 	public void testCreateTables() {
 
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		DataTableClient dtc = new DataTableClient(root, "HybridMasonry1");
 
 		for (ChannelListType typ : ChannelListType.values()) {
@@ -78,7 +78,7 @@ public class RestletClientTest {
 	@Test(dependsOnMethods = { "testCreateTables" })
 	public void testUpdateTables() {
 
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		DataTableClient dtc = new DataTableClient(root, "HybridMasonry1");
 
 		for (ChannelListType typ : ChannelListType.values()) {
@@ -100,7 +100,7 @@ public class RestletClientTest {
 	@Test(dependsOnMethods = { "testUpdateTables" })
 	public void testPutQueries() {
 
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		DataQueryClient dqc = new DataQueryClient(root, "HybridMasonry1");
 
 		for (ChannelListType typ : ChannelListType.values()) {
@@ -117,7 +117,7 @@ public class RestletClientTest {
 	public void testGetQueries() {
 
 		DataQueryClient dqc = new DataQueryClient(root, "HybridMasonry1");
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 
 		for (ChannelListType typ : ChannelListType.values()) {
 			if (typ.equals(ChannelListType.OM)
