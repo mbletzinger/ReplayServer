@@ -1,6 +1,5 @@
 package org.nees.illinois.replay.test.db;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
@@ -9,19 +8,19 @@ import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.data.DbDataUpdates;
-import org.nees.illinois.replay.db.query.TableQueriesList;
 import org.nees.illinois.replay.db.query.DbQueryProcessor;
 import org.nees.illinois.replay.db.query.DbQueryProcessor.QueryType;
 import org.nees.illinois.replay.db.query.SavedTableQuery;
-import org.nees.illinois.replay.db.statement.StatementProcessor;
+import org.nees.illinois.replay.db.query.TableQueriesList;
 import org.nees.illinois.replay.db.statement.DbTablesMap;
+import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.registries.ChannelNameManagement;
 import org.nees.illinois.replay.registries.ExperimentModule;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.utils.ChannelLists;
-import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +93,7 @@ public class TestDbQuery {
 	@Test
 	public void testQuerySpec() {
 
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
@@ -120,7 +119,7 @@ public class TestDbQuery {
 
 	@Test
 	public void testSelectData() {
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		dbu.update(TableType.OM, RateType.CONT, omContData);
@@ -147,7 +146,7 @@ public class TestDbQuery {
 	@Test
 	public void testSelects() {
 
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));

@@ -7,8 +7,8 @@ import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.utils.ChannelLists;
-import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -53,7 +53,7 @@ public class TestChannelLists {
 
 	@Test
 	public void testChannelList() {
-		ChannelLists lists = new ChannelLists();
+		ChannelDataTestingLists lists = new ChannelDataTestingLists();
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		for (String c : lists.getChannels(ChannelListType.OM)) {
 			cnr.addChannel(TableType.OM, c);
