@@ -13,8 +13,8 @@ import org.nees.illinois.replay.test.server.utils.InjectedErrorsType;
 import org.nees.illinois.replay.test.server.utils.RestletLoader;
 import org.nees.illinois.replay.test.server.utils.DataQueryBadClient;
 import org.nees.illinois.replay.test.server.utils.DataTableBadClient;
-import org.nees.illinois.replay.test.utils.ChannelLists;
-import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public class RestletErrorsClientTest {
 	@Test
 	public void testCreateTables() {
 
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		DataTableBadClient dtc = new DataTableBadClient(root,
 				"HybridMasonry1");
 		ChannelListType typ = ChannelListType.OM;
@@ -96,7 +96,7 @@ public class RestletErrorsClientTest {
 		DatasetLoaderI dl = new RestletLoader(root, "HybridMasonry1", false);
 		dl.createTables();
 
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		DataTableBadClient dtc = new DataTableBadClient(root,
 				"HybridMasonry1");
 
@@ -139,7 +139,7 @@ public class RestletErrorsClientTest {
 	@Test
 	public void testPutQueries() {
 
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 
 		DataQueryBadClient dqc = new DataQueryBadClient(root,
 				"HybridMasonry1");
@@ -172,7 +172,7 @@ public class RestletErrorsClientTest {
 		dl.uploadData();
 		dl.createQueries();
 		
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 
 		DataQueryClient clean_dqc = new DataQueryClient(root,
 				"HybridMasonry1");

@@ -18,12 +18,13 @@ import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.restlet.DataQueryServerResource;
 import org.nees.illinois.replay.restlet.DataTableServerResource;
 import org.nees.illinois.replay.test.data.TestDataUpdates;
-import org.nees.illinois.replay.test.resources.utils.DatasetDirector.ExperimentNames;
-import org.nees.illinois.replay.test.resources.utils.DatasetDirector.QueryTypes;
-import org.nees.illinois.replay.test.resources.utils.DatasetDirector.TimeSpec;
-import org.nees.illinois.replay.test.utils.ChannelLists;
-import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.nees.illinois.replay.test.utils.DatasetDirector;
+import org.nees.illinois.replay.test.utils.DatasetDirector.ExperimentNames;
+import org.nees.illinois.replay.test.utils.DatasetDirector.QueryTypes;
+import org.nees.illinois.replay.test.utils.DatasetDirector.TimeSpec;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -39,48 +40,23 @@ import com.google.inject.Injector;
 import com.google.inject.Provider;
 
 public class ResourceLoader implements DatasetLoaderI {
-	/**
-	 * @return the cl
-	 */
-	public ChannelLists getCl() {
-		return cl;
-	}
-
-	/**
-	 * @return the uploadRows
-	 */
-	public int getUploadRows() {
-		return uploadRows;
-	}
-
-	/**
-	 * @return the dqsR
-	 */
-	public DataQueryServerResource getDqsR() {
-		return dqsR;
-	}
-
-	/**
-	 * @return the dtsR
-	 */
-	public DataTableServerResource getDtsR() {
-		return dtsR;
-	}
-
 	private final String appRoot;
-	
-	private final ChannelLists cl = new ChannelLists();
+
+	private final ChannelDataTestingLists cl = new ChannelDataTestingLists();
 
 	private final Context cxt;
 
 	private final DatasetDirector dd = new DatasetDirector();
+
 	private final DataQueryServerResource dqsR;
+	
 	private final DataTableServerResource dtsR;
+
 	private ExperimentNames experiment;
+
+	private final Logger log = LoggerFactory.getLogger(ResourceLoader.class);
 	private boolean secondExperiment;
 	private final int uploadRows = 20;
-	private final Logger log = LoggerFactory.getLogger(ResourceLoader.class);
-
 	public ResourceLoader(String appRoot, ExperimentNames experiment,
 			AbstractModule module, boolean secondExperiment) {
 		Injector injector = Guice.createInjector(module);
@@ -98,14 +74,12 @@ public class ResourceLoader implements DatasetLoaderI {
 		this.secondExperiment = secondExperiment;
 		this.appRoot = appRoot;
 	}
-
 	public void checkChannels() {
 		Context context = dqsR.getContext();
 		ExperimentRegistries er = (ExperimentRegistries) context
 				.getAttributes().get(experiment + ".registries");
 		dd.checkExpectedCnr(experiment, er.getChnlNamesMgmt().getCnr());
 	}
-
 	public void checkDataset(ChannelListType typ) {
 		List<String> channels = cl.getChannels(typ);
 		int columns = channels.size();
@@ -117,13 +91,16 @@ public class ResourceLoader implements DatasetLoaderI {
 					((TestDataUpdates) dtsR.getUpdates()).getData());
 		}
 	}
-
 	public void checkQuery(ChannelListType quy) {
 		Context context = dqsR.getContext();
 		ExperimentRegistries er = (ExperimentRegistries) context
 				.getAttributes().get(experiment + ".registries");
 		Assert.assertNotNull(er.getQueries()
 				.getQuery(quy.name(), RateType.STEP));
+	}
+
+	public void checkQueryData(QueryTypes qt, ChannelListType quy, DoubleMatrix data) {
+		dd.checkData(qt, quy, data);
 	}
 
 	public void checkTable(ChannelListType typ) {
@@ -143,7 +120,7 @@ public class ResourceLoader implements DatasetLoaderI {
 			createQuery(ChannelListType.Query2);
 		}
 	}
-
+	
 	public void createQuery(ChannelListType quy) {
 
 		List<String> channels = cl.getChannels(quy);
@@ -246,6 +223,13 @@ public class ResourceLoader implements DatasetLoaderI {
 	}
 
 	/**
+	 * @return the cl
+	 */
+	public ChannelDataTestingLists getCl() {
+		return cl;
+	}
+
+	/**
 	 * @return the cxt
 	 */
 	public Context getCxt() {
@@ -259,6 +243,20 @@ public class ResourceLoader implements DatasetLoaderI {
 		return dd;
 	}
 
+	/**
+	 * @return the dqsR
+	 */
+	public DataQueryServerResource getDqsR() {
+		return dqsR;
+	}
+
+	/**
+	 * @return the dtsR
+	 */
+	public DataTableServerResource getDtsR() {
+		return dtsR;
+	}
+
 	@Override
 	public String getExperiment() {
 		return experiment.name();
@@ -267,6 +265,13 @@ public class ResourceLoader implements DatasetLoaderI {
 	@Override
 	public String getHostname() {
 		return null;
+	}
+
+	/**
+	 * @return the uploadRows
+	 */
+	public int getUploadRows() {
+		return uploadRows;
 	}
 
 	@Override

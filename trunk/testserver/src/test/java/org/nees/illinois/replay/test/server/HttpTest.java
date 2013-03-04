@@ -11,8 +11,8 @@ import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.restlet.ReplayServerComponent;
 import org.nees.illinois.replay.test.server.guice.LocalRestletTestModule;
 import org.nees.illinois.replay.test.server.utils.HttpClientFunctions;
-import org.nees.illinois.replay.test.utils.ChannelLists;
-import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.nees.mustsim.replay.test.server.http.ChannelList2HttpEntity;
 import org.nees.mustsim.replay.test.server.http.DoubleMatrix2HttpEntity;
@@ -65,7 +65,7 @@ public class HttpTest {
 	public void testCreateTables() {
 
 		// Prepare a mock HTTP call
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		String baseString = hostname
 				+ "/test/data/experiment/HybridMasonry1/table/";
 
@@ -87,7 +87,7 @@ public class HttpTest {
 	@Test(dependsOnMethods = { "testCreateTables" })
 	public void testUpdateTables() {
 
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		String baseString = hostname
 				+ "/test/data/experiment/HybridMasonry1/table/";
 
@@ -119,7 +119,7 @@ public class HttpTest {
 	@Test(dependsOnMethods = { "testUpdateTables" })
 	public void testPutQueries() {
 
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		String baseString = hostname
 				+ "/test/data/experiment/HybridMasonry1/query/";
 
