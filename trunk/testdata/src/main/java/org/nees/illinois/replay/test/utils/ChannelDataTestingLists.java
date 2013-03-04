@@ -7,10 +7,12 @@ import java.util.Map;
 
 import org.nees.illinois.replay.data.TableType;
 
+public class ChannelDataTestingLists {
+	public enum ChannelListType {
+		OM, DAQ, Query1, Query2, OM2, DAQ2, Query3, Query4
+	};
 
-public class ChannelLists {
-	public enum ChannelListType { OM, DAQ, Query1, Query2, OM2, DAQ2, Query3, Query4 };
-	private final Map<ChannelListType,TableType> cl2tt = new HashMap<ChannelLists.ChannelListType, TableType>();
+	private final Map<ChannelListType, TableType> cl2tt = new HashMap<ChannelDataTestingLists.ChannelListType, TableType>();
 	private final Map<ChannelListType, List<String>> channels = new HashMap<ChannelListType, List<String>>();
 	{
 		List<String> chnls = new ArrayList<String>();
@@ -29,7 +31,6 @@ public class ChannelLists {
 		chnls2.add("OM/CntrlSensor/D_North_Y_2");
 		channels.put(ChannelListType.OM2, chnls2);
 		cl2tt.put(ChannelListType.OM2, TableType.OM);
-
 
 		chnls = new ArrayList<String>();
 		chnls.add("DAQ/DisplacementSensor/WestFlange/FirstFloor/DTV02F1A_W7_LinPot05_0");
@@ -69,12 +70,13 @@ public class ChannelLists {
 		channels.put(ChannelListType.Query4, chnls2);
 
 	};
-	
+
 	public List<String> getChannels(ChannelListType listType) {
 		List<String> result = new ArrayList<String>();
 		result.addAll(channels.get(listType));
 		return result;
 	}
+
 	public TableType getTt(ChannelListType type) {
 		return cl2tt.get(type);
 	}

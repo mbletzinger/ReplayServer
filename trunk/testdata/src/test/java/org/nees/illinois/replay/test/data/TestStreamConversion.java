@@ -13,9 +13,9 @@ import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
-import org.nees.illinois.replay.test.utils.ChannelLists;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
 import org.nees.illinois.replay.test.utils.DataGenerator;
-import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ public class TestStreamConversion {
 
 	@Test
 	public void testChannelListConversion() {
-		ChannelLists lists = new ChannelLists();
+		ChannelDataTestingLists lists = new ChannelDataTestingLists();
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
 		for (String c : lists.getChannels(ChannelListType.OM)) {
