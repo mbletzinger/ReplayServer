@@ -16,8 +16,8 @@ import org.nees.illinois.replay.registries.ExperimentModule;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.utils.ChannelLists;
-import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +93,7 @@ public class TestDataStatements {
 
 	@Test
 	public void testContDataUpdate() {
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		DbTablesMap specs = new DbTablesMap(cnr, er.getExperiment());
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		dbu.update(TableType.OM, RateType.CONT, omContData);
@@ -112,7 +112,7 @@ public class TestDataStatements {
 
 	@Test
 	public void testStepDataUpdate() {
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		DbTablesMap specs = new DbTablesMap(cnr, er.getExperiment());
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		log.debug("Adding data "
