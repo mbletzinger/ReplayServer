@@ -8,48 +8,57 @@ import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.restlet.ReplayServerComponent;
 import org.nees.illinois.replay.restlet.client.DataQueryClient;
 import org.nees.illinois.replay.restlet.client.DataTableClient;
+import org.nees.illinois.replay.restlet.guice.DbConfigType;
 import org.nees.illinois.replay.restlet.guice.LocalRestletTestDbModule;
-import org.nees.illinois.replay.test.db.utils.DerbyDbControl;
-import org.nees.illinois.replay.test.utils.ChannelLists;
-import org.nees.illinois.replay.test.utils.ChannelLists.ChannelListType;
+import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
+import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-public class ReplayServerWithDerbyDbTest {
+public class ReplayServerWithDbTest {
 	private ReplayServerComponent component;
 	private final DerbyDbControl derby = new DerbyDbControl();
 	private String hostname;
 	private Injector injector;
 	private final Logger log = LoggerFactory
-			.getLogger(ReplayServerWithDerbyDbTest.class);
+			.getLogger(ReplayServerWithDbTest.class);
+	private boolean ismysql;
 
 	@AfterClass
 	public void afterClass() {
-		derby.stopDerby();
 		if (component.isStarted()) {
 			try {
 				component.stop();
 				Thread.sleep(4000);
 			} catch (Exception e) {
 				log.error("Component Stop Failed ", e);
-				Assert.fail();
 			}
+		}
+		if (ismysql == false) {
+			derby.stopDerby();
 		}
 	}
 
+	@Parameters("db")
 	@BeforeClass
-	public void beforeClass() {
-		derby.startDerby();
+	public void beforeClass(@Optional("derby") String db) {
+		ismysql = db.equals("mysql");
+		if (ismysql == false) {
+			derby.startDerby();
+		}
 		// Instantiate our Restlet component
-		injector = Guice.createInjector(new LocalRestletTestDbModule());
+		injector = Guice.createInjector(new LocalRestletTestDbModule(ismysql ? DbConfigType.LocalTestMySql : DbConfigType.LocalTestDerby));
 		component = injector.getInstance(ReplayServerComponent.class);
 		try {
 			component.start();
@@ -62,7 +71,7 @@ public class ReplayServerWithDerbyDbTest {
 
 	@Test
 	public void testCreateTables() {
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		DataTableClient dtc = new DataTableClient(hostname, "HybridMasonry1");
 
 		for (ChannelListType typ : ChannelListType.values()) {
@@ -95,7 +104,7 @@ public class ReplayServerWithDerbyDbTest {
 	@Test(dependsOnMethods = { "testUpdateTables" })
 	public void testPutQueries() {
 
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		DataQueryClient dqc = new DataQueryClient(hostname, "HybridMasonry1");
 
 		for (ChannelListType typ : ChannelListType.values()) {
@@ -111,7 +120,7 @@ public class ReplayServerWithDerbyDbTest {
 	@Test(dependsOnMethods = { "testCreateTables" })
 	public void testUpdateTables() {
 
-		ChannelLists cl = new ChannelLists();
+		ChannelDataTestingLists cl = new ChannelDataTestingLists();
 		DataTableClient dtc = new DataTableClient(hostname, "HybridMasonry1");
 
 		for (ChannelListType typ : ChannelListType.values()) {
