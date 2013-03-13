@@ -19,14 +19,14 @@ import org.nees.illinois.replay.test.utils.mgen.GenerateExpectedEarly;
 import org.nees.illinois.replay.test.utils.mgen.GenerateExpectedFull;
 import org.nees.illinois.replay.test.utils.mgen.GenerateExpectedLate;
 
-public class DoubleMatrixGenerator {
+public class InterpolateTestData {
 
 	public enum ColumnTypes {
 		Full, Empty, SingleNull, MultiNull, CoupleNulls, SingleEarly, DoubleEarly, SingleLate, DoubleLate
 	};
 
-	private final Map<ColumnTypes, GenerateColumn> generators = new HashMap<DoubleMatrixGenerator.ColumnTypes, GenerateColumn>();
-	private final Map<ColumnTypes, GenerateColumn> expected = new HashMap<DoubleMatrixGenerator.ColumnTypes, GenerateColumn>();
+	private final Map<ColumnTypes, GenerateColumn> generators = new HashMap<InterpolateTestData.ColumnTypes, GenerateColumn>();
+	private final Map<ColumnTypes, GenerateColumn> expected = new HashMap<InterpolateTestData.ColumnTypes, GenerateColumn>();
 	private final int rowSize;
 
 	public List<List<Double>> generate(List<ColumnTypes> specs,
@@ -48,7 +48,7 @@ public class DoubleMatrixGenerator {
 		return result;
 	}
 
-	public DoubleMatrixGenerator(int rowSize, double increment) {
+	public InterpolateTestData(int rowSize, double increment) {
 		this.rowSize = rowSize;
 		generators.put(ColumnTypes.Full, new GenerateActualFull(rowSize,
 				increment));

@@ -8,60 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 
 public class DataGenerator {
-	private int recordNumber = 0;
+	private final int numberOfRows;
 	private final int numberOfColumns;
-	private int[] stepNumber = new int[3];
-	private final double timeMultiplier;
-	private static double startTime = 222.0;
-
-	public DataGenerator(int numberOfColumns, double timeMultiplier) {
-		super();
-		this.numberOfColumns = numberOfColumns;
-		stepNumber[0] = 1;
-		stepNumber[1] = 0;
-		stepNumber[2] = 1;
-		this.timeMultiplier = timeMultiplier;
-	}
-
-	public double[] genRecord() {
-		double[] result = genData(4);
-		result[0] = startTime + (recordNumber * timeMultiplier);
-		for (int s = 0; s < 3; s++) {
-			result[s + 1] = stepNumber[s];
-		}
-		incrementStep();
-		recordNumber++;
-		return result;
-
-	}
-
-	private double[] genData(int start) {
-		double[] result = new double[start + numberOfColumns];
-		for (int c = 0; c < numberOfColumns; c++) {
-			result[c + start] = ((recordNumber % 20) * .01 + c * .003)
-					* (c % 2 == 0 ? 1 : -1);
-		}
-		return result;
-
-	}
-
-	private void incrementStep() {
-		if (recordNumber % 4 == 0) {
-			stepNumber[0]++;
-			stepNumber[1] = 0;
-			stepNumber[2] = 0;
-		}
-		if (recordNumber % 3 == 0) {
-			stepNumber[1]++;
-			stepNumber[2] = 0;
-		}
-		stepNumber[2] += timeMultiplier * 10;
-		;
-	}
-
-	public void reset() {
-		recordNumber = 0;
-	}
+	private final DataRowGenerator rows;
+	private final TimeGenerator time;
 
 	public static void compareData(double[][] expected, double[][] actual) {
 		LoggerFactory.getLogger(DataGenerator.class).debug(
@@ -76,12 +26,21 @@ public class DataGenerator {
 		}
 	}
 
-	public static double[][] initData(int row, int col,
-			double timeMultiplier) {
-		double[][] data = new double[row][col];
-		DataGenerator dg = new DataGenerator(col, timeMultiplier);
-		for (int r = 0; r < row; r++) {
-			data[r] = dg.genRecord();
+	public DataGenerator(int numberOfRows, int numberOfColumns,
+			double timeMultiplier, double startTime) {
+		super();
+		this.numberOfRows = numberOfRows;
+		this.numberOfColumns = numberOfColumns;
+		this.time = new TimeGenerator(timeMultiplier, startTime);
+		this.rows = new DataRowGenerator(numberOfColumns);
+	}
+
+	public double[][] generate() {
+		double[][] data = new double[numberOfRows][numberOfColumns];
+		for (int r = 0; r < numberOfRows; r++) {
+			data[r] = rows.genRecord(time);
+			time.increment();
+			time.incrementStep();
 		}
 		return data;
 	}

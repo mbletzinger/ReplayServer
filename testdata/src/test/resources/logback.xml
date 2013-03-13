@@ -14,6 +14,7 @@
     </encoder>
   </appender>
   <logger name="org.nees.illinois.replay.data" level="DEBUG"/>
+  <logger name="org.nees.illinois.replay.data.DoubleMatrix" level="INFO"/>
   <logger name="org.nees.illinois.replay.db" level="DEBUG"/>
   <logger name="org.nees.illinois" level="INFO"/>
   <logger name="org.nees.illinois.replay.test" level="DEBUG"/>
