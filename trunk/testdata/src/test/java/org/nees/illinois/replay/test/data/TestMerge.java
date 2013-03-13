@@ -5,6 +5,7 @@ import java.util.List;
 import org.nees.illinois.replay.data.MergeSet;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.nees.illinois.replay.test.utils.DatasetDirector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
@@ -20,18 +21,24 @@ public class TestMerge {
 
 	@BeforeMethod
 	public void setUp() throws Exception {
-		double[][] dat = DataGenerator.initData(20, 4, 0.7);
-		omContData = DataGenerator.toList(dat);
-		dat = DataGenerator.initData(15, 3, 1.0);
-		daqContData = DataGenerator.toList(dat);
-		dat = DataGenerator.initData(20, 4, 0.2);
-		omStepData = DataGenerator.toList(dat);
-		dat = DataGenerator.initData(15, 3, 0.3);
-		daqStepData = DataGenerator.toList(dat);
 	}
 
 	@Test
-	public void testMerge() {
+	public void testRawMerge() {
+
+		DataGenerator dg = new DataGenerator(20, 4, 0.7, 222.0);
+		double[][] dat = dg.generate();
+		omContData = DataGenerator.toList(dat);
+		dg = new DataGenerator(15, 3, 1.0, 222.0);
+		dat = dg.generate();
+		daqContData = DataGenerator.toList(dat);
+		dg = new DataGenerator(20, 4, 0.2, 222.0);
+		dat = dg.generate();
+		omStepData = DataGenerator.toList(dat);
+		dg = new DataGenerator(15, 3, 0.3, 222.0);
+		dat = dg.generate();
+		daqStepData = DataGenerator.toList(dat);
+
 		int[] daqcsz = { daqContData.size(), daqContData.get(0).size() };
 		int[] omcsz = { omContData.size(), omContData.get(0).size() };
 		int[] daqssz = { daqStepData.size(), daqStepData.get(0).size() };
@@ -79,5 +86,15 @@ public class TestMerge {
 		}
 
 	}
+	
+	@Test
+	public void testQueryMerges() {
+		DatasetDirector dd = new DatasetDirector();
+		
+	}
+//	private void testQueryMerge(ChannelListType quy, QueryParaTypes qt, DatasetDirector dd) {
+//		ChannelDataTestingLists cl = dd.
+//		List<String> omChnls = 
+//	}
 
 }

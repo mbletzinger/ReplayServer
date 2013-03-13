@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.MatrixFix;
-import org.nees.illinois.replay.test.utils.DoubleMatrixGenerator;
-import org.nees.illinois.replay.test.utils.DoubleMatrixGenerator.ColumnTypes;
+import org.nees.illinois.replay.test.utils.InterpolateTestData;
+import org.nees.illinois.replay.test.utils.InterpolateTestData.ColumnTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterMethod;
@@ -15,7 +15,7 @@ import org.testng.annotations.Test;
 
 public class TestInterpolate {
 	private final Logger log = LoggerFactory.getLogger(TestInterpolate.class);
-	private DoubleMatrixGenerator dmg = new DoubleMatrixGenerator(10, 0.02);
+	private InterpolateTestData dmg = new InterpolateTestData(10, 0.02);
 
 	@BeforeMethod
 	public void setUp() throws Exception {
@@ -27,7 +27,7 @@ public class TestInterpolate {
 
 	@Test
 	public void testFull() {
-		List<ColumnTypes> spec = new ArrayList<DoubleMatrixGenerator.ColumnTypes>();
+		List<ColumnTypes> spec = new ArrayList<InterpolateTestData.ColumnTypes>();
 		for (int i = 0; i < 4; i++) {
 			spec.add(ColumnTypes.Full);
 		}
@@ -45,7 +45,7 @@ public class TestInterpolate {
 
 	@Test
 	public void testEmpty() {
-		List<ColumnTypes> spec = new ArrayList<DoubleMatrixGenerator.ColumnTypes>();
+		List<ColumnTypes> spec = new ArrayList<InterpolateTestData.ColumnTypes>();
 		for (int i = 0; i < 4; i++) {
 			spec.add((i % 2 == 0 ? ColumnTypes.Empty : ColumnTypes.Full));
 		}
@@ -63,7 +63,7 @@ public class TestInterpolate {
 
 	@Test
 	public void testNulls() {
-		List<ColumnTypes> spec = new ArrayList<DoubleMatrixGenerator.ColumnTypes>();
+		List<ColumnTypes> spec = new ArrayList<InterpolateTestData.ColumnTypes>();
 		spec.add(ColumnTypes.Empty);
 		spec.add(ColumnTypes.Full);
 		spec.add(ColumnTypes.SingleNull);
@@ -84,7 +84,7 @@ public class TestInterpolate {
 
 	@Test
 	public void testExtrapolate() {
-		List<ColumnTypes> spec = new ArrayList<DoubleMatrixGenerator.ColumnTypes>();
+		List<ColumnTypes> spec = new ArrayList<InterpolateTestData.ColumnTypes>();
 		spec.add(ColumnTypes.Empty);
 		spec.add(ColumnTypes.Full);
 		spec.add(ColumnTypes.SingleEarly);

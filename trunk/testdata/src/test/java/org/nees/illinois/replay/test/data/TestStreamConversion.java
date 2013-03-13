@@ -13,9 +13,10 @@ import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
-import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
+import org.nees.illinois.replay.test.utils.ChannelListTestMaps;
+import org.nees.illinois.replay.test.utils.ChannelListType;
 import org.nees.illinois.replay.test.utils.DataGenerator;
-import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.DatasetDirector.ExperimentNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ public class TestStreamConversion {
 
 	@Test
 	public void testChannelListConversion() {
-		ChannelDataTestingLists lists = new ChannelDataTestingLists();
+		ChannelListTestMaps lists = new ChannelListTestMaps(false, ExperimentNames.HybridMasonry1.toString());
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
 		for (String c : lists.getChannels(ChannelListType.OM)) {
@@ -53,7 +54,8 @@ public class TestStreamConversion {
 	
 	@Test
 	public void testDoubleMatrixConversion() {
-		double[][] data = DataGenerator.initData(20, 6, 0.5);
+		DataGenerator dg = new DataGenerator(20, 6, 0.5, 222.0);
+		double[][] data = dg.generate();
 		DoubleMatrix2Representation rep2os = new DoubleMatrix2Representation(data);
 		DoubleMatrix orig = new DoubleMatrix(DataGenerator.toList(data), data[0].length);
 		Representation2DoubleMatrix rep2dbl = new Representation2DoubleMatrix(rep2os.getRep());

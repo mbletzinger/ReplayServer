@@ -10,7 +10,6 @@ import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
-import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -21,10 +20,14 @@ public class DatasetDirector {
 		HybridMasonry1, HybridMasonry2
 	};
 
-	public enum QueryTypes {
+	public enum QueryParaTypes {
 		ContWithStart, ContWithStop, Step, StepWithStart, StepWithStop
 	};
 
+	public enum QueryPartsList {
+		OmList, DaqList, AllList
+	}
+	
 	public class TimeSpec {
 		private final Object start;
 		private final Object stop;
@@ -51,54 +54,45 @@ public class DatasetDirector {
 
 	}
 
-	private final ChannelDataTestingLists cl = new ChannelDataTestingLists();
 	private final ChannelNameRegistry expected2ndCnr = new ChannelNameRegistry();
 	private final ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
-	private final Map<ExperimentNames, List<ChannelListType>> experimentQueries = new HashMap<ExperimentNames, List<ChannelListType>>();
-	private final Map<ExperimentNames, List<ChannelListType>> experimentTables = new HashMap<ExperimentNames, List<ChannelListType>>();
+	private final Map<ExperimentNames, ChannelListTestMaps> experimentChannelLists = new HashMap<DatasetDirector.ExperimentNames, ChannelListTestMaps>();
 	private final Logger log = LoggerFactory.getLogger(DatasetDirector.class);
-	private final Map<QueryTypes, RateType> queryRates = new HashMap<QueryTypes, RateType>();
-	private final Map<QueryTypes, Integer> queryTableSize = new HashMap<QueryTypes, Integer>();
-	private final Map<QueryTypes, TimeSpec> queryTimes = new HashMap<DatasetDirector.QueryTypes, DatasetDirector.TimeSpec>();
+	private final Map<QueryParaTypes, RateType> queryRates = new HashMap<QueryParaTypes, RateType>();
+	private final Map<QueryParaTypes, Integer> queryTableSize = new HashMap<QueryParaTypes, Integer>();
+	private final Map<QueryParaTypes, TimeSpec> queryTimes = new HashMap<DatasetDirector.QueryParaTypes, DatasetDirector.TimeSpec>();
 
 	{
 		List<ChannelListType> list = new ArrayList<ChannelListType>();
-		list.add(ChannelListType.Query1);
-		list.add(ChannelListType.Query2);
-		experimentQueries.put(ExperimentNames.HybridMasonry1, list);
+		list.add(ChannelListType.QueryOm);
+		list.add(ChannelListType.QueryDaq);
 		list.clear();
-		list.add(ChannelListType.Query3);
-		list.add(ChannelListType.Query4);
-		experimentQueries.put(ExperimentNames.HybridMasonry2, list);
+		list.add(ChannelListType.QueryBefore);
+		list.add(ChannelListType.QueryAfter);
 		list.clear();
 		list.add(ChannelListType.OM);
 		list.add(ChannelListType.DAQ);
-		experimentTables.put(ExperimentNames.HybridMasonry1, list);
-		list.clear();
-		list.add(ChannelListType.OM2);
-		list.add(ChannelListType.DAQ2);
-		experimentTables.put(ExperimentNames.HybridMasonry2, list);
 
-		queryTableSize.put(QueryTypes.ContWithStart, 20);
-		queryTableSize.put(QueryTypes.ContWithStop, 10);
-		queryTableSize.put(QueryTypes.Step, 40);
-		queryTableSize.put(QueryTypes.StepWithStart, 15);
-		queryTableSize.put(QueryTypes.StepWithStop, 5);
+		queryTableSize.put(QueryParaTypes.ContWithStart, 20);
+		queryTableSize.put(QueryParaTypes.ContWithStop, 10);
+		queryTableSize.put(QueryParaTypes.Step, 40);
+		queryTableSize.put(QueryParaTypes.StepWithStart, 15);
+		queryTableSize.put(QueryParaTypes.StepWithStop, 5);
 
-		queryRates.put(QueryTypes.ContWithStart, RateType.CONT);
-		queryRates.put(QueryTypes.ContWithStop, RateType.CONT);
-		queryRates.put(QueryTypes.Step, RateType.STEP);
-		queryRates.put(QueryTypes.StepWithStart, RateType.STEP);
-		queryRates.put(QueryTypes.StepWithStop, RateType.STEP);
+		queryRates.put(QueryParaTypes.ContWithStart, RateType.CONT);
+		queryRates.put(QueryParaTypes.ContWithStop, RateType.CONT);
+		queryRates.put(QueryParaTypes.Step, RateType.STEP);
+		queryRates.put(QueryParaTypes.StepWithStart, RateType.STEP);
+		queryRates.put(QueryParaTypes.StepWithStop, RateType.STEP);
 
-		queryTimes.put(QueryTypes.ContWithStart, new TimeSpec(
+		queryTimes.put(QueryParaTypes.ContWithStart, new TimeSpec(
 				new Double(222.0), null));
-		queryTimes.put(QueryTypes.ContWithStop, new TimeSpec(new Double(222.0),
+		queryTimes.put(QueryParaTypes.ContWithStop, new TimeSpec(new Double(222.0),
 				new Double(223.0)));
-		queryTimes.put(QueryTypes.Step, new TimeSpec(null, null));
-		queryTimes.put(QueryTypes.StepWithStart, new TimeSpec(new StepNumber(
+		queryTimes.put(QueryParaTypes.Step, new TimeSpec(null, null));
+		queryTimes.put(QueryParaTypes.StepWithStart, new TimeSpec(new StepNumber(
 				1.0, 0.0, 1.0), null));
-		queryTimes.put(QueryTypes.StepWithStop, new TimeSpec(new StepNumber(
+		queryTimes.put(QueryParaTypes.StepWithStop, new TimeSpec(new StepNumber(
 				1.0, 0.0, 1.0), new StepNumber(3.0, 22.0, 1.0)));
 	}
 
@@ -112,7 +106,9 @@ public class DatasetDirector {
 		}
 	}
 
-	public void checkChannels(ChannelListType typ, List<String> channels) {
+	public void checkChannels(ExperimentNames experiment, ChannelListType typ,
+			List<String> channels) {
+		ChannelListTestMaps cl = experimentChannelLists.get(experiment);
 		checkChannels(cl.getChannels(typ), channels);
 	}
 
@@ -124,8 +120,9 @@ public class DatasetDirector {
 		}
 	}
 
-	public void checkData(QueryTypes qt, ChannelListType quy, DoubleMatrix data) {
-		DoubleMatrix expected = generate(qt, quy);
+	public void checkData(ExperimentNames experiment, QueryParaTypes qt,
+			ChannelListType quy, DoubleMatrix data) {
+		DoubleMatrix expected = generate(experiment, qt, quy);
 		log.debug("For " + qt + " and " + quy);
 		log.debug("CHECKING  expected " + expected + "\nWITH actual " + data);
 		DataGenerator.compareData(expected.getData(), data.getData());
@@ -140,28 +137,46 @@ public class DatasetDirector {
 		Assert.assertEquals(cnr.toString(), expected.toString());
 	}
 
-	public DoubleMatrix generate(QueryTypes qt, ChannelListType quy) {
+	public DoubleMatrix generate(ExperimentNames experiment, QueryParaTypes qt,
+			ChannelListType quy) {
+		ChannelListTestMaps cl = experimentChannelLists.get(experiment);
 		int row = queryTableSize.get(qt);
 		List<String> channels = cl.getChannels(quy);
 		RateType rate = queryRates.get(qt);
 		return generate(quy.name(), row, channels.size(), rate);
 	}
 
+	public DoubleMatrix generate(ChannelListType quy, QueryParaTypes qt, QueryPartsList qpl) {
+		ChannelTestingList qctl  = experimentChannelLists.get(quy).getQueryChannels(quy);
+		List<String> channels;
+		int row = queryTableSize.get(qt);
+		RateType rate = queryRates.get(qt);
+		if(qpl.equals(QueryPartsList.DaqList)) {
+			channels = qctl.getExisting().combine();
+		} else if (qpl.equals(QueryPartsList.OmList)) {
+			channels = qctl.getNewChannels();
+		} else {
+			channels = qctl.combine();
+		}
+		return generate(quy.toString(),row,channels.size(),rate);
+	}
+
 	private DoubleMatrix generate(String name, int rows, int cols, RateType rate) {
 		// log.debug("For " + rate + " query " + name + " creating " + rows +
 		// "x"
 		// + cols + " matrix");
-		double[][] data = DataGenerator.initData(rows, cols, 0.2);
+		DataGenerator dg = new DataGenerator(rows, cols, 0.02, 222.0);
+		double[][] data = dg.generate();
 		DoubleMatrix result = new DoubleMatrix(data);
-		log.debug("For " + rate + " query " + name + " creating " + result);
+		log.debug("For " + rate + " list type " + name + " creating " + result);
 		return result;
 	}
 
-	public RateType getRate(QueryTypes qt) {
+	public RateType getRate(QueryParaTypes qt) {
 		return queryRates.get(qt);
 	}
 
-	public TimeSpec getTimes(QueryTypes qt) {
+	public TimeSpec getTimes(QueryParaTypes qt) {
 		return queryTimes.get(qt);
 	}
 }
