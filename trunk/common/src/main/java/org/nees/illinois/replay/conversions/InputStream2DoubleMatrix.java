@@ -11,20 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class InputStream2DoubleMatrix {
-	/**
-	 * @return the numbers
-	 */
-	public List<List<Double>> getNumbers() {
-		return numbers;
-	}
-	public DoubleMatrix getMatrix() {
-		return new DoubleMatrix(numbers, numbers.get(0).size());
-	}
-
-	private final List<List<Double>> numbers = new ArrayList<List<Double>>();
-	
 	private final Logger log = LoggerFactory
 			.getLogger(InputStream2DoubleMatrix.class);
+	private final List<List<Double>> numbers = new ArrayList<List<Double>>();
 
 	public InputStream2DoubleMatrix(InputStream in) {
 		super();
@@ -53,6 +42,17 @@ public class InputStream2DoubleMatrix {
 				}
 			}
 		}
+	}
+	
+	public DoubleMatrix getMatrix() {
+		return new DoubleMatrix(numbers);
+	}
+
+	/**
+	 * @return the numbers
+	 */
+	public List<List<Double>> getNumbers() {
+		return numbers;
 	}
 
 }

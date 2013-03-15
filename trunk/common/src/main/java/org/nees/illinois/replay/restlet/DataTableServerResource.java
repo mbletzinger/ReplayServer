@@ -99,7 +99,7 @@ public class DataTableServerResource extends ServerResource implements
 		Representation2DoubleMatrix rep2dbl = new Representation2DoubleMatrix(
 				data);
 		List<List<Double>> doubles = rep2dbl.getIn2dm().getNumbers();
-		DoubleMatrix dm = new DoubleMatrix(doubles, doubles.get(0).size());
+		DoubleMatrix dm = new DoubleMatrix(doubles);
 		extract.extract(reqAttrsWithRate);
 		Map<RequiredAttrType, Object> attrs = extract.getAttrs();
 		TableType tbl = (TableType) attrs.get(RequiredAttrType.Table);
