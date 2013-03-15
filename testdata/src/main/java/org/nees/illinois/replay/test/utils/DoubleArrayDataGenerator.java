@@ -7,14 +7,14 @@ import org.nees.illinois.replay.data.Mtx2Str;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 
-public class DataGenerator {
+public class DoubleArrayDataGenerator {
 	private final int numberOfRows;
 	private final int numberOfColumns;
 	private final DataRowGenerator rows;
 	private final TimeGenerator time;
 
 	public static void compareData(double[][] expected, double[][] actual) {
-		LoggerFactory.getLogger(DataGenerator.class).debug(
+		LoggerFactory.getLogger(DoubleArrayDataGenerator.class).debug(
 				"Comparing expected " + Mtx2Str.matrix2String(expected)
 						+ "\nwith actual\n" + Mtx2Str.matrix2String(actual));
 		Assert.assertEquals(actual.length, expected.length);
@@ -26,7 +26,7 @@ public class DataGenerator {
 		}
 	}
 
-	public DataGenerator(int numberOfRows, int numberOfColumns,
+	public DoubleArrayDataGenerator(int numberOfRows, int numberOfColumns,
 			double timeMultiplier, double startTime) {
 		super();
 		this.numberOfRows = numberOfRows;

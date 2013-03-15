@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.nees.illinois.replay.data.MergeSet;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
 import org.nees.illinois.replay.test.utils.DatasetDirector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,18 +26,18 @@ public class TestMerge {
 	@Test
 	public void testRawMerge() {
 
-		DataGenerator dg = new DataGenerator(20, 4, 0.7, 222.0);
+		DoubleArrayDataGenerator dg = new DoubleArrayDataGenerator(20, 4, 0.7, 222.0);
 		double[][] dat = dg.generate();
-		omContData = DataGenerator.toList(dat);
-		dg = new DataGenerator(15, 3, 1.0, 222.0);
+		omContData = DoubleArrayDataGenerator.toList(dat);
+		dg = new DoubleArrayDataGenerator(15, 3, 1.0, 222.0);
 		dat = dg.generate();
-		daqContData = DataGenerator.toList(dat);
-		dg = new DataGenerator(20, 4, 0.2, 222.0);
+		daqContData = DoubleArrayDataGenerator.toList(dat);
+		dg = new DoubleArrayDataGenerator(20, 4, 0.2, 222.0);
 		dat = dg.generate();
-		omStepData = DataGenerator.toList(dat);
-		dg = new DataGenerator(15, 3, 0.3, 222.0);
+		omStepData = DoubleArrayDataGenerator.toList(dat);
+		dg = new DoubleArrayDataGenerator(15, 3, 0.3, 222.0);
 		dat = dg.generate();
-		daqStepData = DataGenerator.toList(dat);
+		daqStepData = DoubleArrayDataGenerator.toList(dat);
 
 		int[] daqcsz = { daqContData.size(), daqContData.get(0).size() };
 		int[] omcsz = { omContData.size(), omContData.get(0).size() };
