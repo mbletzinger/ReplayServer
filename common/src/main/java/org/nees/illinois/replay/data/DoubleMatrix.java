@@ -7,74 +7,95 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DoubleMatrix {
-	private final double[][] data;
+	protected final List<List<Double>> data;
+	protected final int numberOfColumns;
 
-	private final boolean[][] isNull;
-	
-//	private final Logger log = LoggerFactory.getLogger(DoubleMatrix.class);
+	private final Logger log = LoggerFactory.getLogger(DoubleMatrix.class);
 
-	public DoubleMatrix(List<List<Double>> idata, int columnSize) {
-		data = new double[idata.size()][columnSize];
-		isNull = new boolean[idata.size()][columnSize];
-		int r = 0;
-		for (List<Double> row : idata) {
-			int c = 0;
-			for (Double col : row) {
-//				log.debug("Filling data[" + r + "][" + c + "]");
-				if (col != null) {
-					data[r][c] = col;
-				} else {
-					isNull[r][c] = true;
-				}
-				c++;
+	public DoubleMatrix(List<List<Double>> idata) {
+		data = idata;
+		// Because we are paranoid we assume that idata is sparse row-wise.
+		// So we find the longest row and append nulls to the others
+		// to make all rows of equal size
+		int col = 0;
+		for (List<Double> r : idata) {
+			if (r.size() > col) {
+				col = r.size();
 			}
-			r++;
+		}
+		numberOfColumns = col;
+		for (List<Double> r : data) {
+			if (r.size() == numberOfColumns) {
+				continue;
+			}
+			for (int n = r.size(); n < numberOfColumns; n++) {
+				r.add(null);
+			}
 		}
 	}
 
-	public DoubleMatrix(double [][] idata) {
-		data = idata;
-		isNull = new boolean [idata.length][idata[0].length];
+	public DoubleMatrix(double[][] idata) {
+		data = new ArrayList<List<Double>>();
+		int row = idata.length;
+		int col = idata[0].length;
+		numberOfColumns = col;
+		for (int r = 0; r < row; r++) {
+			List<Double> rowL = new ArrayList<Double>();
+			for (int c = 0; c < col; c++) {
+				rowL.add(new Double(idata[r][c]));
+			}
+		}
 	}
 
 	/**
 	 * @return the data
 	 */
 	public double[][] getData() {
-		return data;
-	}
-
-	/**
-	 * @return the isNull
-	 */
-	public boolean[][] getIsNull() {
-		return isNull;
+		double[][] result = new double[data.size()][numberOfColumns];
+		for (List<Double> r : data) {
+			int rc = 0;
+			for (int c = 0; c < numberOfColumns; c++) {
+				Double d = r.get(c);
+				if (d == null) {
+					continue;
+				}
+				log.debug("Setting r " + rc + ", c " + c);
+				result[rc][c] = d.doubleValue();
+				rc++;
+			}
+		}
+		return result;
 	}
 
 	public boolean isNull(int row, int col) {
-		return isNull[row][col];
+		List<Double> rowL = data.get(row);
+		if (rowL.size() < col) {
+			return true;
+		}
+		return rowL.get(col) == null;
 	}
 
 	public void set(int row, int col, double value) {
-		data[row][col] = value;
-		isNull[row][col] = false;
+		List<Double> rowL = data.get(row);
+		for (int c = rowL.size(); c < col + 1; c++) {
+			rowL.add(null);
+		}
+		rowL.set(col, new Double(value));
 	}
 
 	public int[] sizes() {
 		int[] result = new int[2];
-		result[0] = data.length;
-		result[1] = data[0].length;
+		result[0] = data.size();
+		result[1] = numberOfColumns;
 		return result;
 	}
 
 	public List<List<Double>> toList() {
 		List<List<Double>> result = new ArrayList<List<Double>>();
-		for (int r = 0; r < data.length; r++) {
-			List<Double> row = new ArrayList<Double>();
-			result.add(row);
-			for (int c = 0; c < data[r].length; c++) {
-				row.add((isNull[r][c] ? null : data[r][c]));
-			}
+		for (List<Double> r : data) {
+			List<Double> nr = new ArrayList<Double>();
+			nr.addAll(r);
+			result.add(nr);
 		}
 		return result;
 	}
@@ -87,11 +108,15 @@ public class DoubleMatrix {
 	@Override
 	public String toString() {
 		String result = "";
-		for (int r = 0; r < data.length; r++) {
+		for (List<Double> r : data) {
 			result += "\n\t[";
-			for (int c = 0; c < data[r].length; c++) {
-				result += (c == 0 ? "" : ", ")
-						+ (isNull[r][c] ? "null" : data[r][c]);
+			for (int c = 0; c < r.size(); c++) {
+				Double d = r.get(c);
+				if (d == null) {
+					result += "null";
+					continue;
+				}
+				result += d.toString();
 			}
 			result += "]";
 		}
@@ -99,6 +124,18 @@ public class DoubleMatrix {
 	}
 
 	public double value(int row, int col) {
-		return data[row][col];
+		if (data.isEmpty() == false) {
+			List<Double> rowL = data.get(row);
+			if (rowL == null) {
+				log.error("Row " + row + " in " + toString() + " is null ");
+				return Double.NaN;
+			}
+			Double d = rowL.get(col);
+			if (d == null) {
+				return Double.NaN;
+			}
+			return rowL.get(col);
+		}
+		return Double.NaN;
 	}
 }
