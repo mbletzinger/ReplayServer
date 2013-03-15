@@ -125,7 +125,7 @@ public class DatasetDirector {
 		DoubleMatrix expected = generate(experiment, qt, quy);
 		log.debug("For " + qt + " and " + quy);
 		log.debug("CHECKING  expected " + expected + "\nWITH actual " + data);
-		DataGenerator.compareData(expected.getData(), data.getData());
+		DoubleArrayDataGenerator.compareData(expected.getData(), data.getData());
 	}
 
 	public void checkExpectedCnr(ExperimentNames experiment,
@@ -147,7 +147,7 @@ public class DatasetDirector {
 	}
 
 	public DoubleMatrix generate(ChannelListType quy, QueryParaTypes qt, QueryPartsList qpl) {
-		ChannelTestingList qctl  = experimentChannelLists.get(quy).getQueryChannels(quy);
+		ChannelTestingList qctl  = experimentChannelLists.get(quy).getChannelLists(quy);
 		List<String> channels;
 		int row = queryTableSize.get(qt);
 		RateType rate = queryRates.get(qt);
@@ -165,7 +165,7 @@ public class DatasetDirector {
 		// log.debug("For " + rate + " query " + name + " creating " + rows +
 		// "x"
 		// + cols + " matrix");
-		DataGenerator dg = new DataGenerator(rows, cols, 0.02, 222.0);
+		DoubleArrayDataGenerator dg = new DoubleArrayDataGenerator(rows, cols, 0.02, 222.0);
 		double[][] data = dg.generate();
 		DoubleMatrix result = new DoubleMatrix(data);
 		log.debug("For " + rate + " list type " + name + " creating " + result);

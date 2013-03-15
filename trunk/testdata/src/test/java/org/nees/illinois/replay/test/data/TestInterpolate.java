@@ -32,13 +32,13 @@ public class TestInterpolate {
 			spec.add(ColumnTypes.Full);
 		}
 		List<List<Double>> actualL = dmg.generate(spec, false);
-		DoubleMatrix actual = new DoubleMatrix(actualL, spec.size());
+		DoubleMatrix actual = new DoubleMatrix(actualL);
 		log.debug("Actual: " + actual);
 		MatrixFix iplt = new MatrixFix(actual);
 		iplt.fix();
 		log.debug("Fixed: " + actual);
 		List<List<Double>> expectedL = dmg.generate(spec, true);
-		DoubleMatrix expected = new DoubleMatrix(expectedL, spec.size());
+		DoubleMatrix expected = new DoubleMatrix(expectedL);
 		// log.debug("Expected: " + expected);
 		dmg.compareList2Doubles(expected, actual);
 	}
@@ -50,13 +50,13 @@ public class TestInterpolate {
 			spec.add((i % 2 == 0 ? ColumnTypes.Empty : ColumnTypes.Full));
 		}
 		List<List<Double>> actualL = dmg.generate(spec, false);
-		DoubleMatrix actual = new DoubleMatrix(actualL, spec.size());
+		DoubleMatrix actual = new DoubleMatrix(actualL);
 		log.debug("Actual: " + actual);
 		MatrixFix iplt = new MatrixFix(actual);
 		iplt.fix();
 		log.debug("Fixed: " + actual);
 		List<List<Double>> expectedL = dmg.generate(spec, true);
-		DoubleMatrix expected = new DoubleMatrix(expectedL, spec.size());
+		DoubleMatrix expected = new DoubleMatrix(expectedL);
 		// log.debug("Expected: " + expected);
 		dmg.compareList2Doubles(expected, actual);
 	}
@@ -71,13 +71,13 @@ public class TestInterpolate {
 		spec.add(ColumnTypes.CoupleNulls);
 
 		List<List<Double>> actualL = dmg.generate(spec, false);
-		DoubleMatrix actual = new DoubleMatrix(actualL, spec.size());
+		DoubleMatrix actual = new DoubleMatrix(actualL);
 		log.debug("Actual: " + actual);
 		MatrixFix iplt = new MatrixFix(actual);
 		iplt.fix();
 		log.debug("Fixed: " + actual);
 		List<List<Double>> expectedL = dmg.generate(spec, true);
-		DoubleMatrix expected = new DoubleMatrix(expectedL, spec.size());
+		DoubleMatrix expected = new DoubleMatrix(expectedL);
 		// log.debug("Expected: " + expected);
 		dmg.compareList2Doubles(expected, actual);
 	}
@@ -93,13 +93,13 @@ public class TestInterpolate {
 		spec.add(ColumnTypes.DoubleLate);
 
 		List<List<Double>> actualL = dmg.generate(spec, false);
-		DoubleMatrix actual = new DoubleMatrix(actualL, spec.size());
+		DoubleMatrix actual = new DoubleMatrix(actualL);
 		log.debug("Actual: " + actual);
 		MatrixFix iplt = new MatrixFix(actual);
 		iplt.fix();
 		log.debug("Fixed: " + actual);
 		List<List<Double>> expectedL = dmg.generate(spec, true);
-		DoubleMatrix expected = new DoubleMatrix(expectedL, spec.size());
+		DoubleMatrix expected = new DoubleMatrix(expectedL);
 		log.debug("Expected: " + expected);
 		dmg.compareList2Doubles(expected, actual);
 	}

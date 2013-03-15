@@ -15,7 +15,7 @@ import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.test.utils.ChannelListTestMaps;
 import org.nees.illinois.replay.test.utils.ChannelListType;
-import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
 import org.nees.illinois.replay.test.utils.DatasetDirector.ExperimentNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,16 +54,16 @@ public class TestStreamConversion {
 	
 	@Test
 	public void testDoubleMatrixConversion() {
-		DataGenerator dg = new DataGenerator(20, 6, 0.5, 222.0);
+		DoubleArrayDataGenerator dg = new DoubleArrayDataGenerator(20, 6, 0.5, 222.0);
 		double[][] data = dg.generate();
 		DoubleMatrix2Representation rep2os = new DoubleMatrix2Representation(data);
-		DoubleMatrix orig = new DoubleMatrix(DataGenerator.toList(data), data[0].length);
+		DoubleMatrix orig = new DoubleMatrix(DoubleArrayDataGenerator.toList(data));
 		Representation2DoubleMatrix rep2dbl = new Representation2DoubleMatrix(rep2os.getRep());
 		List<List<Double>> newL = rep2dbl.getIn2dm().getNumbers();
-		DoubleMatrix newD = new DoubleMatrix(newL,newL.get(0).size());
+		DoubleMatrix newD = new DoubleMatrix(newL);
 		log.debug("Original Data " + orig);
 		log.debug("New  Data " + newD);
-		DataGenerator.compareData(orig.getData(), newD.getData());
+		DoubleArrayDataGenerator.compareData(orig.getData(), newD.getData());
 	}
 	
 }

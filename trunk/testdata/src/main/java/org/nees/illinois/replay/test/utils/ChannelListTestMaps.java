@@ -37,7 +37,7 @@ public class ChannelListTestMaps {
 		return experiment;
 	};
 
-	public ChannelTestingList getQueryChannels(ChannelListType typ) {
+	public ChannelTestingList getChannelLists(ChannelListType typ) {
 		return cl2q.get(typ);
 	}
 	/**

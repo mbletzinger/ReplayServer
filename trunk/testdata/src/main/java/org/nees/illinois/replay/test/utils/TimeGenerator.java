@@ -1,6 +1,21 @@
 package org.nees.illinois.replay.test.utils;
 
 public class TimeGenerator {
+	private int recordNumber = 0;
+
+	private final int [] startStepNumber = { 1, 0, 1};
+
+	private final double startTime;
+
+	private int[] stepNumber = new int[3];
+
+	private final double timeMultiplier;
+	public TimeGenerator(double timeMultiplier, double startTime) {
+		stepNumber = startStepNumber;
+		this.timeMultiplier = timeMultiplier;
+		this.startTime = startTime;
+	}
+
 	/**
 	 * @return the recordNumber
 	 */
@@ -9,19 +24,26 @@ public class TimeGenerator {
 	}
 
 	/**
-	 * @param recordNumber the recordNumber to set
+	 * @return the startStepNumber
 	 */
-	public void setRecordNumber(int recordNumber) {
-		this.recordNumber = recordNumber;
+	public int[] getStartStepNumber() {
+		return startStepNumber;
 	}
-
+	/**
+	 * @return the startTime
+	 */
+	public double getStartTime() {
+		return startTime;
+	}
 	/**
 	 * @return the stepNumber
 	 */
 	public int[] getStepNumber() {
 		return stepNumber;
 	}
-
+	public double getTime() {
+		return startTime + (recordNumber * timeMultiplier);	
+	}
 	/**
 	 * @return the timeMultiplier
 	 */
@@ -29,25 +51,10 @@ public class TimeGenerator {
 		return timeMultiplier;
 	}
 
-	/**
-	 * @return the startTime
-	 */
-	public double getStartTime() {
-		return startTime;
+	public void increment() {
+		recordNumber++;
 	}
-
-	private int[] stepNumber = new int[3];
-	private final double timeMultiplier;
-	private final double startTime;
-	private int recordNumber = 0;
-	public TimeGenerator(double timeMultiplier, double startTime) {
-		stepNumber[0] = 1;
-		stepNumber[1] = 0;
-		stepNumber[2] = 1;
-		this.timeMultiplier = timeMultiplier;
-		this.startTime = startTime;
-	}
-
+	
 	public void incrementStep() {
 		if (recordNumber % 4 == 0) {
 			stepNumber[0]++;
@@ -61,15 +68,14 @@ public class TimeGenerator {
 		stepNumber[2] += timeMultiplier * 10;
 	}
 	
-	public void increment() {
-		recordNumber++;
-	}
-	
-	public double getTime() {
-		return startTime + (recordNumber * timeMultiplier);	
-	}
-
 	public void reset() {
 		recordNumber = 0;
+	}
+
+	/**
+	 * @param recordNumber the recordNumber to set
+	 */
+	public void setRecordNumber(int recordNumber) {
+		this.recordNumber = recordNumber;
 	}
 }
