@@ -44,6 +44,7 @@ public class DoubleMatrix {
 			for (int c = 0; c < col; c++) {
 				rowL.add(new Double(idata[r][c]));
 			}
+			data.add(rowL);
 		}
 	}
 
@@ -52,17 +53,18 @@ public class DoubleMatrix {
 	 */
 	public double[][] getData() {
 		double[][] result = new double[data.size()][numberOfColumns];
+		int rc = 0;
 		for (List<Double> r : data) {
-			int rc = 0;
 			for (int c = 0; c < numberOfColumns; c++) {
 				Double d = r.get(c);
 				if (d == null) {
+					result[rc][c] = Double.NaN;
 					continue;
 				}
 				log.debug("Setting r " + rc + ", c " + c);
 				result[rc][c] = d.doubleValue();
-				rc++;
 			}
+			rc++;
 		}
 		return result;
 	}
@@ -109,14 +111,16 @@ public class DoubleMatrix {
 	public String toString() {
 		String result = "";
 		for (List<Double> r : data) {
+			boolean first = true;
 			result += "\n\t[";
 			for (int c = 0; c < r.size(); c++) {
 				Double d = r.get(c);
 				if (d == null) {
-					result += "null";
+					result += (first ? "" : ", ") + "null";
 					continue;
 				}
-				result += d.toString();
+				result += (first ? "" : ", ") + d.toString();
+				first = false;
 			}
 			result += "]";
 		}
