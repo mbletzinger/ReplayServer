@@ -2,6 +2,7 @@ package org.nees.illinois.replay.test.utils;
 
 public class DataRowGenerator {
 	private final int numberOfColumns;
+	private int unique = 1;
 	public double[] genRecord(TimeGenerator time) {
 		double[] result = genData(4, time.getRecordNumber());
 		int [] stepNumber = time.getStepNumber();
@@ -20,8 +21,12 @@ public class DataRowGenerator {
 	private double[] genData(int start, int recordNumber) {
 		double[] result = new double[start + numberOfColumns];
 		for (int c = 0; c < numberOfColumns; c++) {
-			result[c + start] = ((recordNumber % 20) * .01 + c * .003)
+			result[c + start] = ((recordNumber % 20) * .01 + c * .003 * unique)
 					* (c % 2 == 0 ? 1 : -1);
+		}
+		unique++;
+		if(unique == 3) {
+			unique = 1;
 		}
 		return result;
 

@@ -85,6 +85,16 @@ public class ChannelTestingList {
 	public ChannelTestingList getExisting() {
 		return existing;
 	}
+	
+	public List<String> getExistingList() {
+		List<String> result;
+		if (existing == null) {
+			result = new ArrayList<String>();
+		} else {
+			result = existing.combine();
+		}
+		return result;
+	}
 
 	/**
 	 * @return the mix

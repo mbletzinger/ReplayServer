@@ -63,7 +63,7 @@ public class TestStreamConversion {
 		DoubleMatrix newD = new DoubleMatrix(newL);
 		log.debug("Original Data " + orig);
 		log.debug("New  Data " + newD);
-		DoubleArrayDataGenerator.compareData(orig.getData(), newD.getData());
+		DoubleArrayDataGenerator.compareData(newD.getData(), orig.getData());
 	}
 	
 }

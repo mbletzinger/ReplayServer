@@ -125,7 +125,7 @@ public class DatasetDirector {
 		DoubleMatrix expected = generate(experiment, qt, quy);
 		log.debug("For " + qt + " and " + quy);
 		log.debug("CHECKING  expected " + expected + "\nWITH actual " + data);
-		DoubleArrayDataGenerator.compareData(expected.getData(), data.getData());
+		DoubleArrayDataGenerator.compareData(data.getData(), expected.getData());
 	}
 
 	public void checkExpectedCnr(ExperimentNames experiment,
