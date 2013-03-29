@@ -15,6 +15,12 @@ public class DataRow implements Comparable<DataRow> {
 	public int compareTo(DataRow other) {
 		Double me = data.get(0);
 		Double him = other.data.get(0);
+		if(me == null) {
+			return -1;
+		}
+		if(him == null) {
+			return 1;
+		}
 		return me.compareTo(him);
 	}
 

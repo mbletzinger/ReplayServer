@@ -13,7 +13,7 @@ public class DoubleArrayDataGenerator {
 	private final DataRowGenerator rows;
 	private final TimeGenerator time;
 
-	public static void compareData(double[][] expected, double[][] actual) {
+	public static void compareData(double[][] actual, double[][] expected) {
 		LoggerFactory.getLogger(DoubleArrayDataGenerator.class).debug(
 				"Comparing expected " + Mtx2Str.matrix2String(expected)
 						+ "\nwith actual\n" + Mtx2Str.matrix2String(actual));
@@ -21,6 +21,11 @@ public class DoubleArrayDataGenerator {
 		Assert.assertEquals(actual[0].length, expected[0].length);
 		for (int i = 0; i < expected.length; i++) {
 			for (int j = 0; j < expected[0].length; j++) {
+				
+				if(Double.isNaN(expected[i][j])) {
+					Assert.assertTrue(Double.isNaN(actual[i][j]));
+					continue;
+				}
 				Assert.assertEquals(actual[i][j], expected[i][j], 0.001);
 			}
 		}
