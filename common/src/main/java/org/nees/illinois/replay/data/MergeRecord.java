@@ -21,7 +21,7 @@ public class MergeRecord implements Comparable<MergeRecord> {
 		int i = noc.getTimeNumber();
 		list.addAll(after.subList(i, after.size()));
 		int dsz = noc.getNumber(false) + after.size() - i;
-		noc = new NumberOfColumns(dsz, noc.getRate());
+		noc = new NumberOfColumns(dsz, noc.getTableRate());
 		merged = true;
 	}
 
@@ -41,7 +41,7 @@ public class MergeRecord implements Comparable<MergeRecord> {
 
 	@Override
 	public int compareTo(MergeRecord o) {
-		if (noc.getRate().equals(RateType.STEP)) {
+		if (noc.getTableRate().equals(RateType.STEP)) {
 			StepNumber aS = new StepNumber(list.get(1), list.get(2),
 					list.get(3));
 			StepNumber tS = new StepNumber(o.list.get(1), o.list.get(2),
@@ -85,7 +85,7 @@ public class MergeRecord implements Comparable<MergeRecord> {
 		int i = noc.getTimeNumber();
 		list.addAll(i, before.subList(i, before.size()));
 		int dsz = noc.getNumber(false) + before.size() - i;
-		noc = new NumberOfColumns(dsz, noc.getRate());
+		noc = new NumberOfColumns(dsz, noc.getTableRate());
 		merged = true;
 	}
 

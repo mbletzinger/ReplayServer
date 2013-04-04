@@ -16,13 +16,16 @@ public class QueryRegistry {
 		return queries.get(name + "_" + rate);
 	}
 
-	public void setQuery(String name, RateType rate, SavedQuery dq) {
+	public boolean setQuery(String name, RateType rate, SavedQuery dq) {
+		boolean result = false;
 		if (queries.containsKey(name)) {
 			log.info("Replacing Query \"" + name + "_" + rate + "\"");
+			result = true;
 		} else {
 			log.info("Adding Query \"" + name + "_" + rate + "\"");
 		}
 		queries.put(name + "_" + rate, dq);
+		return result;
 	}
 
 }
