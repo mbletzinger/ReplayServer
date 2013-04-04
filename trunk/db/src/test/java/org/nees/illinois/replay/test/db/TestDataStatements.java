@@ -16,9 +16,9 @@ import org.nees.illinois.replay.registries.ExperimentModule;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
-import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
-import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.nees.illinois.replay.test.utils.ChannelListTestMaps;
+import org.nees.illinois.replay.test.utils.ChannelListType;
+import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
@@ -51,10 +51,14 @@ public class TestDataStatements {
 
 	@BeforeMethod
 	public void setUp() throws Exception {
-		omContData = DataGenerator.initData(20, 6, 0.5);
-		daqContData = DataGenerator.initData(15, 5, 1);
-		omStepData = DataGenerator.initData(20, 6, 0.5);
-		daqStepData = DataGenerator.initData(15, 5, 1);
+		DoubleArrayDataGenerator dadGen = new DoubleArrayDataGenerator(20, 6, 0.5, 222.0);
+		omContData = dadGen.generate();
+		dadGen = new DoubleArrayDataGenerator(15, 5, 1, 222.0);
+		daqContData = dadGen.generate();
+		dadGen = new DoubleArrayDataGenerator(20, 6, 0.5, 222.0);
+		omStepData = dadGen.generate();
+		dadGen = new DoubleArrayDataGenerator(15, 5, 1, 222.0);
+		daqStepData = dadGen.generate();
 		guiceMod.setExperiment("HybridMasonry1");
 		Injector injector = Guice.createInjector(guiceMod);
 		er = injector.getInstance(ExperimentRegistries.class);
@@ -93,7 +97,7 @@ public class TestDataStatements {
 
 	@Test
 	public void testContDataUpdate() {
-		ChannelDataTestingLists cl = new ChannelDataTestingLists();
+		ChannelListTestMaps cl = new ChannelListTestMaps(false,er.getExperiment());
 		DbTablesMap specs = new DbTablesMap(cnr, er.getExperiment());
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		dbu.update(TableType.OM, RateType.CONT, omContData);
@@ -112,7 +116,7 @@ public class TestDataStatements {
 
 	@Test
 	public void testStepDataUpdate() {
-		ChannelDataTestingLists cl = new ChannelDataTestingLists();
+		ChannelListTestMaps cl = new ChannelListTestMaps(false,er.getExperiment());
 		DbTablesMap specs = new DbTablesMap(cnr, er.getExperiment());
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		log.debug("Adding data "
@@ -160,7 +164,7 @@ public class TestDataStatements {
 			dbSt.close();
 			AssertJUnit.fail();
 		}
-		DataGenerator.compareData(expected, rsData);
+		DoubleArrayDataGenerator.compareData(rsData, expected);
 		dbSt.closeQuery(rs);
 		dbSt.close();
 	}

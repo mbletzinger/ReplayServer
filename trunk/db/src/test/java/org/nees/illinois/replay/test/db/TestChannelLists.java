@@ -7,8 +7,8 @@ import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
-import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
+import org.nees.illinois.replay.test.utils.ChannelListTestMaps;
+import org.nees.illinois.replay.test.utils.ChannelListType;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -44,7 +44,7 @@ public class TestChannelLists {
 		DbChannelNameSynch dbcs = new DbChannelNameSynch(null, dbSt);
 		dbcs.removeTable();
 		dbSt.close();
-		pools.getOps().removeDatabase("HybridMasonry1");
+		pools.getOps().removeDatabase(experiment);
 		pools.close();
 		if (ismysql == false) {
 			ddbc.stopDerby();
@@ -53,7 +53,7 @@ public class TestChannelLists {
 
 	@Test
 	public void testChannelList() {
-		ChannelDataTestingLists lists = new ChannelDataTestingLists();
+		ChannelListTestMaps lists = new ChannelListTestMaps(false, experiment);
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		for (String c : lists.getChannels(ChannelListType.OM)) {
 			cnr.addChannel(TableType.OM, c);

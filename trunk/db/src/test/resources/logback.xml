@@ -15,7 +15,7 @@
   </appender>
   <logger name="org.nees.illinois" level="INFO"/>
   <logger name="org.nees.illinois.replay.db" level="INFO"/>
-  <logger name="org.nees.illinois.replay.test" level="INFO"/>
+  <logger name="org.nees.illinois.replay.test" level="DEBUG"/>
    <logger name="org.nees.illinois.replay.test.db.derby.process" level="INFO"/>
   <logger name="org.nees.illinois.replay.test.db.derby.process.ProcessResponse" level="DEBUG"/>
  

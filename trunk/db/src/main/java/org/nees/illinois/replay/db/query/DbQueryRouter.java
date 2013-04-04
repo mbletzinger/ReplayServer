@@ -14,24 +14,24 @@ import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DbQueryProcessor {
+public class DbQueryRouter {
 	public enum QueryType {
 		Cont, ContWithStop, Step, StepWithStart, StepWithStop
 	}
 
-	private final TableQueriesList dbSel;
+	private final SavedQueryWTablesList dbSel;
 	private final StatementProcessor dbSt;
 
-	private final Logger log = LoggerFactory.getLogger(DbQueryProcessor.class);
+	private final Logger log = LoggerFactory.getLogger(DbQueryRouter.class);
 
-	public DbQueryProcessor(StatementProcessor dbSt, TableQueriesList dbSel) {
+	public DbQueryRouter(StatementProcessor dbSt, SavedQueryWTablesList dbSel) {
 		super();
 		this.dbSt = dbSt;
 		this.dbSel = dbSel;
 	}
 
 	public DoubleMatrix getData(QueryType qtype, double start, double stop) {
-		List<SavedTableQuery> selectList = null;
+		List<NumberOfColumnsWithSelect> selectList = null;
 		MergeSet mSet = null;
 		if (qtype.equals(QueryType.Cont)) {
 			selectList = dbSel.getSelect(start);
@@ -46,7 +46,7 @@ public class DbQueryProcessor {
 
 	public DoubleMatrix getData(QueryType qtype, StepNumber start,
 			StepNumber stop) {
-		List<SavedTableQuery> selectList = null;
+		List<NumberOfColumnsWithSelect> selectList = null;
 		MergeSet mSet = null;
 		if (qtype.equals(QueryType.Step)) {
 			selectList = dbSel.getSelect();
@@ -60,7 +60,7 @@ public class DbQueryProcessor {
 			selectList = dbSel.getSelect(start, stop);
 			mSet = new MergeSet(RateType.CONT);
 		}
-		for (SavedTableQuery s : selectList) {
+		for (NumberOfColumnsWithSelect s : selectList) {
 			List<List<Double>> set = singleQuery(s);
 			if (set != null) {
 				mSet.merge(set);
@@ -69,8 +69,8 @@ public class DbQueryProcessor {
 		return collectQueries(selectList, mSet);
 	}
 
-	private DoubleMatrix collectQueries(List<SavedTableQuery> selectList, MergeSet mSet) {
-		for (SavedTableQuery s : selectList) {
+	private DoubleMatrix collectQueries(List<NumberOfColumnsWithSelect> selectList, MergeSet mSet) {
+		for (NumberOfColumnsWithSelect s : selectList) {
 			List<List<Double>> set = singleQuery(s);
 			if (set != null) {
 				mSet.merge(set);
@@ -79,14 +79,13 @@ public class DbQueryProcessor {
 		if(mSet.isEmpty()) {
 			return null;
 		}
-		DoubleMatrix result = new DoubleMatrix(mSet.getRecords(),
-				mSet.getColumnSize(true));
+		DoubleMatrix result = new DoubleMatrix(mSet.getRecords());
 		MatrixFix intpl = new MatrixFix(result);
 		intpl.fix();
 		return result;
 	}
 
-	private List<List<Double>> singleQuery(SavedTableQuery select) {
+	private List<List<Double>> singleQuery(NumberOfColumnsWithSelect select) {
 		ResultSet rs = dbSt.query(select.getSelect());
 		int columns = select.getNumber(true);
 		List<List<Double>> data = new ArrayList<List<Double>>();
@@ -117,7 +116,7 @@ public class DbQueryProcessor {
 			log.error("Result Set fetch failed because ", e);
 			return null;
 		}
-		log.debug("Query returned " + new DoubleMatrix(data, columns));
+		log.debug("Query returned " + new DoubleMatrix(data));
 		return data;
 	}
 }
