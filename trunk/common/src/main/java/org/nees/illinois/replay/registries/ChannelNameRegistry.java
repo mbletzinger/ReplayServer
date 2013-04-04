@@ -59,6 +59,14 @@ public class ChannelNameRegistry {
 		afterLastChannel = alc;
 	}
 
+	public String getName(String id) {
+		for ( String key : names.keySet()) {
+			if(id.equals(names.get(key))) {
+				return key;
+			}
+		}
+		return null;
+	}
 	private synchronized String newChannel(TableType table) {
 		String result = table.toString().toLowerCase() + "_channel";
 		result += afterLastChannel;
@@ -82,9 +90,23 @@ public class ChannelNameRegistry {
 		String result = "";
 		boolean first = true;
 		for(String k : getNames()) {
-			result += (first ? "" : ", ") + k +" = " + names.get(k);
+			result += (first ? "\n\t" : ",\n\t") + k +" = " + names.get(k);
 			first = false;
 		}
 		return result + " last = " + afterLastChannel;
+	}
+	public List<String> names2Ids(List<String> list) {
+		List<String> result = new ArrayList<String>();
+		for (String n : list) {
+			result.add(getId(n));
+		}
+		return result;
+	}
+	public List<String> ids2Names(List<String> list) {
+		List<String> result = new ArrayList<String>();
+		for (String n : list) {
+			result.add(getId(n));
+		}
+		return result;
 	}
 }

@@ -10,9 +10,9 @@ import org.nees.illinois.replay.data.RateType;
 public class SavedQuery {
 
 	protected final String name;
+
 	protected final NumberOfColumns noc;
 	protected final List<String> queryOrder;
-
 	public SavedQuery(List<String> channelOrder, String name,
 			ChannelNameRegistry cnr, RateType rate) {
 		super();
@@ -43,6 +43,15 @@ public class SavedQuery {
 	 */
 	public List<String> getQueryOrder() {
 		return queryOrder;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "name=" + name + ", noc=" + noc + ", queryOrder="
+				+ queryOrder;
 	}
 
 }

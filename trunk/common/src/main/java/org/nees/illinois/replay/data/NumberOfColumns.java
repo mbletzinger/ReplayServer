@@ -4,13 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NumberOfColumns {
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "/dataColumns=" + dataColumns + "/headers="
+				+ headers + "/rate=" + tableRate;
+	}
+
 	public static int dataColumns(int size, RateType rate) {
 		return size - 4;// make sure this matches the current header array size
 	}
 
 	protected final int dataColumns;
 	protected final List<String> headers = new ArrayList<String>();
-	protected final RateType rate;
+	protected final RateType tableRate;
 	{
 		headers.add("time");
 		headers.add("step");
@@ -19,9 +28,9 @@ public class NumberOfColumns {
 
 	}
 
-	public NumberOfColumns(int dataColumns, RateType rate) {
+	public NumberOfColumns(int dataColumns, RateType tableRate) {
 		this.dataColumns = dataColumns;
-		this.rate = rate;
+		this.tableRate = tableRate;
 	}
 
 	/**
@@ -42,8 +51,8 @@ public class NumberOfColumns {
 	/**
 	 * @return the rate
 	 */
-	public RateType getRate() {
-		return rate;
+	public RateType getTableRate() {
+		return tableRate;
 	}
 
 	public int getTimeNumber() {
