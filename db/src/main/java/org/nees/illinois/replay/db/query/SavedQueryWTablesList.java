@@ -14,29 +14,33 @@ import org.nees.illinois.replay.registries.SavedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TableQueriesList extends SavedQuery {
+public class SavedQueryWTablesList extends SavedQuery {
+
+	private final Logger log = LoggerFactory.getLogger(SavedQueryWTablesList.class);
+
 	private int[] query2selectMap;
 
-	private final List<SavedTableQuery> select = new ArrayList<SavedTableQuery>();
+	private final List<NumberOfColumnsWithSelect> select = new ArrayList<NumberOfColumnsWithSelect>();
 	private final List<String> selectOrder = new ArrayList<String>();
 	private final DbTablesMap specs;
-	private final Logger log = LoggerFactory.getLogger(TableQueriesList.class);
-	public TableQueriesList(List<String> channelOrder, String name,
+
+	public SavedQueryWTablesList(List<String> channelOrder, String name,
 			DbTablesMap specs, RateType rate) {
 		super(channelOrder, name, specs.getCnr(), rate);
 		this.specs = specs;
 		createSelects();
 	}
 
-	private SavedTableQuery createSelect(TableType table) {
+	private NumberOfColumnsWithSelect createSelect(TableType table) {
 		List<String> sublist = new ArrayList<String>();
 		List<String> tableList = specs.getColumns(table);
-		if(tableList.isEmpty()) {
+		if (tableList.isEmpty()) {
 			log.debug("No channels for " + table + " are specified");
 			return null;
 		}
-		log.debug("extracting selector order for " + table + " from" + tableList + " and " + queryOrder);
-	
+		log.debug("extracting selector order for " + table + " from"
+				+ tableList + " and " + queryOrder);
+
 		boolean empty = true;
 		for (String c : queryOrder) {
 			if (tableList.contains(c)) {
@@ -49,7 +53,7 @@ public class TableQueriesList extends SavedQuery {
 			return null;
 		}
 
-		String tableName = specs.tableName(table, noc.getRate());
+		String tableName = specs.tableName(table, noc.getTableRate());
 		String result = "SELECT " + getHeaderQuery();
 		log.debug("selectOrder is " + sublist);
 		selectOrder.addAll(sublist);
@@ -57,21 +61,21 @@ public class TableQueriesList extends SavedQuery {
 			result += ", " + c;
 		}
 		result += " FROM " + tableName;
-		return new SavedTableQuery(result, sublist.size(), noc.getRate());
+		return new NumberOfColumnsWithSelect(result, sublist.size(), noc.getTableRate());
 	}
 
 	private void createSelects() {
-		Map<TableType, SavedTableQuery> lists = new HashMap<TableType, SavedTableQuery>();
+		Map<TableType, NumberOfColumnsWithSelect> lists = new HashMap<TableType, NumberOfColumnsWithSelect>();
 		selectOrder.clear();
 		query2selectMap = new int[queryOrder.size()];
 		for (TableType t : TableType.values()) {
-			SavedTableQuery s = createSelect(t);
+			NumberOfColumnsWithSelect s = createSelect(t);
 			if (s != null) {
 				lists.put(t, s);
 			}
 		}
 		for (TableType t : TableType.values()) {
-			SavedTableQuery s = lists.get(t);
+			NumberOfColumnsWithSelect s = lists.get(t);
 			if (s != null) {
 				select.add(s);
 			}
@@ -100,39 +104,39 @@ public class TableQueriesList extends SavedQuery {
 		return query2selectMap;
 	}
 
-	public List<SavedTableQuery> getSelect() {
+	public List<NumberOfColumnsWithSelect> getSelect() {
 		return select;
 	}
 
-	public List<SavedTableQuery> getSelect(double start) {
-		List<SavedTableQuery> result = new ArrayList<SavedTableQuery>();
-		for (SavedTableQuery s : select) {
+	public List<NumberOfColumnsWithSelect> getSelect(double start) {
+		List<NumberOfColumnsWithSelect> result = new ArrayList<NumberOfColumnsWithSelect>();
+		for (NumberOfColumnsWithSelect s : select) {
 			result.add(s.cloneWithTimeConstraint(" WHERE time >= " + start));
 		}
 		return result;
 	}
 
-	public List<SavedTableQuery> getSelect(double start, double stop) {
-		List<SavedTableQuery> result = new ArrayList<SavedTableQuery>();
-		for (SavedTableQuery s : select) {
+	public List<NumberOfColumnsWithSelect> getSelect(double start, double stop) {
+		List<NumberOfColumnsWithSelect> result = new ArrayList<NumberOfColumnsWithSelect>();
+		for (NumberOfColumnsWithSelect s : select) {
 			result.add(s.cloneWithTimeConstraint(" WHERE time BETWEEN " + start
 					+ " AND " + stop));
 		}
 		return result;
 	}
 
-	public List<SavedTableQuery> getSelect(StepNumber start) {
-		List<SavedTableQuery> result = new ArrayList<SavedTableQuery>();
-		for (SavedTableQuery s : select) {
+	public List<NumberOfColumnsWithSelect> getSelect(StepNumber start) {
+		List<NumberOfColumnsWithSelect> result = new ArrayList<NumberOfColumnsWithSelect>();
+		for (NumberOfColumnsWithSelect s : select) {
 			result.add(s.cloneWithTimeConstraint(" WHERE step >= "
 					+ start.getStep()));
 		}
 		return result;
 	}
 
-	public List<SavedTableQuery> getSelect(StepNumber start, StepNumber stop) {
-		List<SavedTableQuery> result = new ArrayList<SavedTableQuery>();
-		for (SavedTableQuery s : select) {
+	public List<NumberOfColumnsWithSelect> getSelect(StepNumber start, StepNumber stop) {
+		List<NumberOfColumnsWithSelect> result = new ArrayList<NumberOfColumnsWithSelect>();
+		for (NumberOfColumnsWithSelect s : select) {
 			result.add(s.cloneWithTimeConstraint(" WHERE step BETWEEN "
 					+ start.getStep() + " AND " + stop.getStep()));
 		}
@@ -151,5 +155,17 @@ public class TableQueriesList extends SavedQuery {
 	 */
 	public ChannelNameManagement getSpecs() {
 		return specs;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.nees.illinois.replay.registries.SavedQuery#toString()
+	 */
+	@Override
+	public String toString() {
+		String result = super.toString();
+		result += "/select=" + select + "/selectOrder=" + selectOrder;
+		return result;
 	}
 }

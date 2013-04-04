@@ -7,7 +7,7 @@ import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.db.DbPools;
-import org.nees.illinois.replay.db.query.DbQueryProcessor.QueryType;
+import org.nees.illinois.replay.db.query.DbQueryRouter.QueryType;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.db.statement.DbTablesMap;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
@@ -28,18 +28,18 @@ public class DbDataQuery implements DataQueryI {
 	private DoubleMatrix doQuery(QueryType qtype, String name, double start,
 			double stop) {
 		StatementProcessor dbSt = pools.createDbStatement(experiment.getExperiment(),false);
-		TableQueriesList dbSpec;
-		dbSpec = (TableQueriesList) experiment.getQueries().getQuery(name, RateType.CONT);
-		DbQueryProcessor dbQuerySt = new DbQueryProcessor(dbSt, dbSpec);
+		SavedQueryWTablesList dbSpec;
+		dbSpec = (SavedQueryWTablesList) experiment.getQueries().getQuery(name, RateType.CONT);
+		DbQueryRouter dbQuerySt = new DbQueryRouter(dbSt, dbSpec);
 		return dbQuerySt.getData(qtype, start, stop);
 	}
 
 	private DoubleMatrix doQuery(QueryType qtype, String name,
 			StepNumber start, StepNumber stop) {
 		StatementProcessor dbSt = pools.createDbStatement(experiment.getExperiment(),false);
-		TableQueriesList dbSpec;
-		dbSpec = (TableQueriesList) experiment.getQueries().getQuery(name, RateType.STEP);
-		DbQueryProcessor dbQuerySt = new DbQueryProcessor(dbSt, dbSpec);
+		SavedQueryWTablesList dbSpec;
+		dbSpec = (SavedQueryWTablesList) experiment.getQueries().getQuery(name, RateType.STEP);
+		DbQueryRouter dbQuerySt = new DbQueryRouter(dbSt, dbSpec);
 		return dbQuerySt.getData(qtype, start, stop);
 	}
 
@@ -77,9 +77,9 @@ public class DbDataQuery implements DataQueryI {
 	public boolean setQuery(String name, List<String> channels) {
 		// DbTableSpecs is getting a clone because query tables are either added or removed; never changed.
 		DbTablesMap specs = (DbTablesMap) experiment.getChnlNamesMgmt().clone();
-		TableQueriesList dq = new TableQueriesList(channels, name, specs, RateType.CONT);
+		SavedQueryWTablesList dq = new SavedQueryWTablesList(channels, name, specs, RateType.CONT);
 		experiment.getQueries().setQuery(name, RateType.CONT, dq);
-		dq = new TableQueriesList(channels, name, specs, RateType.STEP);
+		dq = new SavedQueryWTablesList(channels, name, specs, RateType.STEP);
 		experiment.getQueries().setQuery(name, RateType.STEP, dq);
 		return true;
 	}

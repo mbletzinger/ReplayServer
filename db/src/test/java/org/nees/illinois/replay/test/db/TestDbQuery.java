@@ -1,5 +1,6 @@
 package org.nees.illinois.replay.test.db;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
@@ -8,10 +9,10 @@ import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.data.DbDataUpdates;
-import org.nees.illinois.replay.db.query.DbQueryProcessor;
-import org.nees.illinois.replay.db.query.DbQueryProcessor.QueryType;
-import org.nees.illinois.replay.db.query.SavedTableQuery;
-import org.nees.illinois.replay.db.query.TableQueriesList;
+import org.nees.illinois.replay.db.query.DbQueryRouter;
+import org.nees.illinois.replay.db.query.DbQueryRouter.QueryType;
+import org.nees.illinois.replay.db.query.NumberOfColumnsWithSelect;
+import org.nees.illinois.replay.db.query.SavedQueryWTablesList;
 import org.nees.illinois.replay.db.statement.DbTablesMap;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.registries.ChannelNameManagement;
@@ -19,9 +20,11 @@ import org.nees.illinois.replay.registries.ExperimentModule;
 import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.utils.ChannelDataTestingLists;
-import org.nees.illinois.replay.test.utils.ChannelDataTestingLists.ChannelListType;
-import org.nees.illinois.replay.test.utils.DataGenerator;
+import org.nees.illinois.replay.test.utils.ChannelListTestMaps;
+import org.nees.illinois.replay.test.utils.ChannelListType;
+import org.nees.illinois.replay.test.utils.ChannelTestingList;
+import org.nees.illinois.replay.test.utils.CompareLists;
+import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
@@ -52,10 +55,14 @@ public class TestDbQuery {
 	@BeforeClass
 	public void setUp(@Optional("derby") String db) throws Exception {
 		guiceMod = new DbTestsModule(db);
-		omContData = DataGenerator.initData(20, 6, 0.7);
-		daqContData = DataGenerator.initData(15, 5, 1.0);
-		omStepData = DataGenerator.initData(20, 6, 0.2);
-		daqStepData = DataGenerator.initData(15, 5, 0.3);
+		DoubleArrayDataGenerator dadGen = new DoubleArrayDataGenerator(20, 6, 0.5, 222.0);
+		omContData = dadGen.generate();
+		dadGen = new DoubleArrayDataGenerator(15, 5, 1, 222.0);
+		daqContData = dadGen.generate();
+		dadGen = new DoubleArrayDataGenerator(20, 6, 0.5, 222.0);
+		omStepData = dadGen.generate();
+		dadGen = new DoubleArrayDataGenerator(15, 5, 1, 222.0);
+		daqStepData = dadGen.generate();
 		guiceMod.setExperiment("HybridMasonry1");
 
 		ismysql = db.equals("mysql");
@@ -91,35 +98,42 @@ public class TestDbQuery {
 	}
 
 	@Test
-	public void testQuerySpec() {
+	public void testQuerySpec() {  // Need more test for query types
 
-		ChannelDataTestingLists cl = new ChannelDataTestingLists();
+		ChannelListTestMaps cl = new ChannelListTestMaps(false,er.getExperiment());
 
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
 		DbTablesMap specs = dbu.getSpecs();
 
-		List<String> chnls = cl.getChannels(ChannelListType.Query1);
-		TableQueriesList dbs = new TableQueriesList(chnls, "OM_Channels", specs,
+		ChannelTestingList ctl = cl.getChannelLists(ChannelListType.QueryOm);
+		log.debug("ctl = " + ctl);
+		SavedQueryWTablesList dbs = new SavedQueryWTablesList(ctl.combine(), "OM_Channels", specs,
 				RateType.CONT);
-		AssertJUnit.assertEquals("[om_channel4, om_channel1]", dbs
-				.getSelectOrder().toString());
-		AssertJUnit.assertEquals("[0, 1]",
-				Mtx2Str.iArray2String(dbs.getQuery2selectMap()));
+		log.debug("dbs = " + dbs);
+		CompareLists<String> compare = new CompareLists<String>();
+		log.debug("Comparing [" + cl.getCnrNames(ctl.combine()) + " to " + dbs.getQueryOrder());
+		compare.compare(dbs.getQueryOrder(), cl.getCnrNames(ctl.combine()));
+		List<String> selectList = new ArrayList<String>();
+		selectList.addAll(ctl.getExistingList());
+		selectList.addAll(ctl.getNewChannels());
+		compare.compare(dbs.getSelectOrder(), cl.getCnrNames(selectList));
 
-		chnls = cl.getChannels(ChannelListType.Query2);
+		ctl = cl.getChannelLists(ChannelListType.QueryDaq);
+		log.debug("ctl = " + ctl);
 		specs = dbu.getSpecs();
-		dbs = new TableQueriesList(chnls, "Mixed_Channels", specs, RateType.STEP);
-		AssertJUnit.assertEquals("[daq_channel9, om_channel4, om_channel1]",
-				dbs.getSelectOrder().toString());
-		AssertJUnit.assertEquals("[1, 2, 0]",
-				Mtx2Str.iArray2String(dbs.getQuery2selectMap()));
-
+		dbs = new SavedQueryWTablesList(ctl.combine(), "Mixed_Channels", specs, RateType.STEP);
+		log.debug("dbs = " + dbs);
+		compare.compare(dbs.getQueryOrder(), cl.getCnrNames(ctl.combine()));
+		selectList = new ArrayList<String>();
+		selectList.addAll(ctl.getExistingList());
+		selectList.addAll(ctl.getNewChannels());
+		compare.compare(dbs.getSelectOrder(), cl.getCnrNames(selectList));
 	}
 
 	@Test
-	public void testSelectData() {
-		ChannelDataTestingLists cl = new ChannelDataTestingLists();
+	public void testSelectData() {  // Need expected results here
+		ChannelListTestMaps cl = new ChannelListTestMaps(false,er.getExperiment());
 
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		dbu.update(TableType.OM, RateType.CONT, omContData);
@@ -128,16 +142,16 @@ public class TestDbQuery {
 		dbu.update(TableType.DAQ, RateType.CONT, daqContData);
 		dbu.update(TableType.DAQ, RateType.STEP, daqStepData);
 		DbTablesMap specs = dbu.getSpecs();
-		List<String> chnls = cl.getChannels(ChannelListType.Query1);
-		TableQueriesList dbs = new TableQueriesList(chnls, "OM_Channels", specs,
+		ChannelTestingList chnls = cl.getChannelLists(ChannelListType.QueryOm);
+		SavedQueryWTablesList dbs = new SavedQueryWTablesList(chnls.combine(), "OM_Channels", specs,
 				RateType.STEP);
 		StatementProcessor dbSt = pools.createDbStatement(er.getExperiment(),false);
-		DbQueryProcessor ddr = new DbQueryProcessor(dbSt, dbs);
+		DbQueryRouter ddr = new DbQueryRouter(dbSt, dbs);
 		DoubleMatrix r1 = ddr.getData(QueryType.Step, null, null);
 		log.debug("Results: " + r1.toString());
-		chnls = cl.getChannels(ChannelListType.Query2);
-		dbs = new TableQueriesList(chnls, "Mixed_Channels", specs, RateType.CONT);
-		DbQueryProcessor ddr2 = new DbQueryProcessor(dbSt, dbs);
+		chnls = cl.getChannelLists(ChannelListType.QueryDaq);
+		dbs = new SavedQueryWTablesList(chnls.combine(), "Mixed_Channels", specs, RateType.CONT);
+		DbQueryRouter ddr2 = new DbQueryRouter(dbSt, dbs);
 		DoubleMatrix r2 = ddr2.getData(QueryType.Cont, 0, 0);
 		log.debug("Results: " + r2.toString());
 
@@ -146,16 +160,16 @@ public class TestDbQuery {
 	@Test
 	public void testSelects() {
 
-		ChannelDataTestingLists cl = new ChannelDataTestingLists();
+		ChannelListTestMaps cl = new ChannelListTestMaps(false,er.getExperiment());
 
 		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
 		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
 		DbTablesMap specs = dbu.getSpecs();
 
-		List<String> chnls = cl.getChannels(ChannelListType.Query1);
+		ChannelTestingList chnls = cl.getChannelLists(ChannelListType.QueryOm);
 		for (RateType r : RateType.values()) {
-			TableQueriesList dbs = new TableQueriesList(chnls, "OM_Channels", specs, r);
-			List<SavedTableQuery> selects = dbs.getSelect();
+			SavedQueryWTablesList dbs = new SavedQueryWTablesList(chnls.combine(), "OM_Channels", specs, r);
+			List<NumberOfColumnsWithSelect> selects = dbs.getSelect();
 			AssertJUnit.assertEquals(1, selects.size());
 			AssertJUnit.assertEquals(2, selects.get(0).getNumber(false));
 			AssertJUnit.assertEquals(6, selects.get(0).getNumber(true));
@@ -172,10 +186,10 @@ public class TestDbQuery {
 			AssertJUnit.assertTrue(selects.get(0).getSelect()
 					.contains("900.85"));
 		}
-		chnls = cl.getChannels(ChannelListType.Query2);
+		chnls = cl.getChannelLists(ChannelListType.QueryDaq);
 		for (RateType r : RateType.values()) {
-			TableQueriesList dbs = new TableQueriesList(chnls, "OM_Channels", specs, r);
-			List<SavedTableQuery> selects = dbs.getSelect();
+			SavedQueryWTablesList dbs = new SavedQueryWTablesList(chnls.combine(), "OM_Channels", specs, r);
+			List<NumberOfColumnsWithSelect> selects = dbs.getSelect();
 			AssertJUnit.assertEquals(2, selects.size());
 			selects = dbs.getSelect(10.0);
 			AssertJUnit.assertEquals(2, selects.size());
