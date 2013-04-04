@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+@Test(groups = { "test_test_data" })
 public class TestChannelTestData {
 	private final Logger log = LoggerFactory
 			.getLogger(TestChannelTestData.class);

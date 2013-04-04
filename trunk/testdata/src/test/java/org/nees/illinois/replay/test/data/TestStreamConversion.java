@@ -1,8 +1,5 @@
 package org.nees.illinois.replay.test.data;
 
-import org.testng.annotations.Test;
-import org.testng.annotations.BeforeMethod;
-import org.testng.AssertJUnit;
 import java.util.List;
 
 import org.nees.illinois.replay.conversions.ChannelList2Representation;
@@ -10,16 +7,19 @@ import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrix;
-import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.test.utils.ChannelListTestMaps;
 import org.nees.illinois.replay.test.utils.ChannelListType;
-import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
 import org.nees.illinois.replay.test.utils.DatasetDirector.ExperimentNames;
+import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.AssertJUnit;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
+@Test(groups = { "test_data" })
 public class TestStreamConversion {
 	private final Logger log = LoggerFactory
 			.getLogger(TestStreamConversion.class);

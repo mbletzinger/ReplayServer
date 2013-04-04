@@ -13,6 +13,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+@Test(groups = { "test_data" })
 public class TestInterpolate {
 	private final Logger log = LoggerFactory.getLogger(TestInterpolate.class);
 	private InterpolateTestData dmg = new InterpolateTestData(10, 0.02);

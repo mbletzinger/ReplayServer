@@ -11,7 +11,7 @@ public class ChannelTestingList {
 
 	private final String name;
 
-	private final List<String> newChannels = new ArrayList<String>();;
+	private final List<String> newChannels = new ArrayList<String>();
 
 	public ChannelTestingList(MatrixMixType mix,
 			ChannelTestingList existing, List<String> newChannels,
@@ -21,7 +21,7 @@ public class ChannelTestingList {
 		this.mix = mix;
 		this.newChannels.addAll(newChannels);
 		this.existing = existing;
-	}
+	};
 
 	public List<String> combine() {
 		List<String> result = new ArrayList<String>();
@@ -85,7 +85,7 @@ public class ChannelTestingList {
 	public ChannelTestingList getExisting() {
 		return existing;
 	}
-	
+
 	public List<String> getExistingList() {
 		List<String> result;
 		if (existing == null) {
@@ -95,7 +95,7 @@ public class ChannelTestingList {
 		}
 		return result;
 	}
-
+	
 	/**
 	 * @return the mix
 	 */
@@ -115,6 +115,15 @@ public class ChannelTestingList {
 	 */
 	public List<String> getNewChannels() {
 		return newChannels;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		String result = "/name=" + name + "/existing=" + (existing == null ? "none" : existing) + "/mix=" + mix + "/new=" + newChannels; 
+		return result;
 	}
 
 }
