@@ -2,16 +2,25 @@ package org.nees.illinois.replay.test.data;
 
 import java.util.List;
 
+import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.MergeSet;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
+import org.nees.illinois.replay.test.utils.ChannelDataGenerator;
+import org.nees.illinois.replay.test.utils.ChannelDataGenerator.TestingParts;
+import org.nees.illinois.replay.test.utils.ChannelListTestMaps;
+import org.nees.illinois.replay.test.utils.ChannelListType;
 import org.nees.illinois.replay.test.utils.DatasetDirector;
+import org.nees.illinois.replay.test.utils.DatasetDirector.ExperimentNames;
+import org.nees.illinois.replay.test.utils.DatasetDirector.QueryParaTypes;
+import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
+import org.nees.illinois.replay.test.utils.MatrixMixType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+@Test(groups = { "test_data" })
 public class TestMerge {
 	private List<List<Double>> omContData;
 	private List<List<Double>> daqContData;
@@ -87,9 +96,30 @@ public class TestMerge {
 
 	}
 	
-	@Test
+	@Test(dependsOnMethods = { "testRawMerge" })
 	public void testQueryMerges() {
-		DatasetDirector dd = new DatasetDirector();
+		DatasetDirector dd = new DatasetDirector(ExperimentNames.HybridMasonry1);
+		ChannelListTestMaps cltm = dd.getCltm();
+		for (ChannelListType clt : cltm.getQueryTypes()) {
+			if(clt.equals(ChannelListType.QueryDaq) || clt.equals(ChannelListType.QueryOm)) {
+				continue;
+			}
+			for( QueryParaTypes qpt : QueryParaTypes.values()) {
+				for(MatrixMixType m : MatrixMixType.values() ) {
+					log.info("Testing " + clt + " " + qpt + " " + m);
+					ChannelDataGenerator cdg = dd.generateQueryData(clt, qpt, m);
+					cdg.generateParts();
+					cdg.generateWhole();
+//					cdg.mixColumns(); // Columns are not mixed until after the merge
+					MergeSet mset = new MergeSet(RateType.CONT);
+					mset.merge(cdg.getData(TestingParts.First).toList());
+					mset.merge(cdg.getData(TestingParts.Second).toList());
+					DoubleMatrix actual = new DoubleMatrix(mset.getRecords());
+					DoubleMatrix expected = cdg.getData(TestingParts.All);
+					DoubleArrayDataGenerator.compareData(actual.getData(), expected.getData());
+				}
+			}
+		}
 		
 	}
 //	private void testQueryMerge(ChannelListType quy, QueryParaTypes qt, DatasetDirector dd) {
