@@ -1,8 +1,8 @@
 package org.nees.illinois.replay.restlet;
 
+import org.nees.illinois.replay.common.registries.ExperimentModule;
 import org.nees.illinois.replay.data.DataQueryI;
 import org.nees.illinois.replay.data.DataUpdateI;
-import org.nees.illinois.replay.registries.ExperimentModule;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;

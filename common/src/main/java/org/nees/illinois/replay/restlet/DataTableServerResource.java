@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.nees.illinois.replay.common.registries.ExperimentModule;
+import org.nees.illinois.replay.common.registries.ExperimentRegistries;
+import org.nees.illinois.replay.common.registries.ExperimentSessionManager;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
 import org.nees.illinois.replay.data.DataUpdateI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.TableType;
-import org.nees.illinois.replay.registries.ExperimentModule;
-import org.nees.illinois.replay.registries.ExperimentRegistries;
-import org.nees.illinois.replay.registries.ExperimentSessionManager;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;

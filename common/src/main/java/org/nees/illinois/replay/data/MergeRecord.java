@@ -5,21 +5,21 @@ import java.util.List;
 
 
 public class MergeRecord implements Comparable<MergeRecord> {
-	private List<Double> list;
+	private List<Double> record;
 	private boolean merged = false;
 
 	private NumberOfColumns noc;
 
 	public MergeRecord(RateType rate, List<Double> list) {
 		super();
-		this.list = list;
+		this.record = list;
 		int dsz = NumberOfColumns.dataColumns(list.size(), rate);
 		noc = new NumberOfColumns(dsz, rate);
 	}
 
 	public void append(List<Double> after) {
 		int i = noc.getTimeNumber();
-		list.addAll(after.subList(i, after.size()));
+		record.addAll(after.subList(i, after.size()));
 		int dsz = noc.getNumber(false) + after.size() - i;
 		noc = new NumberOfColumns(dsz, noc.getTableRate());
 		merged = true;
@@ -42,13 +42,13 @@ public class MergeRecord implements Comparable<MergeRecord> {
 	@Override
 	public int compareTo(MergeRecord o) {
 		if (noc.getTableRate().equals(RateType.STEP)) {
-			StepNumber aS = new StepNumber(list.get(1), list.get(2),
-					list.get(3));
-			StepNumber tS = new StepNumber(o.list.get(1), o.list.get(2),
-					o.list.get(3));
+			StepNumber aS = new StepNumber(record.get(1), record.get(2),
+					record.get(3));
+			StepNumber tS = new StepNumber(o.record.get(1), o.record.get(2),
+					o.record.get(3));
 			return aS.compareTo(tS);
 		}
-		return compareTo(list.get(0), o.list.get(0));
+		return compareTo(record.get(0), o.record.get(0));
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -63,8 +63,8 @@ public class MergeRecord implements Comparable<MergeRecord> {
 	/**
 	 * @return the list
 	 */
-	public List<Double> getList() {
-		return list;
+	public List<Double> getRecord() {
+		return record;
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class MergeRecord implements Comparable<MergeRecord> {
 
 	public void prepend(List<Double> before) {
 		int i = noc.getTimeNumber();
-		list.addAll(i, before.subList(i, before.size()));
+		record.addAll(i, before.subList(i, before.size()));
 		int dsz = noc.getNumber(false) + before.size() - i;
 		noc = new NumberOfColumns(dsz, noc.getTableRate());
 		merged = true;
@@ -105,7 +105,7 @@ public class MergeRecord implements Comparable<MergeRecord> {
 	}
 
 	public int size() {
-		return list.size();
+		return record.size();
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -114,7 +114,7 @@ public class MergeRecord implements Comparable<MergeRecord> {
 	public String toString() {
 		String result = "";
 		boolean first = true;
-		for(Double d : list) {
+		for(Double d : record) {
 			result += (first ? "" : ", ") + d;
 			first = false;
 		}

@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.registries;
+package org.nees.illinois.replay.common.registries;
 
 import com.google.inject.AbstractModule;
 
