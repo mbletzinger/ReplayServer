@@ -25,7 +25,7 @@ public class MergeSet {
 		List<List<Double>> result = new ArrayList<List<Double>>();
 		Collections.sort(accum);
 		for (MergeRecord r : accum) {
-			result.add(r.getList());
+			result.add(r.getRecord());
 		}
 		return result;
 	}
@@ -59,7 +59,7 @@ public class MergeSet {
 			if (i < 0) {
 				continue;
 			}
-			accum.get(i).append(r.getList());
+			accum.get(i).append(r.getRecord());
 			r.setMerged(true);
 		}
 		for (MergeRecord r : accum) {

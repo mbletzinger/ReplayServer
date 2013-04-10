@@ -10,7 +10,7 @@ public class NumberOfColumns {
 	@Override
 	public String toString() {
 		return "/dataColumns=" + dataColumns + "/headers="
-				+ headers + "/rate=" + tableRate;
+				+ headers;
 	}
 
 	public static int dataColumns(int size, RateType rate) {
