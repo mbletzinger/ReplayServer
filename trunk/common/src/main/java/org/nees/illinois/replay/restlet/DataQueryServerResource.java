@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.illinois.replay.common.registries.ExperimentModule;
+import org.nees.illinois.replay.common.registries.ExperimentModuleDeleteMe;
 import org.nees.illinois.replay.common.registries.ExperimentRegistries;
-import org.nees.illinois.replay.common.registries.ExperimentSessionManager;
-import org.nees.illinois.replay.common.registries.SavedQuery;
+import org.nees.illinois.replay.common.registries.SavedQueryDeleteMe;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
-import org.nees.illinois.replay.data.DataQueryI;
+import org.nees.illinois.replay.data.DataQuerySubResourceI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
+import org.nees.illinois.replay.data.SubResourceI;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
@@ -30,10 +30,10 @@ import com.google.inject.Provider;
 
 public class DataQueryServerResource extends ServerResource implements
 		DataQueryResource {
-	private DataQueryI dquery;
+	private DataQuerySubResourceI dquery;
 
 	private AttributeExtraction extract;
-	private ExperimentModule guiceMod;
+	private ExperimentModuleDeleteMe guiceMod;
 	private ExperimentRegistries er;
 	private final Logger log = LoggerFactory
 			.getLogger(DataQueryServerResource.class);
@@ -58,10 +58,10 @@ public class DataQueryServerResource extends ServerResource implements
 	@Override
 	protected void doInit() throws ResourceException {
 		@SuppressWarnings("unchecked")
-		Provider<DataQueryI> provider = (Provider<DataQueryI>) getContext()
+		Provider<DataQuerySubResourceI> provider = (Provider<DataQuerySubResourceI>) getContext()
 				.getAttributes().get("queryI");
 		dquery = provider.get();
-		guiceMod = (ExperimentModule) getContext().getAttributes().get(
+		guiceMod = (ExperimentModuleDeleteMe) getContext().getAttributes().get(
 				"guiceMod");
 		extract = new AttributeExtraction(getRequest().getAttributes());
 		ExperimentSessionManager esm = new ExperimentSessionManager(
@@ -95,7 +95,7 @@ public class DataQueryServerResource extends ServerResource implements
 		rate = (RateType) attrs.get(RequiredAttrType.Rate);
 		query = (String) attrs.get(RequiredAttrType.Query);
 
-		SavedQuery spec = er.getQueries().getQuery(query, rate);
+		SavedQueryDeleteMe spec = er.getQueries().getQuery(query);
 		if (spec == null) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
 					"Query \"" + query + "\" not recognized");
@@ -115,9 +115,9 @@ public class DataQueryServerResource extends ServerResource implements
 			if (strt == null) {
 				data = dquery.doQuery(query);
 			} else if (stp == null) {
-				data = dquery.doQuery(query, strt);
+				data = dquery.doQuery(query, strt, null, null);
 			} else {
-				data = dquery.doQuery(query, strt, stp);
+				data = dquery.doQuery(query, strt, stp, null);
 			}
 			return data;
 		}
@@ -138,7 +138,7 @@ public class DataQueryServerResource extends ServerResource implements
 	/**
 	 * @return the dquery
 	 */
-	public DataQueryI getDquery() {
+	public SubResourceI getDquery() {
 		return dquery;
 	}
 
@@ -176,7 +176,7 @@ public class DataQueryServerResource extends ServerResource implements
 	 * @param dquery
 	 *            the dquery to set
 	 */
-	public void setDquery(DataQueryI dquery) {
+	public void setDquery(DataQuerySubResourceI dquery) {
 		this.dquery = dquery;
 	}
 

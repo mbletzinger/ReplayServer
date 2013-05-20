@@ -2,25 +2,21 @@ package org.nees.illinois.replay.common.registries;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.nees.illinois.replay.data.TableType;
-
 /**
  * Class which maintains an experiment scope registry of all data channel names.
  * Each name is mapped to a database format friendly name. The class performs
  * lookups to switch between these name mappings.
- * 
  * @author Michael Bletzinger
  */
-public class ChannelNameRegistry {
+public class ChannelNameRegistry implements Cloneable {
 
 	/**
-	 * Next index to use for a database friendly channel name
+	 * Next index to use for a database friendly channel name.
 	 */
 	private long afterLastChannel = 1;
 
@@ -31,7 +27,15 @@ public class ChannelNameRegistry {
 	 */
 	private final ConcurrentMap<String, String> names = new ConcurrentHashMap<String, String>();
 
-	public String addChannel(TableType table, String channel) {
+	/**
+	 * Adds a channel name to the registry.
+	 * @param table
+	 *            Associated database table.
+	 * @param channel
+	 *            Name to be added.
+	 * @return Database friendly version of the name.
+	 */
+	public final String addChannel(final String table, final String channel) {
 		String result = getId(channel);
 		if (result == null) {
 			result = newChannel(table);
@@ -40,40 +44,41 @@ public class ChannelNameRegistry {
 		return result;
 	}
 
-	/**
-	 * @return the afterLastChannel
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#clone()
 	 */
-	public synchronized long getAfterLastChannel() {
-		return afterLastChannel;
-	}
-
-	public Map<String, String> getClone() {
-		Map<String, String> result = new HashMap<String, String>();
-		result.putAll(names);
+	@Override
+	public final Object clone() {
+		ChannelNameRegistry result = new ChannelNameRegistry();
+		result.init(names, afterLastChannel);
 		return result;
 	}
 
-	public String getId(String channel) {
+	/**
+	 * @return the afterLastChannel
+	 */
+	public final synchronized long getAfterLastChannel() {
+		return afterLastChannel;
+	}
+
+	/**
+	 * Return the database friendly name.
+	 * @param channel
+	 *            Experiment channel name.
+	 * @return Database friendly version.
+	 */
+	public final String getId(final String channel) {
 		return names.get(channel);
 	}
 
 	/**
-	 * @return the names
+	 * Reverse lookup a database friendly channel id.
+	 * @param id
+	 *            channel id.
+	 * @return Original channel name.
 	 */
-	public List<String> getNames() {
-		List<String> keys = new ArrayList<String>();
-		keys.addAll(names.keySet());
-		Collections.sort(keys);
-		return keys;
-	}
-
-	public void init(Map<String, String> values, long alc) {
-		names.clear();
-		names.putAll(values);
-		afterLastChannel = alc;
-	}
-
-	public String getName(String id) {
+	public final String getName(final String id) {
 		for (String key : names.keySet()) {
 			if (id.equals(names.get(key))) {
 				return key;
@@ -82,8 +87,68 @@ public class ChannelNameRegistry {
 		return null;
 	}
 
-	private synchronized String newChannel(TableType table) {
-		String result = table.toString().toLowerCase() + "_channel";
+	/**
+	 * @return the names
+	 */
+	public final List<String> getNames() {
+		List<String> keys = new ArrayList<String>();
+		keys.addAll(names.keySet());
+		Collections.sort(keys);
+		return keys;
+	}
+
+	/**
+	 * Maps a list of database friendly channel id's to channel names using
+	 * reverse lookup.
+	 * @param list
+	 *            List of id's.
+	 * @return List of names.
+	 */
+	public final List<String> ids2Names(final List<String> list) {
+		List<String> result = new ArrayList<String>();
+		for (String n : list) {
+			result.add(getId(n));
+		}
+		return result;
+	}
+
+	/**
+	 * Initialization function used to synchronize with the database. For
+	 * internal use only.
+	 * @param values
+	 *            Map of channel names.
+	 * @param alc
+	 *            Last unused index.
+	 */
+
+	public final void init(final Map<String, String> values, final long alc) {
+		names.clear();
+		names.putAll(values);
+		afterLastChannel = alc;
+	}
+
+	/**
+	 * Maps a list of database channel names to friendly channel id's.
+	 * @param list
+	 *            List of names.
+	 * @return List of id's.
+	 */
+	public final List<String> names2Ids(final List<String> list) {
+		List<String> result = new ArrayList<String>();
+		for (String n : list) {
+			result.add(getId(n));
+		}
+		return result;
+	}
+
+	/**
+	 * Create a database friendly channel name.
+	 * @param table
+	 *            Name of database table.
+	 * @return New database friendly id.
+	 */
+	private synchronized String newChannel(final String table) {
+		String result = table.toLowerCase() + "_channel";
 		result += afterLastChannel;
 		afterLastChannel++;
 		return result;
@@ -93,7 +158,8 @@ public class ChannelNameRegistry {
 	 * @param afterLastChannel
 	 *            the afterLastChannel to set
 	 */
-	public synchronized void setAfterLastChannel(long afterLastChannel) {
+	public final synchronized void setAfterLastChannel(
+			final long afterLastChannel) {
 		this.afterLastChannel = afterLastChannel;
 	}
 
@@ -102,7 +168,7 @@ public class ChannelNameRegistry {
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public String toString() {
+	public final String toString() {
 		String result = "";
 		boolean first = true;
 		for (String k : getNames()) {
@@ -110,21 +176,5 @@ public class ChannelNameRegistry {
 			first = false;
 		}
 		return result + " last = " + afterLastChannel;
-	}
-
-	public List<String> names2Ids(List<String> list) {
-		List<String> result = new ArrayList<String>();
-		for (String n : list) {
-			result.add(getId(n));
-		}
-		return result;
-	}
-
-	public List<String> ids2Names(List<String> list) {
-		List<String> result = new ArrayList<String>();
-		for (String n : list) {
-			result.add(getId(n));
-		}
-		return result;
 	}
 }

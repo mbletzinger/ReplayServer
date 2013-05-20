@@ -2,7 +2,7 @@ package org.nees.illinois.replay.common.registries;
 
 import com.google.inject.AbstractModule;
 
-public abstract class ExperimentModule extends AbstractModule {
+public abstract class ExperimentModuleDeleteMe extends AbstractModule {
 	private String experiment;
 
 	/**

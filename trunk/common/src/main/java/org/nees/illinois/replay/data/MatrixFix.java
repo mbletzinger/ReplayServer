@@ -3,20 +3,65 @@ package org.nees.illinois.replay.data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class which fills in null elements in a matrix through interpolation or
+ * extrapolation.
+ * @author Michael Bletzinger
+ */
 public class MatrixFix {
-	private enum ColScanType {
-		Early, Empty, Full, Gaps, Late
+	/**
+	 * Type of null problem.
+	 * @author Michael Bletzinger
+	 */
+	private enum MatrixProblemType {
+		/**
+		 * Nulls occurring at the beginning of the column.
+		 */
+		Early,
+		/**
+		 * Column is empty.
+		 */
+		Empty,
+		/**
+		 * Column has no nulls.
+		 */
+		Full,
+		/**
+		 * Column has nulls interspersed.
+		 */
+		Gaps,
+		/**
+		 * Nulls occurring towards the end of the column.
+		 */
+		Late
 	}
 
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory.getLogger(MatrixFix.class);
+	/**
+	 * Matrix to be fixed.
+	 */
 	private final DoubleMatrix matrix;
 
-	public MatrixFix(DoubleMatrix indata) {
+	/**
+	 * Constructor.
+	 * @param indata
+	 *            Matrix to be fixed.
+	 */
+	public MatrixFix(final DoubleMatrix indata) {
 		super();
 		this.matrix = indata;
 	};
 
-	private ColScanType columnScan(int column) {
+	/**
+	 * Determine the null gap issues for a column.
+	 * @param column
+	 *            Column index.
+	 * @return The issue.
+	 */
+	private MatrixProblemType columnScan(final int column) {
 		boolean hasContents = false;
 		boolean hasNulls = false;
 		int[] sizes = matrix.sizes();
@@ -31,26 +76,33 @@ public class MatrixFix {
 		}
 		if (hasContents) {
 			if (nullStart) {
-				return ColScanType.Late;
+				return MatrixProblemType.Late;
 			}
 
 			if (nullEnd) {
-				return ColScanType.Early;
+				return MatrixProblemType.Early;
 			}
 			if (hasNulls) {
-				return ColScanType.Gaps;
+				return MatrixProblemType.Gaps;
 			}
-			return ColScanType.Full;
+			return MatrixProblemType.Full;
 		}
-		return ColScanType.Empty;
+		return MatrixProblemType.Empty;
 	}
 
-	private void extrapolate(ColScanType scan, int column) {
+	/**
+	 * Extrapolate to fill in the nulls of a column.
+	 * @param scan
+	 *            Type of problem.
+	 * @param column
+	 *            Index of column.
+	 */
+	private void extrapolate(final MatrixProblemType scan, final int column) {
 		int[] sizes = matrix.sizes();
 		int start = 0;
 		int interval = 1;
 		int end = sizes[0];
-		if (scan.equals(ColScanType.Early)) {
+		if (scan.equals(MatrixProblemType.Early)) {
 			start = sizes[0] - 1;
 			interval = -1;
 			end = 0;
@@ -68,16 +120,19 @@ public class MatrixFix {
 		}
 	}
 
-	public void fix() {
+	/**
+	 * Fix the matrix.
+	 */
+	public final void fix() {
 		int[] sizes = matrix.sizes();
 		log.debug("Matrix sizes are [" + sizes[0] + "][" + sizes[1] + "]");
 		for (int c = 0; c < sizes[1]; c++) {
-			ColScanType scan = columnScan(c);
-			while (scan.equals(ColScanType.Full) == false
-					&& scan.equals(ColScanType.Empty) == false) {
+			MatrixProblemType scan = columnScan(c);
+			while (scan.equals(MatrixProblemType.Full) == false
+					&& scan.equals(MatrixProblemType.Empty) == false) {
 				log.debug("Scanning column " + c + " is " + scan);
-				if (scan.equals(ColScanType.Late)
-						|| scan.equals(ColScanType.Early)) {
+				if (scan.equals(MatrixProblemType.Late)
+						|| scan.equals(MatrixProblemType.Early)) {
 					extrapolate(scan, c);
 					scan = columnScan(c);
 					continue;
@@ -96,11 +151,18 @@ public class MatrixFix {
 	/**
 	 * @return the matrix
 	 */
-	public DoubleMatrix getMatrix() {
+	public final DoubleMatrix getMatrix() {
 		return matrix;
 	}
 
-	private void interpolate(int column, int firstNull) {
+	/**
+	 * Interpolate to fill in null values in a column.
+	 * @param column
+	 *            Column index.
+	 * @param firstNull
+	 *            The first occurrence of a null value.
+	 */
+	private void interpolate(final int column, final int firstNull) {
 		int nonNull = firstNull;
 
 		while (matrix.isNull(nonNull, column)) {

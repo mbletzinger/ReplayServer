@@ -1,8 +1,8 @@
 package org.nees.illinois.replay.restlet;
 
-import org.nees.illinois.replay.common.registries.ExperimentModule;
-import org.nees.illinois.replay.data.DataQueryI;
-import org.nees.illinois.replay.data.DataUpdateI;
+import org.nees.illinois.replay.common.registries.ExperimentModuleDeleteMe;
+import org.nees.illinois.replay.data.DataQuerySubResourceI;
+import org.nees.illinois.replay.data.DataUpdateSubResourceI;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
@@ -23,8 +23,8 @@ public class ReplayServerComponent extends Component {
 
 	@Inject
 	public ReplayServerComponent(HostInfo hostinfo,
-			ReplayServerApplication app, Provider<DataUpdateI> tdu,
-			Provider<DataQueryI> tdq, ExperimentModule guiceMod) {
+			ReplayServerApplication app, Provider<DataUpdateSubResourceI> tdu,
+			Provider<DataQuerySubResourceI> tdq, ExperimentModuleDeleteMe guiceMod) {
 		super();
 		this.hostinfo = hostinfo;
 		// Configure the log service

@@ -3,7 +3,7 @@ package org.nees.illinois.replay.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NumberOfColumns {
+public class NumberOfColumnsReplaceMeWithTableColumnsI {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -28,7 +28,7 @@ public class NumberOfColumns {
 
 	}
 
-	public NumberOfColumns(int dataColumns, RateType tableRate) {
+	public NumberOfColumnsReplaceMeWithTableColumnsI(int dataColumns, RateType tableRate) {
 		this.dataColumns = dataColumns;
 		this.tableRate = tableRate;
 	}

@@ -1,15 +1,13 @@
-/**
- * 
- */
 package org.nees.illinois.replay.common.types;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nees.illinois.replay.data.MatrixSpecI;
+
 /**
  * Class which specifies the name and columns of a database table. The class
  * differentiates between data columns and columns which contain time data.
- * 
  * @author Michael Bletzinger
  */
 public class TableColumns implements TableColumnsI {
@@ -17,15 +15,15 @@ public class TableColumns implements TableColumnsI {
 	 * List of data column names.
 	 */
 	private final List<String> dataColumns;
-	/**
-	 * List of time column names.
-	 */
-	private final List<String> timeColumns = new ArrayList<String>();
+
 	/**
 	 * Table name info.
 	 */
 	private final TableIdentityI tableId;
-
+	/**
+	 * List of time column names.
+	 */
+	private final List<String> timeColumns = new ArrayList<String>();
 	{
 		timeColumns.add("time");
 		timeColumns.add("step");
@@ -85,4 +83,30 @@ public class TableColumns implements TableColumnsI {
 		return tableId;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public final String toString() {
+		return "TableColumns [dataColumns=" + dataColumns + ", timeColumns="
+				+ timeColumns + ", tableId=" + tableId + "]";
+	}
+
+	@Override
+	public final void addDataColumn(final String channel) {
+		dataColumns.add(channel);
+	}
+
+	@Override
+	public final int numberOfTimeColumns() {
+		return timeColumns.size();
+	}
+
+
+	@Override
+	public final void appendColumns(final MatrixSpecI other) {
+		TableColumnsI otherTC = (TableColumnsI) other;
+		dataColumns.addAll(otherTC.getColumns(false));
+	}
 }

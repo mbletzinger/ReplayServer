@@ -1,9 +1,10 @@
-package org.nees.illinois.replay.common.registries;
+package org.nees.illinois.replay.restlet;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-import org.nees.illinois.replay.restlet.AttributeExtraction;
+import org.nees.illinois.replay.common.registries.ExperimentModuleDeleteMe;
+import org.nees.illinois.replay.common.registries.ExperimentRegistries;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 
@@ -14,9 +15,9 @@ public class ExperimentSessionManager {
 
 		private final AttributeExtraction extract;
 		private final ConcurrentMap<String, Object> cxtAttrs;
-		private final ExperimentModule guiceMod;
+		private final ExperimentModuleDeleteMe guiceMod;
 
-		public ExperimentSessionManager(ConcurrentMap<String, Object> cxtAttrs, Map<String,Object> reqAttrs, ExperimentModule guiceMod) {
+		public ExperimentSessionManager(ConcurrentMap<String, Object> cxtAttrs, Map<String,Object> reqAttrs, ExperimentModuleDeleteMe guiceMod) {
 			super();
 			this.extract = new AttributeExtraction(reqAttrs);
 			this.cxtAttrs = cxtAttrs;
@@ -38,7 +39,6 @@ public class ExperimentSessionManager {
 				guiceMod.setExperiment(experiment);
 				Injector injector = Guice.createInjector(guiceMod);
 				er = injector.getInstance(ExperimentRegistries.class);
-				er.setLookups(injector.getProvider(ChannelNameManagement.class));
 				cxtAttrs.put(key, er);
 				} else {
 					throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "\"" + experiment + "\" is not an experiment");
