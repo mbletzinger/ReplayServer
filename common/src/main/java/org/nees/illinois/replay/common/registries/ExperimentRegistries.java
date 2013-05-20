@@ -1,56 +1,90 @@
 package org.nees.illinois.replay.common.registries;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.name.Named;
 
-
+/**
+ * Registeries to manage the dataset of an experiment. The Replay server manages
+ * a session that has experiment scope. The registries save data that needs to
+ * be shared between requests but is not necessarily part of the database. Each
+ * experiment has the following registry:
+ * <dl>
+ * <dt>Channel Name Registry
+ * <dd>Maps channel names to database-friendly column names
+ * <dt>Table Identity Registry
+ * <dd>Maps dataset table names to their database table {@link TableIdentityI
+ * identities}.
+ * <dt>Table Registry
+ * <dd>Maps table {@link TableIdentityI identities} to their
+ * {@link TableColumnsI definitions}.
+ * </dl>
+ * @author Michael Bletzinger
+ */
 public class ExperimentRegistries {
-	private ChannelNameManagement chnlNamesMgmt;
-
+	/**
+	 * Channel name {@link ChannelNameRegistry registry} for the experiment.
+	 */
+	private final ChannelNameRegistry cnr = new ChannelNameRegistry();
+	/**
+	 * Name of the experiment.
+	 */
 	private final String experiment;
-
+	/**
+	 * Query {@link QueryRegistry registry} for the experiment.
+	 */
 	private final QueryRegistry queries = new QueryRegistry();
+	/**
+	 * Table identity {@link TableIdentityRegistry registry} for the experiment.
+	 */
+	private final TableIdentityRegistry tblIdr = new TableIdentityRegistry();
+	/**
+	 * Table {@link TableRegistry registry} for the experiment.
+	 */
+	private final TableRegistry tblDefr = new TableRegistry();
 
+	/**
+	 * Creates an experiment registry.
+	 * @param experiment
+	 *            Name of the experiment.
+	 */
 	@Inject
-	public ExperimentRegistries(@Named("experiment") String experiment) {
+	public ExperimentRegistries(@Named("experiment") final String experiment) {
 		super();
 		this.experiment = experiment;
 	}
 
-	public void setLookups(Provider<ChannelNameManagement> plookups) {
-		chnlNamesMgmt = plookups.get();
-	}
 	/**
-	 * @return the lookups
+	 * @return the channel name registry
 	 */
-	public  ChannelNameManagement getChnlNamesMgmt() {
-		return chnlNamesMgmt;
+	public final ChannelNameRegistry getCnr() {
+		return cnr;
 	}
-	/**
-	 * @return the cnr clone
-	 */
-	public  ChannelNameRegistry getCnrClone() {
-		ChannelNameRegistry clone = new ChannelNameRegistry();
-		clone.init(chnlNamesMgmt.getCnr().getClone(), chnlNamesMgmt.getCnr().getAfterLastChannel());
-		return clone;
-	}
-	/**
-	 * @return the lookups clone
-	 */
-	public  ChannelNameManagement getLookupsClone() {
-		return chnlNamesMgmt.clone();
-	}
+
 	/**
 	 * @return the experiment
 	 */
-	public  String getExperiment() {
+	public final String getExperiment() {
 		return experiment;
 	}
+
 	/**
 	 * @return the queries
 	 */
-	public  QueryRegistry getQueries() {
+	public final QueryRegistry getQueries() {
 		return queries;
+	}
+
+	/**
+	 * @return the table identity registry
+	 */
+	public final TableIdentityRegistry getTblIdr() {
+		return tblIdr;
+	}
+
+	/**
+	 * @return the table registry
+	 */
+	public final TableRegistry getTblDefr() {
+		return tblDefr;
 	}
 }

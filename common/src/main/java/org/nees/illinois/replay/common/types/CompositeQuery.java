@@ -3,7 +3,9 @@
  */
 package org.nees.illinois.replay.common.types;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nees.illinois.replay.data.RateType;
 
@@ -12,33 +14,37 @@ import org.nees.illinois.replay.data.RateType;
  */
 public class CompositeQuery implements CompositeQueryI {
 	/**
-	 * Query name
+	 * Query name.
 	 */
 	private final String name;
 
 	/**
-	 * Column order of the query results
+	 * Column order of the query results.
 	 */
 	private final List<String> queryOrder;
 
 	/**
-	 * Sampling rate of the queried data
+	 * Sampling rate of the queried data.
 	 **/
 	private RateType rate;
+
+	/**
+	 * {@link Map Map} of table queries used to generate a select statement for
+	 * each table.
+	 */
+	private final Map<TableIdentityI, TableColumnsI> tableQueries = new HashMap<TableIdentityI, TableColumnsI>();
 
 	/**
 	 * @param name
 	 *            Query name
 	 * @param queryOrder
 	 *            Column order of the query results
-	 * @param rate
-	 *            Sampling rate of the queried data
 	 */
-	public CompositeQuery(final String name, final List<String> queryOrder, final RateType rate) {
+	public CompositeQuery(final String name, final List<String> queryOrder) {
 		this.name = name;
 		this.queryOrder = queryOrder;
-		this.rate = rate;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.nees.illinois.replay.common.types.QueryI#getName()
@@ -47,20 +53,13 @@ public class CompositeQuery implements CompositeQueryI {
 	public final String getName() {
 		return name;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.nees.illinois.replay.common.types.QueryI#getQueryList()
 	 */
 	@Override
 	public final List<String> getQueryList() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/**
-	 * @return the queryOrder
-	 */
-	public final List<String> getQueryOrder() {
 		return queryOrder;
 	}
 
@@ -76,13 +75,13 @@ public class CompositeQuery implements CompositeQueryI {
 	 * @see org.nees.illinois.replay.common.types.QueryI#getTableQueries()
 	 */
 	@Override
-	public final List<TableColumnsI> getTableQueries() {
-		// TODO Auto-generated method stub
-		return null;
+	public final Map<TableIdentityI, TableColumnsI> getTableQueries() {
+		return tableQueries;
 	}
 
 	/**
-	 * @param rate the rate to set
+	 * @param rate
+	 *            the rate to set
 	 */
 	public final void setRate(final RateType rate) {
 		this.rate = rate;

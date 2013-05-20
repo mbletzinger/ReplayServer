@@ -3,17 +3,17 @@ package org.nees.illinois.replay.common.registries;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nees.illinois.replay.data.NumberOfColumns;
+import org.nees.illinois.replay.data.NumberOfColumnsReplaceMeWithTableColumnsI;
 import org.nees.illinois.replay.data.RateType;
 
 
-public class SavedQuery {
+public class SavedQueryDeleteMe {
 
 	protected final String name;
 
-	protected final NumberOfColumns noc;
+	protected final NumberOfColumnsReplaceMeWithTableColumnsI noc;
 	protected final List<String> queryOrder;
-	public SavedQuery(List<String> channelOrder, String name,
+	public SavedQueryDeleteMe(List<String> channelOrder, String name,
 			ChannelNameRegistry cnr, RateType rate) {
 		super();
 		this.queryOrder = new ArrayList<String>();
@@ -21,7 +21,7 @@ public class SavedQuery {
 			this.queryOrder.add(cnr.getId(c));
 		}
 		this.name = name;
-		this.noc = new NumberOfColumns(channelOrder.size(), rate);
+		this.noc = new NumberOfColumnsReplaceMeWithTableColumnsI(channelOrder.size(), rate);
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class SavedQuery {
 	/**
 	 * @return the noc
 	 */
-	public NumberOfColumns getNoc() {
+	public NumberOfColumnsReplaceMeWithTableColumnsI getNoc() {
 		return noc;
 	}
 

@@ -4,15 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.illinois.replay.common.registries.ExperimentModule;
+import org.nees.illinois.replay.common.registries.ExperimentModuleDeleteMe;
 import org.nees.illinois.replay.common.registries.ExperimentRegistries;
-import org.nees.illinois.replay.common.registries.ExperimentSessionManager;
+import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
-import org.nees.illinois.replay.data.DataUpdateI;
+import org.nees.illinois.replay.data.DataUpdateSubResourceI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;
@@ -33,8 +32,8 @@ public class DataTableServerResource extends ServerResource implements
 	private final List<RequiredAttrType> reqAttrs = new ArrayList<AttributeExtraction.RequiredAttrType>();
 
 	private final List<RequiredAttrType> reqAttrsWithRate = new ArrayList<AttributeExtraction.RequiredAttrType>();
-	private DataUpdateI updates;
-	private  ExperimentModule guiceMod;
+	private DataUpdateSubResourceI updates;
+	private  ExperimentModuleDeleteMe guiceMod;
 
 
 	public DataTableServerResource() {
@@ -53,10 +52,10 @@ public class DataTableServerResource extends ServerResource implements
 	protected void doInit() throws ResourceException {
 		this.extract = new AttributeExtraction(getRequest().getAttributes());
 		@SuppressWarnings("unchecked")
-		Provider<DataUpdateI> provider = (Provider<DataUpdateI>) getContext()
+		Provider<DataUpdateSubResourceI> provider = (Provider<DataUpdateSubResourceI>) getContext()
 				.getAttributes().get("updatesI");
 		this.updates = provider.get();
-		guiceMod = (ExperimentModule) getContext().getAttributes().get("guiceMod");
+		guiceMod = (ExperimentModuleDeleteMe) getContext().getAttributes().get("guiceMod");
 		ExperimentSessionManager esm = new ExperimentSessionManager(
 				getContext().getAttributes(), getRequestAttributes(), guiceMod);
 		boolean allowCreated = getRequest().getMethod().equals(Method.PUT);
@@ -68,7 +67,7 @@ public class DataTableServerResource extends ServerResource implements
 	/**
 	 * @return the updates
 	 */
-	public DataUpdateI getUpdates() {
+	public DataUpdateSubResourceI getUpdates() {
 		return updates;
 	}
 
@@ -89,7 +88,7 @@ public class DataTableServerResource extends ServerResource implements
 	 * @param updates
 	 *            the updates to set
 	 */
-	public void setUpdates(DataUpdateI updates) {
+	public void setUpdates(DataUpdateSubResourceI updates) {
 		this.updates = updates;
 	}
 
