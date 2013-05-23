@@ -32,7 +32,7 @@ public interface DataUpdateSubResourceI extends SubResourceI {
 
 	/**
 	 * Add data to a table.
-	 * @param table
+	 * @param tableString
 	 *            Table identity.
 	 * @param rate
 	 *            Table rate type.
@@ -40,5 +40,5 @@ public interface DataUpdateSubResourceI extends SubResourceI {
 	 *            Data to add.
 	 * @return True if successful.
 	 */
-	boolean update(TableIdentityI table, RateType rate, double[][] data);
+	boolean update(String tableString, RateType rate, double[][] data);
 }

@@ -46,7 +46,7 @@ public class QueryDefiner {
 	 *            Query Registry.
 	 */
 	public QueryDefiner(final ChannelNameRegistry cnr, final TableRegistry tr,
-			QueryRegistry qr) {
+			final QueryRegistry qr) {
 		this.cnr = cnr;
 		this.tr = tr;
 		this.qr = qr;

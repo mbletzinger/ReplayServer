@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.illinois.replay.common.registries.ExperimentModuleDeleteMe;
 import org.nees.illinois.replay.common.registries.ExperimentRegistries;
-import org.nees.illinois.replay.common.registries.SavedQueryDeleteMe;
+import org.nees.illinois.replay.common.types.CompositeQueryI;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.data.DataQuerySubResourceI;
@@ -17,7 +16,6 @@ import org.nees.illinois.replay.data.SubResourceI;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
@@ -28,20 +26,46 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Provider;
 
+/**
+ * Implements a query server resource for the replay server.
+ * @author Michael Bletzinger
+ */
 public class DataQueryServerResource extends ServerResource implements
 		DataQueryResource {
+	/**
+	 * Subresource that actually does all of the work. This is passed in as part
+	 * of the restlet context so that it can be configured with Google GUICE.
+	 */
 	private DataQuerySubResourceI dquery;
-
+	/**
+	 * Used to extract attributes from the request URI.
+	 */
 	private AttributeExtraction extract;
-	private ExperimentModuleDeleteMe guiceMod;
+	/**
+	 * Registries for the experiment session.
+	 */
 	private ExperimentRegistries er;
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory
 			.getLogger(DataQueryServerResource.class);
+	/**
+	 * Map of URI attributes.
+	 */
 	private Map<RequiredAttrType, Object> attrs;
+	/**
+	 * Rate type specified in the request.
+	 */
 	private RateType rate;
+	/**
+	 * Query name specified in the request.
+	 */
 	private String query;
 
-
+	/**
+	 * Constructor.
+	 */
 	public DataQueryServerResource() {
 		super();
 
@@ -52,20 +76,17 @@ public class DataQueryServerResource extends ServerResource implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see org.restlet.resource.Resource#doInit()
 	 */
 	@Override
-	protected void doInit() throws ResourceException {
+	protected final void doInit() {
 		@SuppressWarnings("unchecked")
 		Provider<DataQuerySubResourceI> provider = (Provider<DataQuerySubResourceI>) getContext()
 				.getAttributes().get("queryI");
 		dquery = provider.get();
-		guiceMod = (ExperimentModuleDeleteMe) getContext().getAttributes().get(
-				"guiceMod");
 		extract = new AttributeExtraction(getRequest().getAttributes());
 		ExperimentSessionManager esm = new ExperimentSessionManager(
-				getContext().getAttributes(), getRequestAttributes(), guiceMod);
+				getContext().getAttributes(), getRequestAttributes());
 		er = esm.getRegistries(false);
 		dquery.setExperiment(er);
 		super.doInit();
@@ -73,7 +94,7 @@ public class DataQueryServerResource extends ServerResource implements
 
 	@Override
 	@Get("bin")
-	public Representation getBin() throws ResourceException {
+	public final Representation getBin() {
 		DoubleMatrix data = getDm();
 		if (data == null) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
@@ -84,29 +105,31 @@ public class DataQueryServerResource extends ServerResource implements
 		return dbl2rep.getRep();
 	}
 
-	private DoubleMatrix getDm() throws ResourceException {
+	/**
+	 * Function that does all of the work for a query request. The function
+	 * determines the start, stop, and rate attributes and executes a query
+	 * using the {@link DataQuerySubResourceI dquery} subresource.
+	 * @return the data in double matrix form.
+	 */
+	private DoubleMatrix getDm() {
 		final List<RequiredAttrType> reqAttrs = new ArrayList<AttributeExtraction.RequiredAttrType>();
 
-		log.debug("Query Resource handling " + getRequest().getMethod() + " with " + getRequest());
+		log.debug("Query Resource handling " + getRequest().getMethod()
+				+ " with " + getRequest());
 		reqAttrs.add(RequiredAttrType.Rate);
 		reqAttrs.add(RequiredAttrType.Query);
+		reqAttrs.add(RequiredAttrType.Start);
+		reqAttrs.add(RequiredAttrType.Stop);
 		extract.extract(reqAttrs);
 		attrs = extract.getAttrs();
 		rate = (RateType) attrs.get(RequiredAttrType.Rate);
 		query = (String) attrs.get(RequiredAttrType.Query);
 
-		SavedQueryDeleteMe spec = er.getQueries().getQuery(query);
+		CompositeQueryI spec = er.getQueries().getQuery(query);
 		if (spec == null) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
 					"Query \"" + query + "\" not recognized");
 		}
-		reqAttrs.clear();
-		reqAttrs.add(RequiredAttrType.Start);
-		reqAttrs.add(RequiredAttrType.Stop);
-		reqAttrs.add(rate.equals(RateType.STEP) ? RequiredAttrType.StepNumber
-				: RequiredAttrType.Double);
-		extract.extract(reqAttrs);
-		attrs = extract.getAttrs();
 
 		if (rate.equals(RateType.STEP)) {
 			StepNumber strt = (StepNumber) attrs.get(RequiredAttrType.Start);
@@ -138,27 +161,26 @@ public class DataQueryServerResource extends ServerResource implements
 	/**
 	 * @return the dquery
 	 */
-	public SubResourceI getDquery() {
+	public final SubResourceI getDquery() {
 		return dquery;
 	}
 
-//	@Override
-//	@Get("txt")
-//	public Representation getText() throws ResourceException {
-//		DoubleMatrix data = getDm();
-//		return new StringRepresentation(data.toString().toCharArray());
-//	}
+	// @Override
+	// @Get("txt")
+	// public Representation getText() throws ResourceException {
+	// DoubleMatrix data = getDm();
+	// return new StringRepresentation(data.toString().toCharArray());
+	// }
 
 	@Override
 	@Delete
-	public void removeList(String query) {
-		// TODO Auto-generated method stub
-
+	public final void removeList(final String query) {
+		throw new ResourceException(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, "Remove not implemented yet.");
 	}
 
 	@Override
 	@Put
-	public void set(Representation channels) throws ResourceException {
+	public final void set(final Representation channels) {
 		final List<RequiredAttrType> reqAttrs = new ArrayList<AttributeExtraction.RequiredAttrType>();
 
 		reqAttrs.add(RequiredAttrType.Query);
@@ -176,7 +198,7 @@ public class DataQueryServerResource extends ServerResource implements
 	 * @param dquery
 	 *            the dquery to set
 	 */
-	public void setDquery(DataQuerySubResourceI dquery) {
+	public final void setDquery(final DataQuerySubResourceI dquery) {
 		this.dquery = dquery;
 	}
 

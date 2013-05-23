@@ -6,13 +6,28 @@ import org.restlet.representation.Representation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Converts {@link Representation representation} to a String list of channel
+ * names.
+ * @author Michael Bletzinger
+ */
 public class Representation2ChannelList {
+	/**
+	 * Converter.
+	 */
 	private final InputStream2ChannelList il2cl;
-
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory
 			.getLogger(Representation2ChannelList.class);
 
-	public Representation2ChannelList(Representation rep) {
+	/**
+	 * Constructor which also does the conversion.
+	 * @param rep
+	 *            Representation to be converted.
+	 */
+	public Representation2ChannelList(final Representation rep) {
 		super();
 		InputStream2ChannelList i2c = null;
 		try {
@@ -31,9 +46,9 @@ public class Representation2ChannelList {
 	}
 
 	/**
-	 * @return the il2cl
+	 * @return the stream converter. You can get the channel list from this.
 	 */
-	public InputStream2ChannelList getIl2cl() {
+	public final InputStream2ChannelList getIl2cl() {
 		return il2cl;
 	}
 }

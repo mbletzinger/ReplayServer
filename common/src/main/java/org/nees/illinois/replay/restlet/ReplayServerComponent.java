@@ -1,6 +1,5 @@
 package org.nees.illinois.replay.restlet;
 
-import org.nees.illinois.replay.common.registries.ExperimentModuleDeleteMe;
 import org.nees.illinois.replay.data.DataQuerySubResourceI;
 import org.nees.illinois.replay.data.DataUpdateSubResourceI;
 import org.restlet.Client;
@@ -15,16 +14,37 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
+/**
+ * Replay server version of a restlet {@link Component component}. The class has
+ * the main function which boots up the server. The purpose of the class is to
+ * load the context with sub-resources injected from Google GUICE.
+ * @author Michael Bletzinger
+ */
 public class ReplayServerComponent extends Component {
-
+/**
+ * Class containing all of the server Internet parameters.
+ */
 	private final HostInfo hostinfo;
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory
 			.getLogger(ReplayServerComponent.class);
-
+/**
+ * Constructor.
+ *@param hostinfo
+ * Class containing all of the server Internet parameters.
+ *@param app
+ *Restlet app version to use.
+ *@param tdu
+ *A provider for data update subresource instances.
+ *@param tdq
+ *A provider for query subresource instances.
+ */
 	@Inject
-	public ReplayServerComponent(HostInfo hostinfo,
-			ReplayServerApplication app, Provider<DataUpdateSubResourceI> tdu,
-			Provider<DataQuerySubResourceI> tdq, ExperimentModuleDeleteMe guiceMod) {
+	public ReplayServerComponent(final HostInfo hostinfo,
+			final ReplayServerApplication app, final Provider<DataUpdateSubResourceI> tdu,
+			final Provider<DataQuerySubResourceI> tdq) {
 		super();
 		this.hostinfo = hostinfo;
 		// Configure the log service
@@ -43,7 +63,6 @@ public class ReplayServerComponent extends Component {
 		Context cxt = getContext().createChildContext();
 		cxt.getAttributes().put("updatesI", tdu);
 		cxt.getAttributes().put("queryI", tdq);
-		cxt.getAttributes().put("guiceMod", guiceMod);
 		if (hostinfo.isTracing()) {
 			cxt.getParameters().set("tracing", "true");
 		}
@@ -59,21 +78,10 @@ public class ReplayServerComponent extends Component {
 	}
 
 	/**
-	 * @return the hostinfo
+	 * @return the host information class.
 	 */
-	public HostInfo getHostinfo() {
+	public final HostInfo getHostinfo() {
 		return hostinfo;
 	}
-
-	// /**
-	// * Launches the mail server component.
-	// *
-	// * @param args
-	// * The arguments.
-	// * @throws Exception
-	// */
-	// public static void main(String[] args) throws Exception {
-	// new ReplayTestServerComponent(8111).start();
-	// }
 
 }

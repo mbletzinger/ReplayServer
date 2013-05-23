@@ -1,8 +1,5 @@
 package org.nees.illinois.replay.common.registries;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
-
 /**
  * Registeries to manage the dataset of an experiment. The Replay server manages
  * a session that has experiment scope. The registries save data that needs to
@@ -47,8 +44,7 @@ public class ExperimentRegistries {
 	 * @param experiment
 	 *            Name of the experiment.
 	 */
-	@Inject
-	public ExperimentRegistries(@Named("experiment") final String experiment) {
+	public ExperimentRegistries(final String experiment) {
 		super();
 		this.experiment = experiment;
 	}
