@@ -10,15 +10,34 @@ import org.nees.illinois.replay.data.DoubleMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Converts an input stream into a double matrix.
+ * @author Michael Bletzinger
+ */
 public class InputStream2DoubleMatrix {
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory
 			.getLogger(InputStream2DoubleMatrix.class);
+	/**
+	 * Resulting double matrix in list form.
+	 */
 	private final List<List<Double>> numbers = new ArrayList<List<Double>>();
 
-	public InputStream2DoubleMatrix(InputStream in) {
+	/**
+	 * Constructor that also does the conversion. The input stream is assumed to
+	 * be headed by to integers which contain the row and column sizes followed
+	 * by the appropriate number of double values. See the
+	 * {@link DataInputStream DataInputStream} class for information about
+	 * number formats and sizes.
+	 * @param in
+	 *            Input stream to convert.
+	 */
+	public InputStream2DoubleMatrix(final InputStream in) {
 		super();
 		DataInputStream din = new DataInputStream(in);
-		int [] hdrs = new int [2];
+		int[] hdrs = new int[2];
 		try {
 			hdrs[0] = din.readInt();
 			hdrs[1] = din.readInt();
@@ -43,15 +62,19 @@ public class InputStream2DoubleMatrix {
 			}
 		}
 	}
-	
-	public DoubleMatrix getMatrix() {
+
+	/**
+	 * Get double matrix as a DoubleMatrix.
+	 * @return the DoubleMatrix instance.
+	 */
+	public final DoubleMatrix getMatrix() {
 		return new DoubleMatrix(numbers);
 	}
 
 	/**
-	 * @return the numbers
+	 * @return the numbers in list form.
 	 */
-	public List<List<Double>> getNumbers() {
+	public final List<List<Double>> getNumbers() {
 		return numbers;
 	}
 

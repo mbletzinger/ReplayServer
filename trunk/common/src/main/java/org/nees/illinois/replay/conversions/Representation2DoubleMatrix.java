@@ -6,12 +6,26 @@ import org.restlet.representation.Representation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Converts a {@link Representation representation} into a double matrix.
+ * @author Michael Bletzinger
+ */
 public class Representation2DoubleMatrix {
+	/**
+	 * Converter.
+	 */
 	private final InputStream2DoubleMatrix in2dm;
-
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory
 			.getLogger(Representation2DoubleMatrix.class);
-	public Representation2DoubleMatrix(Representation rep) {
+
+	/**
+	 * Constructor which also does the conversion.
+	 * @param rep
+	 */
+	public Representation2DoubleMatrix(final Representation rep) {
 		super();
 		InputStream2DoubleMatrix i2d = null;
 		try {
@@ -30,9 +44,9 @@ public class Representation2DoubleMatrix {
 	}
 
 	/**
-	 * @return the in2dm
+	 * @return the converter which also contains the resulting double matrix.
 	 */
-	public InputStream2DoubleMatrix getIn2dm() {
+	public final InputStream2DoubleMatrix getIn2dm() {
 		return in2dm;
 	}
 

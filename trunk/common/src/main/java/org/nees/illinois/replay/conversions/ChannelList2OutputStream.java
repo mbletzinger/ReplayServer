@@ -9,14 +9,31 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class which converts a String array into a buffered output stream.
+ * @author Michael Bletzinger
+ */
 public class ChannelList2OutputStream {
+	/**
+	 * Buffer for output stream.
+	 */
 	private final byte[] buffer;
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory
 			.getLogger(ChannelList2OutputStream.class);
+	/**
+	 * Output stream.
+	 */
 	private final OutputStream out;
 
-
-	public ChannelList2OutputStream(List<String> channels) {
+	/**
+	 * Constructor.
+	 * @param channels
+	 *            String array of channel names.
+	 */
+	public ChannelList2OutputStream(final List<String> channels) {
 		super();
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		writeChannels(channels, bout);
@@ -27,18 +44,25 @@ public class ChannelList2OutputStream {
 	/**
 	 * @return the buffer
 	 */
-	public byte[] getBuffer() {
+	public final byte[] getBuffer() {
 		return buffer;
 	}
 
 	/**
 	 * @return the out
 	 */
-	public OutputStream getOut() {
+	public final OutputStream getOut() {
 		return out;
 	}
 
-	private void writeChannels(List<String> channels, OutputStream bout) {
+	/**
+	 * Does the actual conversion.
+	 * @param channels
+	 *            String array of channel names.
+	 * @param bout
+	 *            Buffered output stream.
+	 */
+	private void writeChannels(final List<String> channels, final OutputStream bout) {
 		DataOutputStream dout = new DataOutputStream(bout);
 		String str = Str2CL.cl2str(channels);
 		try {
@@ -49,6 +73,7 @@ public class ChannelList2OutputStream {
 			try {
 				dout.close();
 			} catch (IOException e) {
+				log.debug("ignoring close error",e);
 			}
 		}
 	}

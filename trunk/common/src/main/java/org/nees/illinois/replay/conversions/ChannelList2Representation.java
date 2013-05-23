@@ -5,30 +5,46 @@ import java.util.List;
 import org.restlet.representation.ByteArrayRepresentation;
 import org.restlet.representation.Representation;
 
+/**
+ * Converts a channel list into an output stream and wraps inside a restlet
+ * {@link Representation representation}.
+ * @author Michael Bletzinger
+ */
 public class ChannelList2Representation {
+	/**
+	 * channel list converter.
+	 */
 	private final ChannelList2OutputStream cl2os;
 
-//	private final Logger log = LoggerFactory
-//			.getLogger(ChannelList2Representation.class);
+	// private final Logger log = LoggerFactory
+	// .getLogger(ChannelList2Representation.class);
+	/**
+	 * Resulting representation.
+	 */
 	private final Representation rep;
 
-	public ChannelList2Representation(List<String> channels) {
+	/**
+	 * Constructor.
+	 * @param channels
+	 *            List of channel names to convert.
+	 */
+	public ChannelList2Representation(final List<String> channels) {
 		super();
 		cl2os = new ChannelList2OutputStream(channels);
 		this.rep = new ByteArrayRepresentation(cl2os.getBuffer());
 	}
 
 	/**
-	 * @return the cl2os
+	 * @return the converter. Used only for unit testing.
 	 */
-	public ChannelList2OutputStream getCl2os() {
+	public final ChannelList2OutputStream getCl2os() {
 		return cl2os;
 	}
 
 	/**
-	 * @return the representation
+	 * @return the resulting representation
 	 */
-	public Representation getRep() {
+	public final Representation getRep() {
 		return rep;
 	}
 }

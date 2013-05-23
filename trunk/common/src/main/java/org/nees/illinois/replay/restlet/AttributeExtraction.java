@@ -12,28 +12,80 @@ import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class used to parse the attributes from incoming "cool URI's". The attributes
+ * are of the form "/name/value" in the URI. The Restlet code scans the
+ * attribute tokens in the URI and delivers these as a map of strings and objects. This
+ * class checks the presence of required attributes and reports any problems
+ * with their values.
+ * @author Michael Bletzinger
+ */
 public class AttributeExtraction {
+	/**
+	 * List of possible attributes.
+	 * @author Michael Bletzinger
+	 */
 	public enum RequiredAttrType {
-		Experiment, Table, Rate, Start, Stop, Query, Double, StepNumber
+		/**
+		 * Experiment name.
+		 */
+		Experiment,
+		/**
+		 * Query name.
+		 */
+		Query,
+		/**
+		 * Either CONT or STEP.
+		 */
+		Rate,
+		/**
+		 * Start time in seconds or step number.
+		 */
+		Start,
+		/**
+		 * Stop time in seconds or step number.
+		 */
+		Stop,
+		/**
+		 * Table name.
+		 */
+		Table
 	};
 
-	final Map<RequiredAttrType, Object> attrs = new HashMap<RequiredAttrType, Object>();
-	final Map<String, Object> reqAttrs;
+	/**
+	 * Map of parsed attribute values.
+	 */
+	private final Map<RequiredAttrType, Object> attrs = new HashMap<RequiredAttrType, Object>();
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory
 			.getLogger(AttributeExtraction.class);
+	/**
+	 * Map of attributes from the URI.
+	 */
+	private final Map<String, Object> uriAttrs;
 
-	public AttributeExtraction(Map<String, Object> reqAttrs) {
+	/**
+	 * Constructor.
+	 * @param uriAttrs
+	 *            Map of attributes from the URI.
+	 */
+	public AttributeExtraction(final Map<String, Object> uriAttrs) {
 		super();
-		this.reqAttrs = reqAttrs;
-		log.debug("Req attributes are " + reqAttrs);
+		this.uriAttrs = uriAttrs;
+		log.debug("Req attributes are " + uriAttrs);
 	}
 
-	public String getExperiment() {
-		return extractString("experiment");
-	}
-	
-	public void extract(List<RequiredAttrType> required) throws ResourceException {
-		boolean isStepNumber = required.contains(RequiredAttrType.StepNumber);
+	/**
+	 * Main function for parsing URIs. The function will throw a restlet
+	 * {@link ResourceException ResourceException} if any attributes are missing
+	 * or malformed.
+	 * @param required
+	 *            List of required attributes for the URI.
+	 */
+	public final void extract(final List<RequiredAttrType> required) {
+		boolean isStepNumber = false;
 		for (RequiredAttrType aType : required) {
 			if (aType.equals(RequiredAttrType.Experiment)) {
 				String val = extractString("experiment");
@@ -61,6 +113,7 @@ public class AttributeExtraction {
 					throw new ResourceException(
 							Status.CLIENT_ERROR_BAD_REQUEST, "Need a rate");
 				}
+				isStepNumber = val.equals(RateType.STEP);
 				attrs.put(RequiredAttrType.Rate, val);
 				continue;
 			}
@@ -81,7 +134,8 @@ public class AttributeExtraction {
 				} else {
 					val = extractDouble("start");
 				}
-				if (val == null && ! isStepNumber) { // Starting step number is optional
+				if (val == null && !isStepNumber) { // Starting step number is
+													// optional
 					throw new ResourceException(
 							Status.CLIENT_ERROR_BAD_REQUEST,
 							"Need a start for the query");
@@ -96,7 +150,7 @@ public class AttributeExtraction {
 				} else {
 					val = extractDouble("stop");
 				}
-				if (val != null) { //Stop attribute is optional
+				if (val != null) { // Stop attribute is optional
 					attrs.put(RequiredAttrType.Stop, val);
 				}
 				continue;
@@ -104,26 +158,36 @@ public class AttributeExtraction {
 		}
 	}
 
-	private TableType extractTable() {
-		String str = (String) reqAttrs.get("table");
+	/**
+	 * Extract a double number.
+	 * @param label
+	 *            Name of attribute.
+	 * @return The double number.
+	 */
+	private Double extractDouble(final String label) {
+		String str = (String) uriAttrs.get(label);
 		if (str == null) {
 			return null;
 		}
 		if (str.equals("")) {
 			return null;
 		}
-		TableType tbl;
+		Double result = null;
 		try {
-			tbl = TableType.valueOf(str);
-		} catch (IllegalArgumentException e) {
+			result = new Double(str);
+		} catch (Exception e) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "\""
-					+ str + " \" is not a TableType");
+					+ str + " \" is not a valid time value");
 		}
-		return tbl;
+		return result;
 	}
 
+	/**
+	 * Extract the rate type.
+	 * @return The rate type.
+	 */
 	private RateType extractRate() {
-		String str = (String) reqAttrs.get("rate");
+		String str = (String) uriAttrs.get("rate");
 		if (str == null) {
 			return null;
 		}
@@ -140,20 +204,14 @@ public class AttributeExtraction {
 		return rate;
 	}
 
-	private String extractString(String label) {
-		String str = (String) reqAttrs.get(label);
-		return str;
-	}
-
 	/**
-	 * @return the attrs
+	 * Extract a step number.
+	 * @param label
+	 *            Name of attribute.
+	 * @return Step number value.
 	 */
-	public Map<RequiredAttrType, Object> getAttrs() {
-		return attrs;
-	}
-
-	private StepNumber extractStepNumber(String label) {
-		String str = (String) reqAttrs.get(label);
+	private StepNumber extractStepNumber(final String label) {
+		String str = (String) uriAttrs.get(label);
 		if (str == null) {
 			return null;
 		}
@@ -170,22 +228,52 @@ public class AttributeExtraction {
 		return result;
 	}
 
-	private Double extractDouble(String label) {
-		String str = (String) reqAttrs.get(label);
+	/**
+	 * Extract a string value.
+	 * @param label
+	 *            Name of attribute.
+	 * @return value.
+	 */
+	private String extractString(final String label) {
+		String str = (String) uriAttrs.get(label);
+		return str;
+	}
+
+	/**
+	 * Extract the table name.
+	 * @return The table name.
+	 */
+	private TableType extractTable() {
+		String str = (String) uriAttrs.get("table");
 		if (str == null) {
 			return null;
 		}
 		if (str.equals("")) {
 			return null;
 		}
-		Double result = null;
+		TableType tbl;
 		try {
-			result = new Double(str);
-		} catch (Exception e) {
+			tbl = TableType.valueOf(str);
+		} catch (IllegalArgumentException e) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "\""
-					+ str + " \" is not a valid time value");
+					+ str + " \" is not a TableType");
 		}
-		return result;
+		return tbl;
+	}
+
+	/**
+	 * @return the parsed attributes.
+	 */
+	public final Map<RequiredAttrType, Object> getAttrs() {
+		return attrs;
+	}
+
+	/**
+	 * Get experiment name.
+	 * @return experiment string.
+	 */
+	public final String getExperiment() {
+		return extractString("experiment");
 	}
 
 }
