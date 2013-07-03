@@ -1,7 +1,7 @@
 package org.nees.illinois.replay.restlet;
 
-import org.nees.illinois.replay.data.DataQuerySubResourceI;
-import org.nees.illinois.replay.data.DataUpdateSubResourceI;
+import org.nees.illinois.replay.subresource.DataQuerySubResourceI;
+import org.nees.illinois.replay.subresource.DataUpdateSubResourceI;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;

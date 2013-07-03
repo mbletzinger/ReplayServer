@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.data;
+package org.nees.illinois.replay.subresource;
 
 import org.nees.illinois.replay.common.registries.ExperimentRegistries;
 

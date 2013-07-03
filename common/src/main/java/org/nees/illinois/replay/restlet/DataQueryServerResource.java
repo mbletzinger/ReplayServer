@@ -8,12 +8,12 @@ import org.nees.illinois.replay.common.registries.ExperimentRegistries;
 import org.nees.illinois.replay.common.types.CompositeQueryI;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
-import org.nees.illinois.replay.data.DataQuerySubResourceI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.data.StepNumber;
-import org.nees.illinois.replay.data.SubResourceI;
+import org.nees.illinois.replay.events.StepNumber;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
+import org.nees.illinois.replay.subresource.DataQuerySubResourceI;
+import org.nees.illinois.replay.subresource.SubResourceI;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Delete;
@@ -131,7 +131,7 @@ public class DataQueryServerResource extends ServerResource implements
 					"Query \"" + query + "\" not recognized");
 		}
 
-		if (rate.equals(RateType.STEP)) {
+		if (rate.equals(RateType.EVENT)) {
 			StepNumber strt = (StepNumber) attrs.get(RequiredAttrType.Start);
 			StepNumber stp = (StepNumber) attrs.get(RequiredAttrType.Stop);
 			DoubleMatrix data;

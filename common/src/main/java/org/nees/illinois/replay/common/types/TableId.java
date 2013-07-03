@@ -18,11 +18,6 @@ public class TableId implements TableIdentityI, Cloneable {
 	private final String datasetname;
 
 	/**
-	 * Sampling rate.
-	 */
-	private RateType rate;
-
-	/**
 	 * Name of the table.
 	 */
 	private final String tablename;
@@ -34,16 +29,13 @@ public class TableId implements TableIdentityI, Cloneable {
 	 *            Database name.
 	 * @param tablename
 	 *            Name of the table.
-	 * @param rate
-	 *            Sampling rate.
 	 */
 	public TableId(final String datasetname, final String databasename,
-			final String tablename, final RateType rate) {
+			final String tablename) {
 		super();
 		this.databasename = databasename;
 		this.tablename = tablename;
 		this.datasetname = datasetname;
-		this.rate = rate;
 	}
 
 	/*
@@ -52,7 +44,7 @@ public class TableId implements TableIdentityI, Cloneable {
 	 */
 	@Override
 	public final Object clone() {
-		return new TableId(null, databasename, tablename, rate);
+		return new TableId(null, databasename, tablename);
 	}
 
 	/**
@@ -69,14 +61,7 @@ public class TableId implements TableIdentityI, Cloneable {
 
 	@Override
 	public final String getDbName() {
-		return databasename + "." + tablename + "_" + rate;
-	}
-
-	/**
-	 * @return the rate
-	 */
-	public final RateType getRate() {
-		return rate;
+		return databasename + "." + tablename;
 	}
 
 	/**
@@ -86,14 +71,6 @@ public class TableId implements TableIdentityI, Cloneable {
 		return tablename;
 	}
 
-	/**
-	 * @param rate
-	 *            the rate to set
-	 */
-	public final void setRate(final RateType rate) {
-		this.rate = rate;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -101,7 +78,7 @@ public class TableId implements TableIdentityI, Cloneable {
 	@Override
 	public final String toString() {
 		return "TableId [datasetname=" + datasetname + ", databasename="
-				+ databasename + ", rate=" + rate + ", tablename=" + tablename
+				+ databasename + ", tablename=" + tablename
 				+ "]";
 	}
 }

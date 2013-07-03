@@ -71,7 +71,7 @@ public class ReplayServerApplication extends Application {
 		router.attach(appRoot + "/experiment/{experiment}/table/{table}",
 				tableClass);
 		router.attach(appRoot
-				+ "/experiment/{experiment}/table/{table}/rate/{rate}",
+				+ "/experiment/{experiment}/table/{table}",
 				tableClass);
 		router.attach(appRoot + "/experiment/{experiment}/query/{query}",
 				queryClass);

@@ -24,6 +24,7 @@ public class Representation2DoubleMatrix {
 	/**
 	 * Constructor which also does the conversion.
 	 * @param rep
+	 *            Representation to convert.
 	 */
 	public Representation2DoubleMatrix(final Representation rep) {
 		super();

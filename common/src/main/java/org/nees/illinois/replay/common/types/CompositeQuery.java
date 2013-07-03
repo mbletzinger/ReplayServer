@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.illinois.replay.data.RateType;
-
 /**
  * @author Michael Bletzinger
  */
@@ -22,11 +20,6 @@ public class CompositeQuery implements CompositeQueryI {
 	 * Column order of the query results.
 	 */
 	private final List<String> queryOrder;
-
-	/**
-	 * Sampling rate of the queried data.
-	 **/
-	private RateType rate;
 
 	/**
 	 * {@link Map Map} of table queries used to generate a select statement for
@@ -63,13 +56,6 @@ public class CompositeQuery implements CompositeQueryI {
 		return queryOrder;
 	}
 
-	/**
-	 * @return the rate
-	 */
-	public final RateType getRate() {
-		return rate;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see org.nees.illinois.replay.common.types.QueryI#getTableQueries()
@@ -77,14 +63,6 @@ public class CompositeQuery implements CompositeQueryI {
 	@Override
 	public final Map<TableIdentityI, TableColumnsI> getTableQueries() {
 		return tableQueries;
-	}
-
-	/**
-	 * @param rate
-	 *            the rate to set
-	 */
-	public final void setRate(final RateType rate) {
-		this.rate = rate;
 	}
 
 }
