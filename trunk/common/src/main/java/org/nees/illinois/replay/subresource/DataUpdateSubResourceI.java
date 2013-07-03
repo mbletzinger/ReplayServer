@@ -1,9 +1,10 @@
-package org.nees.illinois.replay.data;
+package org.nees.illinois.replay.subresource;
 
 import java.util.List;
 
 import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.common.types.TableIdentityI;
+import org.nees.illinois.replay.data.RateType;
 
 /**
  * Interface to the data sub-resource which manages data updates for the restlet

@@ -55,7 +55,7 @@ public class TableIdentityRegistry {
 		TableIdentityI result = identities.get(datasetname);
 		if (result == null) {
 			String dbtn = newName(type, rate);
-			result = new TableId(datasetname, experiment, dbtn, rate);
+			result = new TableId(datasetname, experiment, dbtn);
 			identities.put(datasetname, result);
 		}
 		return result;

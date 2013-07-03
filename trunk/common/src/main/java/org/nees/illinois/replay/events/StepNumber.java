@@ -1,5 +1,4 @@
-package org.nees.illinois.replay.data;
-
+package org.nees.illinois.replay.events;
 
 /**
  * Class to manage step numbers. A step number is a triplet of the form step,
@@ -7,7 +6,7 @@ package org.nees.illinois.replay.data;
  * and does comparisons.
  * @author Michael Bletzinger
  */
-public class StepNumber implements Comparable<StepNumber> {
+public class StepNumber implements Comparable<StepNumber>, IterationStepI {
 	/**
 	 * Correction step number.
 	 */
@@ -20,6 +19,19 @@ public class StepNumber implements Comparable<StepNumber> {
 	 * Substep number.
 	 */
 	private final long substep;
+	/**
+	 * Database ID of the step number.
+	 */
+	private final String id;
+	/**
+	 * Time stamp of the step number.
+	 */
+	private final TimeAndSource time;
+
+	/**
+	 * Step index used for comparing with other steps.
+	 */
+	private final double index;
 
 	/**
 	 * Constructor for doubles from a data matrix.
@@ -29,12 +41,23 @@ public class StepNumber implements Comparable<StepNumber> {
 	 *            Substep number.
 	 * @param correctionStep
 	 *            Correction step number.
+	 * @param time
+	 *            timestamp for step number.
+	 * @param id
+	 *            Database ID of the step number.
+	 * @param index
+	 *            Step index used for comparing with other steps.
 	 */
-	public StepNumber(final double step, final double substep, final double correctionStep) {
+	public StepNumber(final double step, final double substep,
+			final double correctionStep, final TimeAndSource time,
+			final String id, final double index) {
 		super();
 		this.step = Math.round(step);
 		this.substep = Math.round(substep);
 		this.correctionStep = Math.round(correctionStep);
+		this.time = time;
+		this.id = id;
+		this.index = index;
 	}
 
 	/**
@@ -45,25 +68,46 @@ public class StepNumber implements Comparable<StepNumber> {
 	 *            Substep number.
 	 * @param correctionStep
 	 *            Correction step number.
+	 * @param time
+	 *            Time stamp of the step number.
+	 * @param id
+	 *            Database ID of the step number.
+	 * @param index
+	 *            Step index used for comparing with other steps.
 	 */
-	public StepNumber(final int step, final int substep, final int correctionStep) {
+	public StepNumber(final int step, final int substep,
+			final int correctionStep, final TimeAndSource time,
+			final String id, final double index) {
 		super();
 		this.step = step;
 		this.substep = substep;
 		this.correctionStep = correctionStep;
+		this.time = time;
+		this.id = id;
+		this.index = index;
 	}
 
 	/**
 	 * Constructor from a String. The "_" underline character is the delimiter.
 	 * @param steps
 	 *            Step number string.
+	 * @param time
+	 *            Time stamp of the step number.
+	 * @param id
+	 *            Database ID of the step number.
+	 * @param index
+	 *            Step index used for comparing with other steps.
 	 */
-	public StepNumber(final String steps) {
+	public StepNumber(final String steps, final TimeAndSource time,
+			final String id, final double index) {
 		super();
 		String[] ssteps = steps.split("_");
 		this.step = Integer.parseInt(ssteps[0]);
 		this.substep = Integer.parseInt(ssteps[1]);
 		this.correctionStep = Integer.parseInt(ssteps[2]);
+		this.time = time;
+		this.id = id;
+		this.index = index;
 	}
 
 	@Override
@@ -120,5 +164,35 @@ public class StepNumber implements Comparable<StepNumber> {
 	@Override
 	public final String toString() {
 		return step + "_" + substep + "_" + correctionStep;
+	}
+
+	@Override
+	public final String getName() {
+		return toString();
+	}
+
+	@Override
+	public final String getid() {
+		return id;
+	}
+
+	@Override
+	public final String getDescription() {
+		return toString();
+	}
+
+	@Override
+	public final double getStepIndex() {
+		return index;
+	}
+
+	@Override
+	public final TimeAndSource getTime() {
+		return time;
+	}
+
+	@Override
+	public final EventType getType() {
+		return EventType.StepNumber;
 	}
 }

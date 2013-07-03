@@ -1,6 +1,10 @@
-package org.nees.illinois.replay.data;
+package org.nees.illinois.replay.subresource;
 
 import java.util.List;
+
+import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.RateType;
+import org.nees.illinois.replay.events.StepNumber;
 
 
 /**

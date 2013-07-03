@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.data.StepNumber;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
@@ -35,7 +34,7 @@ public class AttributeExtraction {
 		 */
 		Query,
 		/**
-		 * Either CONT or STEP.
+		 * Either TIME or EVENT.
 		 */
 		Rate,
 		/**
@@ -113,7 +112,7 @@ public class AttributeExtraction {
 					throw new ResourceException(
 							Status.CLIENT_ERROR_BAD_REQUEST, "Need a rate");
 				}
-				isStepNumber = val.equals(RateType.STEP);
+				isStepNumber = val.equals(RateType.EVENT);
 				attrs.put(RequiredAttrType.Rate, val);
 				continue;
 			}
@@ -210,7 +209,7 @@ public class AttributeExtraction {
 	 *            Name of attribute.
 	 * @return Step number value.
 	 */
-	private StepNumber extractStepNumber(final String label) {
+	private String extractStepNumber(final String label) {
 		String str = (String) uriAttrs.get(label);
 		if (str == null) {
 			return null;
@@ -218,14 +217,7 @@ public class AttributeExtraction {
 		if (str.equals("")) {
 			return null;
 		}
-		StepNumber result = null;
-		try {
-			result = new StepNumber(str);
-		} catch (Exception e) {
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "\""
-					+ str + " \" is not a valid step number");
-		}
-		return result;
+		return str;
 	}
 
 	/**

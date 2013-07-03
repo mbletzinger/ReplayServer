@@ -9,9 +9,9 @@ public enum RateType {
 	/**
 	 * Data sampled continuously.
 	 */
-	CONT,
+	TIME,
 	/**
 	 * Data sampled per iteration step.
 	 */
-	STEP
+	EVENT
 }

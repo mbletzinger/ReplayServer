@@ -76,7 +76,7 @@ public class MergeRecord implements Comparable<MergeRecord> {
 
 	@Override
 	public final int compareTo(final MergeRecord arg0) {
-		TimeCompare tc = new TimeCompare(compareRate);
+		TimeCompare tc = new TimeCompare();
 		return tc.compareRow(record, arg0.record);
 	}
 
