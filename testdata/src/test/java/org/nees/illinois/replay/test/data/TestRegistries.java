@@ -3,15 +3,15 @@ package org.nees.illinois.replay.test.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nees.illinois.replay.common.registries.ChannelNameManagement;
+import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.common.registries.QueryRegistry;
+import org.nees.illinois.replay.common.registries.SavedQueryDeleteMe;
+import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.data.TableType;
-import org.nees.illinois.replay.registries.ChannelNameManagement;
-import org.nees.illinois.replay.registries.ChannelNameRegistry;
-import org.nees.illinois.replay.registries.QueryRegistry;
-import org.nees.illinois.replay.registries.SavedQuery;
 import org.nees.illinois.replay.test.utils.ChannelListTestMaps;
 import org.nees.illinois.replay.test.utils.ChannelListType;
-import org.nees.illinois.replay.test.utils.ChannelTestingList;
+import org.nees.illinois.replay.test.utils.QueryChannelLists;
 import org.nees.illinois.replay.test.utils.CompareLists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +28,8 @@ public class TestRegistries {
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		int count = 1;
 		for (String c : cltm.getChannels(ChannelListType.OM)) {
-			cnr.addChannel(TableType.OM, c);
-			String expected = TableType.OM.toString().toLowerCase()
+			cnr.addChannel(TableType.Control, c);
+			String expected = TableType.Control.toString().toLowerCase()
 					+ "_channel" + count;
 			count++;
 			Assert.assertEquals(expected, cnr.getId(c));
@@ -51,8 +51,8 @@ public class TestRegistries {
 		List<String> expectedChannels = new ArrayList<String>();
 		List<String> expectedIds = new ArrayList<String>();
 		for (String c : cltm.getChannels(ChannelListType.OM)) {
-			cnr.addChannel(TableType.OM, c);
-			String id = TableType.OM.toString().toLowerCase() + "_channel"
+			cnr.addChannel(TableType.Control, c);
+			String id = TableType.Control.toString().toLowerCase() + "_channel"
 					+ count;
 			expectedIds.add(id);
 			count++;
@@ -82,9 +82,9 @@ public class TestRegistries {
 		QueryRegistry qr = new QueryRegistry();
 		CompareLists<String> compare = new CompareLists<String>();
 		for (ChannelListType qt : cltm.getQueryTypes()) {
-			ChannelTestingList ctl = cltm.getChannelLists(qt);
+			QueryChannelLists ctl = cltm.getChannelLists(qt);
 			for (RateType r : RateType.values()) {
-				SavedQuery query = new SavedQuery(ctl.combine(), qt.name(),
+				SavedQueryDeleteMe query = new SavedQueryDeleteMe(ctl.combine(), qt.name(),
 						cnm.getCnr(), r);
 				log.debug("Created query " + query);
 				Assert.assertEquals(ctl.combine().size(), query.getNoc()
@@ -95,7 +95,7 @@ public class TestRegistries {
 						+ " has the wrong number of time columns");
 				List<String> expected = cnm.getCnr().names2Ids(ctl.combine());
 				compare.compare(query.getQueryOrder(), expected);
-				qr.setQuery(qt.name(), r, query);
+				qr.setQuery(qt.name(), query);
 			}
 		}
 	}

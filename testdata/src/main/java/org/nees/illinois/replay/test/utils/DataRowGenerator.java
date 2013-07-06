@@ -1,31 +1,69 @@
 package org.nees.illinois.replay.test.utils;
 
+/**
+ * Class which generates a row of data to be used in unit testing.
+ * @author Michael Bletzinger
+ */
 public class DataRowGenerator {
+	/**
+	 * Number of columns in the row.
+	 */
 	private final int numberOfColumns;
+	/**
+	 * Iteration counter to alter the data from row to row.
+	 */
 	private int unique = 1;
-	public double[] genRecord(TimeGenerator time) {
-		double[] result = genData(4, time.getRecordNumber());
-		int [] stepNumber = time.getStepNumber();
+	/**
+	 * number of time columns.
+	 */
+	private final int timeColumns = 4;
+
+	/**
+	 * Generate a row.
+	 * @param time
+	 *            Time generator to use for the first 4 columns.
+	 * @return Array of doubles.
+	 */
+	public final double[] genRecord(final TimeGenerator time) {
+		double[] result = genData(timeColumns, time.getRecordNumber());
+		int[] stepNumber = time.getStepNumber();
 		result[0] = time.getTime();
-		for (int s = 0; s < 3; s++) {
+		for (int s = 0; s < timeColumns - 1; s++) {
 			result[s + 1] = stepNumber[s];
 		}
 		return result;
 	}
 
-	public DataRowGenerator(int numberOfColumns) {
+	/**
+	 * @param numberOfColumns
+	 *            Number of columns in the row.
+	 */
+	public DataRowGenerator(final int numberOfColumns) {
 		super();
 		this.numberOfColumns = numberOfColumns;
 	}
 
-	private double[] genData(int start, int recordNumber) {
+	/**
+	 * Generate data.
+	 * @param start
+	 *            Start of the data columns.
+	 * @param recordNumber
+	 *            Row number used to uniquefy the data.
+	 * @return Array of doubles.
+	 */
+	private double[] genData(final int start, final int recordNumber) {
 		double[] result = new double[start + numberOfColumns];
 		for (int c = 0; c < numberOfColumns; c++) {
-			result[c + start] = ((recordNumber % 20) * .01 + c * .003 * unique)
+			final int recordNumberModulus = 20;
+			final double uniquefyMultiplier = 0.01;
+			final double columnUniquefyScale = 0.003;
+			result[c + start] = ((recordNumber % recordNumberModulus)
+					* uniquefyMultiplier + c * columnUniquefyScale * unique)
 					* (c % 2 == 0 ? 1 : -1);
 		}
+		final int columnUniquefyMax = 3;
 		unique++;
-		if(unique == 3) {
+		if (unique == columnUniquefyMax) {
 			unique = 1;
 		}
 		return result;

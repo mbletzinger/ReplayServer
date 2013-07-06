@@ -52,18 +52,18 @@ public class TestMerge {
 		int[] omcsz = { omContData.size(), omContData.get(0).size() };
 		int[] daqssz = { daqStepData.size(), daqStepData.get(0).size() };
 		int[] omssz = { omStepData.size(), omStepData.get(0).size() };
-		MergeSet mset = new MergeSet(RateType.CONT);
+		MergeSet mset = new MergeSet(RateType.TIME);
 		mset.merge(daqContData);
 		log.debug("DAQ only " + mset);
 		AssertJUnit.assertEquals(3, mset.getColumnSize(false));
 		AssertJUnit.assertEquals(7, mset.getColumnSize(true));
-		List<List<Double>> result = mset.getRecords();
+		List<List<Double>> result = mset.getResult();
 		for (List<Double> r : result) {
 			log.info("Checking " + r);
 			AssertJUnit.assertEquals(daqcsz[1], r.size());
 		}
 		mset.merge(omContData);
-		result = mset.getRecords();
+		result = mset.getResult();
 		log.debug("with OM " + mset);
 		AssertJUnit.assertEquals(7, mset.getColumnSize(false));
 		AssertJUnit.assertEquals(11, mset.getColumnSize(true));
@@ -74,9 +74,9 @@ public class TestMerge {
 			log.info("Checking " + r);
 			AssertJUnit.assertEquals(daqcsz[1] + omcsz[1] - 4, r.size());
 		}
-		mset = new MergeSet(RateType.STEP);
+		mset = new MergeSet(RateType.EVENT);
 		mset.merge(daqStepData);
-		result = mset.getRecords();
+		result = mset.getResult();
 		log.debug("DAQ only " + mset);
 		AssertJUnit.assertEquals(3, mset.getColumnSize(false));
 		AssertJUnit.assertEquals(7, mset.getColumnSize(true));
@@ -85,7 +85,7 @@ public class TestMerge {
 			AssertJUnit.assertEquals(daqssz[1], r.size());
 		}
 		mset.merge(omStepData);
-		result = mset.getRecords();
+		result = mset.getResult();
 		log.debug("with OM " + mset);
 		AssertJUnit.assertEquals(7, mset.getColumnSize(false));
 		AssertJUnit.assertEquals(11, mset.getColumnSize(true));
@@ -111,10 +111,10 @@ public class TestMerge {
 					cdg.generateParts();
 					cdg.generateWhole();
 //					cdg.mixColumns(); // Columns are not mixed until after the merge
-					MergeSet mset = new MergeSet(RateType.CONT);
+					MergeSet mset = new MergeSet(RateType.TIME);
 					mset.merge(cdg.getData(TestingParts.First).toList());
 					mset.merge(cdg.getData(TestingParts.Second).toList());
-					DoubleMatrix actual = new DoubleMatrix(mset.getRecords());
+					DoubleMatrix actual = new DoubleMatrix(mset.getResult());
 					DoubleMatrix expected = cdg.getData(TestingParts.All);
 					DoubleArrayDataGenerator.compareData(actual.getData(), expected.getData());
 				}

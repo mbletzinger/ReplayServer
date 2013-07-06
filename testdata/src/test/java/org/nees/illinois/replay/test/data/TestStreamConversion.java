@@ -2,13 +2,13 @@ package org.nees.illinois.replay.test.data;
 
 import java.util.List;
 
+import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.conversions.ChannelList2Representation;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrix;
-import org.nees.illinois.replay.data.TableType;
-import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.test.utils.ChannelListTestMaps;
 import org.nees.illinois.replay.test.utils.ChannelListType;
 import org.nees.illinois.replay.test.utils.DatasetDirector.ExperimentNames;
@@ -33,8 +33,8 @@ public class TestStreamConversion {
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
 		for (String c : lists.getChannels(ChannelListType.OM)) {
-			cnr.addChannel(TableType.OM, c);
-			expectedCnr.addChannel(TableType.OM, c);
+			cnr.addChannel(TableType.Control, c);
+			expectedCnr.addChannel(TableType.Control, c);
 		}
 		ChannelList2Representation cl2rep = new ChannelList2Representation(
 				cnr.getNames());
@@ -42,7 +42,7 @@ public class TestStreamConversion {
 		Representation2ChannelList rep2cl = new Representation2ChannelList(cl2rep.getRep());
 		ChannelNameRegistry actualCnr = new ChannelNameRegistry();
 		for (String c : rep2cl.getIl2cl().getChannels()) {
-			actualCnr.addChannel(TableType.OM, c);
+			actualCnr.addChannel(TableType.Control, c);
 		}
 		log.debug("expected CNR " + expectedCnr);
 		log.debug("New CNR " + actualCnr);

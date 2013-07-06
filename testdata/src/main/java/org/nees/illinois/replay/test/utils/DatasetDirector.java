@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.data.StepNumber;
-import org.nees.illinois.replay.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.events.StepNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -68,11 +68,11 @@ public class DatasetDirector {
 		queryTableSize.put(QueryParaTypes.StepWithStart, 15);
 		queryTableSize.put(QueryParaTypes.StepWithStop, 5);
 
-		queryRates.put(QueryParaTypes.ContWithStart, RateType.CONT);
-		queryRates.put(QueryParaTypes.ContWithStop, RateType.CONT);
-		queryRates.put(QueryParaTypes.Step, RateType.STEP);
-		queryRates.put(QueryParaTypes.StepWithStart, RateType.STEP);
-		queryRates.put(QueryParaTypes.StepWithStop, RateType.STEP);
+		queryRates.put(QueryParaTypes.ContWithStart, RateType.TIME);
+		queryRates.put(QueryParaTypes.ContWithStop, RateType.TIME);
+		queryRates.put(QueryParaTypes.Step, RateType.EVENT);
+		queryRates.put(QueryParaTypes.StepWithStart, RateType.EVENT);
+		queryRates.put(QueryParaTypes.StepWithStop, RateType.EVENT);
 
 		queryTimes.put(QueryParaTypes.ContWithStart, new TimeSpec(new Double(
 				222.0), null));
@@ -80,9 +80,9 @@ public class DatasetDirector {
 				222.0), new Double(223.0)));
 		queryTimes.put(QueryParaTypes.Step, new TimeSpec(null, null));
 		queryTimes.put(QueryParaTypes.StepWithStart, new TimeSpec(
-				new StepNumber(1.0, 0.0, 1.0), null));
+				new StepNumber(1.0, 0.0, 1.0, null, null, null), null));
 		queryTimes.put(QueryParaTypes.StepWithStop, new TimeSpec(
-				new StepNumber(1.0, 0.0, 1.0), new StepNumber(3.0, 22.0, 1.0)));
+				new StepNumber(1.0, 0.0, 1.0, null, null, null), new StepNumber(3.0, 22.0, 1.0, null, null, null)));
 	}
 	public DatasetDirector(ExperimentNames experiment) {
 		super();
@@ -137,7 +137,7 @@ public class DatasetDirector {
 
 	public ChannelDataGenerator generateQueryData(ChannelListType quy,
 			QueryParaTypes qt, MatrixMixType rowMix) {
-		ChannelTestingList qctl = cltm.getChannelLists(quy);
+		QueryChannelLists qctl = cltm.getChannelLists(quy);
 		int row = queryTableSize.get(qt);
 		return new ChannelDataGenerator(qctl, rowMix, row);
 	}

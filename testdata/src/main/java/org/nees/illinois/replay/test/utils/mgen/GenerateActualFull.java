@@ -3,17 +3,31 @@ package org.nees.illinois.replay.test.utils.mgen;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenerateActualFull extends GenerateActualColumn {
+/**
+ * Generate a column of doubles.
+ * @author Michael Bletzinger
+ */
+public class GenerateActualFull implements GenerateColumnI {
+	/**
+	 * Actual generator.
+	 */
+	private final GenerateActualColumn gen;
 
 	@Override
-	public void gen(List<List<Double>> result, boolean slopeNegative) {
+	public final void gen(final List<List<Double>> result,
+			final boolean slopeNegative) {
 		List<Integer> skips = new ArrayList<Integer>();
-		genCol(result, skips, slopeNegative);
+		gen.genCol(result, skips, slopeNegative);
 	}
 
-	public GenerateActualFull(int rowSize, double increment) {
-		super(rowSize, increment, 0);
+	/**
+	 * @param rowSize
+	 *            Number of values to generate.
+	 * @param increment
+	 *            interval between numbers.
+	 */
+	public GenerateActualFull(final int rowSize, final double increment) {
+		gen = new GenerateActualColumn(rowSize, increment);
 	}
-
 
 }
