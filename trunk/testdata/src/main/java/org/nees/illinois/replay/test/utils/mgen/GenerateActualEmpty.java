@@ -2,19 +2,30 @@ package org.nees.illinois.replay.test.utils.mgen;
 
 import java.util.List;
 
-public class GenerateActualEmpty extends GenerateActualColumn {
+/**
+ * Creates a column of nulls.
+ * @author Michael Bletzinger
+ */
+public class GenerateActualEmpty implements GenerateColumnI {
+	/**
+	 * number of elements.
+	 */
+	private final int rowSize;
 
 	@Override
-	public void gen(List<List<Double>> result, boolean slopeNegative) {
+	public final void gen(final List<List<Double>> result, final boolean slopeNegative) {
 		for (int r = 0; r < rowSize; r++) {
 			List<Double> row = result.get(r);
 			row.add(null);
 		}
 	}
 
-	public GenerateActualEmpty(int rowSize, double increment) {
-		super(rowSize, increment, 0);
+	/**
+	 * @param rowSize
+	 *            number of elements.
+	 */
+	public GenerateActualEmpty(final int rowSize) {
+		this.rowSize = rowSize;
 	}
-
 
 }

@@ -9,35 +9,90 @@ import org.nees.illinois.replay.data.DoubleMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class which generates data sets based on the various channel lists in a
+ * {@link QueryChannelLists} specification.
+ * @author Michael Bletzinger
+ */
 public class ChannelDataGenerator {
+	/**
+	 * Defines which set of channel names to include.
+	 * @author Michael Bletzinger
+	 */
 	public enum TestingParts {
-		All, First, Second
+		/**
+		 * Include all channels.
+		 */
+		All,
+		/**
+		 * Include the first set.
+		 */
+		First,
+		/**
+		 * include the second set.
+		 */
+		Second
 	}
 
-	private final ChannelTestingList ctl;
-
+	/**
+	 * List of {@link QueryChannelLists} used to test queries.
+	 */
+	private final QueryChannelLists ctl;
+	/**
+	 * Map of data sets used to query data.
+	 */
 	private final Map<TestingParts, DoubleMatrix> dataParts = new HashMap<TestingParts, DoubleMatrix>();
-
+	/**
+	 * Number of data rows to generate.
+	 */
 	private final int numberOfRows;
-
+	/**
+	 * Data generator.
+	 */
 	private DataRowGenerator rowGen;;
-
+	/**
+	 * Defines how the data parts are combined both row-wise and column-wise.
+	 */
 	private final MatrixMixType rowMix;
+	/**
+	 * Start time for data records.
+	 */
 	private final double startTime = 222.0;
+	/**
+	 * Generate for time.
+	 */
 	private TimeGenerator time;
+	/**
+	 * Determines time interval between data records.
+	 */
 	private final double timeMultiplier = .02;
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory
 			.getLogger(ChannelDataGenerator.class);
 
-	public ChannelDataGenerator(ChannelTestingList ctl, MatrixMixType rowMix,
-			int numberOfRows) {
+	/**
+	 * Constructor.
+	 * @param ctl
+	 *            Map of data sets used to query data.
+	 * @param rowMix
+	 *            Defines how the data rows are combined.
+	 * @param numberOfRows
+	 *            Number of data rows to generate.
+	 */
+	public ChannelDataGenerator(final QueryChannelLists ctl,
+			final MatrixMixType rowMix, final int numberOfRows) {
 		super();
 		this.ctl = ctl;
 		this.rowMix = rowMix;
 		this.numberOfRows = numberOfRows;
 	}
 
-	public void generateParts() {
+	/**
+	 * Generates the individual data sets.
+	 */
+	public final void generateParts() {
 		List<String> newChannels = ctl.getNewChannels();
 		List<String> existing = ctl.getExistingList();
 		if (rowMix.equals(MatrixMixType.AddAfter)) {
@@ -54,13 +109,16 @@ public class ChannelDataGenerator {
 
 	}
 
-	public void generateWhole() {
+	/**
+	 * Generates the expected combined data set.
+	 */
+	public final void generateWhole() {
 		List<String> newChannels = ctl.getNewChannels();
 		List<String> existing = ctl.getExistingList();
 		int fsz = existing.size();
 		int ssz = newChannels.size();
 		int moreColumns = fsz > ssz ? fsz : ssz;
-		;
+		final int fourTimeColumns = 4;
 		List<Double> nulls = new ArrayList<Double>();
 		for (int i = 0; i < moreColumns; i++) {
 			nulls.add(null);
@@ -82,7 +140,7 @@ public class ChannelDataGenerator {
 				List<Double> row = new ArrayList<Double>();
 				row.addAll(fLists.get(r));
 				List<Double> second = sLists.get(r);
-				row.addAll(second.subList(4, second.size()));
+				row.addAll(second.subList(fourTimeColumns, second.size()));
 				allL.add(row);
 			}
 		} else {
@@ -94,9 +152,10 @@ public class ChannelDataGenerator {
 				tmp.clear();
 				tmp.addAll(row);
 				row.clear();
-				row.addAll(tmp.subList(0, 4)); // add time columns
+				row.addAll(tmp.subList(0, fourTimeColumns)); // add time columns
 				row.addAll(nulls.subList(0, fsz));
-				row.addAll(tmp.subList(4, tmp.size())); // add data
+				row.addAll(tmp.subList(fourTimeColumns, tmp.size())); // add
+																		// data
 			}
 
 			if (fData != null) {
@@ -111,9 +170,14 @@ public class ChannelDataGenerator {
 		dataParts.put(TestingParts.All, sdm);
 	}
 
-	public void mixColumns() {
+	/**
+	 * Mix the data columns based on the {@link QueryChannelLists}
+	 * specifications.
+	 */
+	public final void mixColumns() {
 		int fcsz = ctl.getExistingList().size();
 		int scsz = ctl.getNewChannels().size();
+		final int fourTimeColumns = 4;
 		MatrixMixType mix = ctl.getMix();
 		List<List<Double>> accum = (dataParts.get(TestingParts.All)).toList();
 		if (mix.equals(MatrixMixType.AddAfter)) {
@@ -127,16 +191,18 @@ public class ChannelDataGenerator {
 			List<Double> tmp = new ArrayList<Double>();
 			tmp.addAll(row);
 			row.clear();
-			row.addAll(tmp.subList(0, 4));
+			row.addAll(tmp.subList(0, fourTimeColumns));
 			if (mix.equals(MatrixMixType.AddBefore)) {
-				row.addAll(tmp.subList(fcsz + 4, tmp.size()));
-				row.addAll(tmp.subList(4, fcsz + 4));
+				row.addAll(tmp.subList(fcsz + fourTimeColumns, tmp.size()));
+				row.addAll(tmp.subList(fourTimeColumns, fcsz + fourTimeColumns));
 			}
 			if (mix.equals(MatrixMixType.AddMiddle)) {
 				int hscsz = scsz / 2;
-				row.addAll(tmp.subList(fcsz + 4, fcsz + 4 + hscsz));
-				row.addAll(tmp.subList(4, fcsz + 4));
-				row.addAll(tmp.subList(fcsz + 4 + hscsz, tmp.size()));
+				row.addAll(tmp.subList(fcsz + fourTimeColumns, fcsz
+						+ fourTimeColumns + hscsz));
+				row.addAll(tmp.subList(fourTimeColumns, fcsz + fourTimeColumns));
+				row.addAll(tmp.subList(fcsz + fourTimeColumns + hscsz,
+						tmp.size()));
 			}
 			if (mix.equals(MatrixMixType.AddInterleaved)) {
 				int smaller = fcsz;
@@ -146,20 +212,29 @@ public class ChannelDataGenerator {
 					firstIsBigger = true;
 				}
 				for (int c = 0; c < smaller; c++) {
-					row.add(tmp.get(4 + fcsz + c));
-					row.add(tmp.get(4 + c));
+					row.add(tmp.get(fourTimeColumns + fcsz + c));
+					row.add(tmp.get(fourTimeColumns + c));
 				}
 				if (firstIsBigger) {
-					row.addAll(tmp.subList(4 + smaller, fcsz));
+					row.addAll(tmp.subList(fourTimeColumns + smaller, fcsz));
 				} else {
-					row.addAll(tmp.subList(4 + fcsz + smaller, tmp.size()));
+					row.addAll(tmp.subList(fourTimeColumns + fcsz + smaller,
+							tmp.size()));
 				}
 			}
 		}
 		dataParts.put(TestingParts.All, new DoubleMatrix(accum));
 	}
 
-	private DoubleMatrix genSeparateSet(int rows, int cols) {
+	/**
+	 * Generate a data set.
+	 * @param rows
+	 *            number of rows.
+	 * @param cols
+	 *            number of columns.
+	 * @return double matrix of data.
+	 */
+	private DoubleMatrix genSeparateSet(final int rows, final int cols) {
 		if (cols == 0) {
 			return null;
 		}
@@ -175,38 +250,51 @@ public class ChannelDataGenerator {
 	}
 
 	/**
-	 * @return the ctl
+	 * @return the query channel lists.
 	 */
-	public ChannelTestingList getCtl() {
+	public final QueryChannelLists getCtl() {
 		return ctl;
 	}
 
-	public DoubleMatrix getData(TestingParts part) {
+	/**
+	 * Get a dataset.
+	 * @param part
+	 *            Which data set.
+	 * @return double matrix of data.
+	 */
+	public final DoubleMatrix getData(final TestingParts part) {
 		return dataParts.get(part);
 	}
 
 	/**
 	 * @return the dataParts
 	 */
-	public Map<TestingParts, DoubleMatrix> getDataParts() {
+	public final Map<TestingParts, DoubleMatrix> getDataParts() {
 		return dataParts;
 	}
 
 	/**
 	 * @return the numberOfRows
 	 */
-	public int getNumberOfRows() {
+	public final int getNumberOfRows() {
 		return numberOfRows;
 	}
 
 	/**
 	 * @return the rowMix
 	 */
-	public MatrixMixType getRowMix() {
+	public final MatrixMixType getRowMix() {
 		return rowMix;
 	}
 
-	private void mixAddAfter(int ssz, int fsz) {
+	/**
+	 * Add the first data set after the second one.
+	 * @param ssz
+	 *            Size of first data set.
+	 * @param fsz
+	 *            Size of the second data set.
+	 */
+	private void mixAddAfter(final int ssz, final int fsz) {
 		time = new TimeGenerator(timeMultiplier, startTime);
 		DoubleMatrix sData = genSeparateSet(numberOfRows, ssz);
 		DoubleMatrix fData = genSeparateSet(numberOfRows, fsz);
@@ -214,7 +302,14 @@ public class ChannelDataGenerator {
 		dataParts.put(TestingParts.Second, sData);
 	}
 
-	private void mixAddBefore(int ssz, int fsz) {
+	/**
+	 * Add the first data set before the second one.
+	 * @param ssz
+	 *            Size of first data set.
+	 * @param fsz
+	 *            Size of the second data set.
+	 */
+	private void mixAddBefore(final int ssz, final int fsz) {
 		time = new TimeGenerator(timeMultiplier, startTime);
 		DoubleMatrix fData = genSeparateSet(numberOfRows, fsz);
 		DoubleMatrix sData = genSeparateSet(numberOfRows, ssz);
@@ -222,7 +317,14 @@ public class ChannelDataGenerator {
 		dataParts.put(TestingParts.Second, sData);
 	}
 
-	private void mixAddBetween(int ssz, int fsz) {
+	/**
+	 * Insert the rows of the first data set into the middle of the second one.
+	 * @param ssz
+	 *            Size of first data set.
+	 * @param fsz
+	 *            Size of the second data set.
+	 */
+	private void mixAddBetween(final int ssz, final int fsz) {
 		time = new TimeGenerator(timeMultiplier, startTime);
 		int bef = numberOfRows / 2;
 		int aft = numberOfRows - bef;
@@ -236,16 +338,32 @@ public class ChannelDataGenerator {
 		dataParts.put(TestingParts.Second, sData);
 	}
 
-	private void mixAddInterleaved(int ssz, int fsz) {
+	/**
+	 * Alternate the first data set rows with the second one.
+	 * @param ssz
+	 *            Size of first data set.
+	 * @param fsz
+	 *            Size of the second data set.
+	 */
+	private void mixAddInterleaved(final int ssz, final int fsz) {
 		time = new TimeGenerator(timeMultiplier, startTime);
+		final double timeOffset = 0.01;
 		DoubleMatrix fData = genSeparateSet(numberOfRows, fsz);
-		time = new TimeGenerator(timeMultiplier, startTime + .01);
+		time = new TimeGenerator(timeMultiplier, startTime + timeOffset);
 		DoubleMatrix sData = genSeparateSet(numberOfRows, ssz);
 		dataParts.put(TestingParts.First, fData);
 		dataParts.put(TestingParts.Second, sData);
 	}
 
-	private void mixAddMerged(int ssz, int fsz) {
+	/**
+	 * Change the times of the first data set rows to match the rows of the
+	 * second one.
+	 * @param ssz
+	 *            Size of first data set.
+	 * @param fsz
+	 *            Size of the second data set.
+	 */
+	private void mixAddMerged(final int ssz, final int fsz) {
 		time = new TimeGenerator(timeMultiplier, startTime);
 		DoubleMatrix fData = genSeparateSet(numberOfRows, fsz);
 		time = new TimeGenerator(timeMultiplier, startTime);

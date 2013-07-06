@@ -1,17 +1,35 @@
 package org.nees.illinois.replay.test.utils.mgen;
 
 import java.util.List;
+/**
+ * Extrapolate the end of the column.
+ * @author Michael Bletzinger
+ *
+ */
 
-public class GenerateExpectedLate extends GenerateExpectedColumn {
+public class GenerateExpectedLate implements GenerateColumnI {
 
 
-	public GenerateExpectedLate(int rowSize, double increment, int gap) {
-		super(rowSize, increment, gap);
+	/**
+	 * Extrapolates and generates values.
+	 */
+	private final GenerateExpectedColumn gen;
+
+	/**
+	 * @param rowSize
+	 *            Number of elements in the column.
+	 * @param increment
+	 *            Interval between column values.
+	 *            @param gap
+	 *            size of the missing elements at the end.
+	 */
+	public GenerateExpectedLate(final int rowSize, final double increment, final int gap) {
+		gen = new GenerateExpectedColumn(rowSize, increment, gap);
 	}
 
 	@Override
-	public void gen(List<List<Double>> result, boolean slopeNegative) {
-		genExtrapolated(result, slopeNegative, true);
+	public final void gen(final List<List<Double>> result, final boolean slopeNegative) {
+		gen.genExtrapolated(result, slopeNegative, true);
 	}
 
 }

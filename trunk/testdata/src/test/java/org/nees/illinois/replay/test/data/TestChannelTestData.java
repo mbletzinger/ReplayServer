@@ -6,7 +6,7 @@ import java.util.List;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.test.utils.ChannelDataGenerator;
 import org.nees.illinois.replay.test.utils.ChannelDataGenerator.TestingParts;
-import org.nees.illinois.replay.test.utils.ChannelTestingList;
+import org.nees.illinois.replay.test.utils.QueryChannelLists;
 import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
 import org.nees.illinois.replay.test.utils.MatrixMixType;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class TestChannelTestData {
 		for (int i = 1; i < 4; i++) {
 			newChannels.add("Test" + i);
 		}
-		ChannelTestingList ctl = new ChannelTestingList(MatrixMixType.AddAfter,
+		QueryChannelLists ctl = new QueryChannelLists(MatrixMixType.AddAfter,
 				null, newChannels, "Simple");
 		ChannelDataGenerator cdg = new ChannelDataGenerator(ctl,
 				MatrixMixType.AddAfter, 2);
@@ -65,7 +65,7 @@ public class TestChannelTestData {
 		for (int i = 1; i < 4; i++) {
 			firstChannels.add("Test" + i);
 		}
-		ChannelTestingList ctl_p = new ChannelTestingList(
+		QueryChannelLists ctl_p = new QueryChannelLists(
 				MatrixMixType.AddAfter, null, firstChannels, "Simple");
 
 		List<String> secondChannels = new ArrayList<String>();
@@ -76,7 +76,7 @@ public class TestChannelTestData {
 			if(m.equals(MatrixMixType.AddMerged)) {
 				continue;
 			}
-			ChannelTestingList ctl = new ChannelTestingList(m, ctl_p,
+			QueryChannelLists ctl = new QueryChannelLists(m, ctl_p,
 					secondChannels, "AddAfter");
 			ChannelDataGenerator cdg = new ChannelDataGenerator(ctl,
 					MatrixMixType.AddAfter, 2);
@@ -102,14 +102,14 @@ public class TestChannelTestData {
 		for (int i = 1; i < 4; i++) {
 			firstChannels.add("Test" + i);
 		}
-		ChannelTestingList ctl_p = new ChannelTestingList(
+		QueryChannelLists ctl_p = new QueryChannelLists(
 				MatrixMixType.AddAfter, null, firstChannels, "Simple");
 
 		List<String> secondChannels = new ArrayList<String>();
 		for (int i = 1; i < 4; i++) {
 			secondChannels.add("Check" + i);
 		}
-		ChannelTestingList ctl = new ChannelTestingList(MatrixMixType.AddAfter,
+		QueryChannelLists ctl = new QueryChannelLists(MatrixMixType.AddAfter,
 				ctl_p, secondChannels, "AddAfter");
 		ChannelDataGenerator cdg = new ChannelDataGenerator(ctl,
 				MatrixMixType.AddBefore, 2);
@@ -146,14 +146,14 @@ public class TestChannelTestData {
 		for (int i = 1; i < 4; i++) {
 			firstChannels.add("Test" + i);
 		}
-		ChannelTestingList ctl_p = new ChannelTestingList(
+		QueryChannelLists ctl_p = new QueryChannelLists(
 				MatrixMixType.AddAfter, null, firstChannels, "Simple");
 
 		List<String> secondChannels = new ArrayList<String>();
 		for (int i = 1; i < 4; i++) {
 			secondChannels.add("Check" + i);
 		}
-		ChannelTestingList ctl = new ChannelTestingList(MatrixMixType.AddAfter,
+		QueryChannelLists ctl = new QueryChannelLists(MatrixMixType.AddAfter,
 				ctl_p, secondChannels, "AddAfter");
 		ChannelDataGenerator cdg = new ChannelDataGenerator(ctl,
 				MatrixMixType.AddMiddle, 2);
@@ -190,14 +190,14 @@ public class TestChannelTestData {
 		for (int i = 1; i < 4; i++) {
 			firstChannels.add("Test" + i);
 		}
-		ChannelTestingList ctl_p = new ChannelTestingList(
+		QueryChannelLists ctl_p = new QueryChannelLists(
 				MatrixMixType.AddAfter, null, firstChannels, "Simple");
 
 		List<String> secondChannels = new ArrayList<String>();
 		for (int i = 1; i < 4; i++) {
 			secondChannels.add("Check" + i);
 		}
-		ChannelTestingList ctl = new ChannelTestingList(MatrixMixType.AddAfter,
+		QueryChannelLists ctl = new QueryChannelLists(MatrixMixType.AddAfter,
 				ctl_p, secondChannels, "AddAfter");
 		ChannelDataGenerator cdg = new ChannelDataGenerator(ctl,
 				MatrixMixType.AddInterleaved, 2);
@@ -234,14 +234,14 @@ public class TestChannelTestData {
 		for (int i = 1; i < 4; i++) {
 			firstChannels.add("Test" + i);
 		}
-		ChannelTestingList ctl_p = new ChannelTestingList(
+		QueryChannelLists ctl_p = new QueryChannelLists(
 				MatrixMixType.AddAfter, null, firstChannels, "Simple");
 
 		List<String> secondChannels = new ArrayList<String>();
 		for (int i = 1; i < 4; i++) {
 			secondChannels.add("Check" + i);
 		}
-		ChannelTestingList ctl = new ChannelTestingList(MatrixMixType.AddAfter,
+		QueryChannelLists ctl = new QueryChannelLists(MatrixMixType.AddAfter,
 				ctl_p, secondChannels, "AddAfter");
 		ChannelDataGenerator cdg = new ChannelDataGenerator(ctl,
 				MatrixMixType.AddMerged, 2);
@@ -269,7 +269,7 @@ public class TestChannelTestData {
 	}
 
 	private double[][] columnMix(MatrixMixType mix, double[][] data,
-			ChannelTestingList ctl) {
+			QueryChannelLists ctl) {
 		int fcsz = ctl.getExistingList().size();
 		int scsz = ctl.getNewChannels().size();
 		List<List<Double>> accum = (new DoubleMatrix(data)).toList();

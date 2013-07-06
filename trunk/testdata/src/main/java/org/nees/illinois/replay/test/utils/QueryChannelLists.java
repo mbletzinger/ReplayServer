@@ -3,9 +3,9 @@ package org.nees.illinois.replay.test.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChannelTestingList {
+public class QueryChannelLists {
 	
-	private final ChannelTestingList existing;
+	private final QueryChannelLists existing;
 
 	private final MatrixMixType mix;
 
@@ -13,8 +13,8 @@ public class ChannelTestingList {
 
 	private final List<String> newChannels = new ArrayList<String>();
 
-	public ChannelTestingList(MatrixMixType mix,
-			ChannelTestingList existing, List<String> newChannels,
+	public QueryChannelLists(MatrixMixType mix,
+			QueryChannelLists existing, List<String> newChannels,
 			String name) {
 		super();
 		this.name = name;
@@ -82,7 +82,7 @@ public class ChannelTestingList {
 	/**
 	 * @return the existing channels
 	 */
-	public ChannelTestingList getExisting() {
+	public QueryChannelLists getExisting() {
 		return existing;
 	}
 

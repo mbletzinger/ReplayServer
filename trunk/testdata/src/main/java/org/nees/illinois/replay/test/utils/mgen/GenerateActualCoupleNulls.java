@@ -3,19 +3,34 @@ package org.nees.illinois.replay.test.utils.mgen;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenerateActualCoupleNulls extends GenerateActualColumn {
+/**
+ * Generate a column with two nulls.
+ * @author Michael Bletzinger
+ */
+public class GenerateActualCoupleNulls implements GenerateColumnI {
+	/**
+	 * Actual generator.
+	 */
+	private final GenerateActualColumn gen;
 
-	public GenerateActualCoupleNulls(int rowSize, double increment) {
-		super(rowSize, increment, 0);
+	/**
+	 * @param rowSize
+	 *            Number of values to generate.
+	 * @param increment
+	 *            interval between numbers.
+	 */
+	public GenerateActualCoupleNulls(final int rowSize, final double increment) {
+		gen = new GenerateActualColumn(rowSize, increment);
 	}
 
 	@Override
-	public void gen(List<List<Double>> result, boolean slopeNegative) {
+	public final void gen(final List<List<Double>> result,
+			final boolean slopeNegative) {
 		List<Integer> skips = new ArrayList<Integer>();
 		skips.add(2);
-		skips.add(5);
-		genCol(result, skips, slopeNegative);		
+		final int five = 5;
+		skips.add(five);
+		gen.genCol(result, skips, slopeNegative);
 	}
-
 
 }

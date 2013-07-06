@@ -5,21 +5,55 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.illinois.replay.data.TableType;
-import org.nees.illinois.replay.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.common.registries.TableIdentityRegistry;
+import org.nees.illinois.replay.common.registries.TableType;
+import org.nees.illinois.replay.data.RateType;
 
+/**
+ * This class provides mock channel lists used to fill in registries used by
+ * unit tests.
+ * @author Michael Bletzinger
+ */
 public class ChannelListTestMaps {
+	/**
+	 * Map of channel lists for each channel list type.
+	 */
 	private final Map<ChannelListType, List<String>> cl2Channels = new HashMap<ChannelListType, List<String>>();
-
-	private final Map<ChannelListType, ChannelTestingList> cl2q = new HashMap<ChannelListType, ChannelTestingList>();
+	/**
+	 * Map of mock merged channel lists for each channel list type.
+	 */
+	private final Map<ChannelListType, QueryChannelLists> cl2q = new HashMap<ChannelListType, QueryChannelLists>();
+	/**
+	 * Map of table types for each channel list type.
+	 */
 	private final Map<ChannelListType, TableType> cl2tt = new HashMap<ChannelListType, TableType>();
-
+	/**
+	 * Name of mock experiment.
+	 */
 	private final String experiment;
+	/**
+	 * List of channel list types which are used for mock queries.
+	 */
 	private final List<ChannelListType> queryTypes = new ArrayList<ChannelListType>();
+	/**
+	 * Flag to indicate that the alternate mock channel list set should be used.
+	 */
 	private final boolean second;
+	/**
+	 * Map of table types for each channel list type.
+	 */
 	private final List<ChannelListType> tableTypes = new ArrayList<ChannelListType>();
 
-	public ChannelListTestMaps(boolean second, String experiment) {
+	/**
+	 * Constructor.
+	 * @param second
+	 *            Flag to indicate that the alternate mock channel list set
+	 *            should be used.
+	 * @param experiment
+	 *            Name of mock experiment.
+	 */
+	public ChannelListTestMaps(final boolean second, final String experiment) {
 		super();
 		this.second = second;
 		this.experiment = experiment;
@@ -27,17 +61,25 @@ public class ChannelListTestMaps {
 		initQueryLists();
 	}
 
-	public void fillCnr(ChannelNameRegistry cnr) {
-		for (String c : getChannels(ChannelListType.OM)) {
-			cnr.addChannel(TableType.OM, c);
+	public void fillTblIdr(TableIdentityRegistry tblIdr) {
+		for (ChannelListType type : tableTypes) {
+			tblIdr.addTable(experiment, getTableName(type), getTt(type),
+					RateType.TIME);
+			tblIdr.addTable(experiment, getTableName(type), getTt(type),
+					RateType.EVENT);
 		}
-		for (String c : getChannels(ChannelListType.DAQ)) {
-			cnr.addChannel(TableType.DAQ, c);
-		}
-
 	}
 
-	public ChannelTestingList getChannelLists(ChannelListType typ) {
+	public void fillCnr(ChannelNameRegistry cnr) {
+		ChannelListType[] types = { ChannelListType.OM, ChannelListType.DAQ };
+		for (ChannelListType type : types) {
+			for (String c : getChannels(type)) {
+				cnr.addChannel(getTableName(type), c);
+			}
+		}
+	}
+
+	public QueryChannelLists getChannelLists(ChannelListType typ) {
 		return cl2q.get(typ);
 	};
 
@@ -72,6 +114,10 @@ public class ChannelListTestMaps {
 		return cl2tt.get(type);
 	}
 
+	public String getTableName(ChannelListType type) {
+		return type.toString() + "name";
+	}
+
 	private void initQueryLists() {
 		List<String> omChnls = new ArrayList<String>();
 		omChnls.add("OM/CntrlSensor/D_West_X_3");
@@ -93,39 +139,38 @@ public class ChannelListTestMaps {
 			daqChnls.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL08K_W7_SG_K18_9");
 		}
 
-
-		ChannelTestingList qOmCtl = new ChannelTestingList(
+		QueryChannelLists qOmCtl = new QueryChannelLists(
 				MatrixMixType.AddAfter, null, omChnls, "OM");
 		cl2q.put(ChannelListType.QueryOm, qOmCtl);
 		cl2Channels.put(ChannelListType.QueryOm, omChnls);
 
-		ChannelTestingList qDaqCtl = new ChannelTestingList(
+		QueryChannelLists qDaqCtl = new QueryChannelLists(
 				MatrixMixType.AddAfter, null, daqChnls, "DAQ");
 		cl2q.put(ChannelListType.QueryDaq, qDaqCtl);
 		cl2Channels.put(ChannelListType.QueryDaq, daqChnls);
 
-		ChannelTestingList query = new ChannelTestingList(
+		QueryChannelLists query = new QueryChannelLists(
 				MatrixMixType.AddBefore, qOmCtl, daqChnls,
 				ChannelListType.QueryBefore.toString());
 		cl2q.put(ChannelListType.QueryBefore, query);
 		cl2Channels.put(ChannelListType.QueryBefore, query.combine());
 
-		query = new ChannelTestingList(MatrixMixType.AddAfter, qOmCtl,
+		query = new QueryChannelLists(MatrixMixType.AddAfter, qOmCtl,
 				daqChnls, ChannelListType.QueryAfter.toString());
 		cl2q.put(ChannelListType.QueryAfter, query);
 		cl2Channels.put(ChannelListType.QueryAfter, query.combine());
 
-		query = new ChannelTestingList(MatrixMixType.AddMiddle, qOmCtl,
+		query = new QueryChannelLists(MatrixMixType.AddMiddle, qOmCtl,
 				daqChnls, ChannelListType.QueryMiddle.toString());
 		cl2q.put(ChannelListType.QueryMiddle, query);
 		cl2Channels.put(ChannelListType.QueryMiddle, query.combine());
 
-		query = new ChannelTestingList(MatrixMixType.AddInterleaved, qOmCtl,
+		query = new QueryChannelLists(MatrixMixType.AddInterleaved, qOmCtl,
 				daqChnls, ChannelListType.QueryMixed.toString());
 		cl2q.put(ChannelListType.QueryMixed, query);
 		cl2Channels.put(ChannelListType.QueryMixed, query.combine());
 
-		query = new ChannelTestingList(MatrixMixType.AddMiddle, query,
+		query = new QueryChannelLists(MatrixMixType.AddMiddle, query,
 				daqChnls, ChannelListType.QueryTriple.toString());
 		cl2q.put(ChannelListType.QueryTriple, query);
 		cl2Channels.put(ChannelListType.QueryTriple, query.combine());
@@ -155,7 +200,7 @@ public class ChannelListTestMaps {
 			chnls.add("OM/CntrlSensor/D_North_Y_2");
 		}
 		cl2Channels.put(ChannelListType.OM, chnls);
-		cl2tt.put(ChannelListType.OM, TableType.OM);
+		cl2tt.put(ChannelListType.OM, TableType.Control);
 
 		chnls = new ArrayList<String>();
 		chnls.add("DAQ/DisplacementSensor/WestFlange/FirstFloor/DTV02F1A_W7_LinPot05_0");
