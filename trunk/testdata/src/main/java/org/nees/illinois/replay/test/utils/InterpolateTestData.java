@@ -7,7 +7,7 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
-import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.test.utils.mgen.GenerateActualCoupleNulls;
 import org.nees.illinois.replay.test.utils.mgen.GenerateActualEarly;
 import org.nees.illinois.replay.test.utils.mgen.GenerateActualEmpty;
@@ -160,8 +160,8 @@ public class InterpolateTestData {
 	 * @param actual
 	 *            The matrix generated fro mthe code under test.
 	 */
-	public final void compareList2Doubles(final DoubleMatrix expected,
-			final DoubleMatrix actual) {
+	public final void compareList2Doubles(final DoubleMatrixI expected,
+			final DoubleMatrixI actual) {
 		int[] esizes = expected.sizes();
 		int[] asizes = actual.sizes();
 		Assert.assertEquals(esizes[0], asizes[0]);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.test.utils.ChannelDataGenerator;
 import org.nees.illinois.replay.test.utils.ChannelDataGenerator.TestingParts;
 import org.nees.illinois.replay.test.utils.QueryChannelLists;
@@ -314,7 +315,7 @@ public class TestChannelTestData {
 				}
 			}
 		}
-		DoubleMatrix result = new DoubleMatrix(accum);
+		DoubleMatrixI result = new DoubleMatrix(accum);
 		log.debug("Expected mix " + result);
 		return result.getData();
 	}
