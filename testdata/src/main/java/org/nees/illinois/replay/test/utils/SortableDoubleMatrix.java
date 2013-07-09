@@ -5,28 +5,82 @@ import java.util.Collections;
 import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.DoubleMatrixI;
 
-public class SortableDoubleMatrix extends DoubleMatrix {
+/**
+ * Class which sorts the rows by the first column assumed to be time in seconds.
+ * @author Michael Bletzinger
+ */
+public class SortableDoubleMatrix implements DoubleMatrixI {
 
-	public SortableDoubleMatrix(double[][] idata) {
-		super(idata);
+	/**
+	 * Actual double matrix.
+	 */
+	private DoubleMatrix dm;
+
+	/**
+	 * Create an instance from a double[][] array type.
+	 * @param idata
+	 *            The double [][] array.
+	 */
+	public SortableDoubleMatrix(final double[][] idata) {
+		dm = new DoubleMatrix(idata);
 	}
 
-	public SortableDoubleMatrix(List<List<Double>> idata) {
-		super(idata);
+	/**
+	 * Create an instance from a double list.
+	 * @param idata
+	 *            The double list.
+	 */
+	public SortableDoubleMatrix(final List<List<Double>> idata) {
+		dm = new DoubleMatrix(idata);
 	}
 
-	public void sort() {
+	/**
+	 * Sort the matrix row-wise.
+	 */
+	public final void sort() {
 		List<DataRow> sortMe = new ArrayList<DataRow>();
-		for(List<Double> r : data) {
+		for (List<Double> r : dm.toList()) {
 			DataRow dr = new DataRow(r);
 			sortMe.add(dr);
 		}
 		Collections.sort(sortMe);
-		data.clear();
-		for(DataRow dr : sortMe) {
+		List<List<Double>> data = new ArrayList<List<Double>>();
+		for (DataRow dr : sortMe) {
 			List<Double> r = dr.getData();
 			data.add(r);
 		}
+		dm = new DoubleMatrix(data);
+	}
+
+	@Override
+	public final double[][] getData() {
+		return dm.getData();
+	}
+
+	@Override
+	public final boolean isNull(final int row, final int col) {
+		return dm.isNull(row, col);
+	}
+
+	@Override
+	public final void set(final int row, final int col, final Double value) {
+		dm.set(row, col, value);
+	}
+
+	@Override
+	public final int[] sizes() {
+		return dm.sizes();
+	}
+
+	@Override
+	public final List<List<Double>> toList() {
+		return dm.toList();
+	}
+
+	@Override
+	public final double value(final int row, final int col) {
+		return dm.value(row, col);
 	}
 }

@@ -61,16 +61,12 @@ public class ChannelListTestMaps {
 		initQueryLists();
 	}
 
-	public void fillTblIdr(TableIdentityRegistry tblIdr) {
-		for (ChannelListType type : tableTypes) {
-			tblIdr.addTable(experiment, getTableName(type), getTt(type),
-					RateType.TIME);
-			tblIdr.addTable(experiment, getTableName(type), getTt(type),
-					RateType.EVENT);
-		}
-	}
-
-	public void fillCnr(ChannelNameRegistry cnr) {
+	/**
+	 * Fill in the {@link ChannelNameRegistry} with the mock channel names.
+	 * @param cnr
+	 *            Reference to the registry.
+	 */
+	public final void fillCnr(final ChannelNameRegistry cnr) {
 		ChannelListType[] types = { ChannelListType.OM, ChannelListType.DAQ };
 		for (ChannelListType type : types) {
 			for (String c : getChannels(type)) {
@@ -79,11 +75,37 @@ public class ChannelListTestMaps {
 		}
 	}
 
-	public QueryChannelLists getChannelLists(ChannelListType typ) {
+	/**
+	 * Fill in the {@link TableIdentityRegistry} with the mock table names.
+	 * @param tblIdr
+	 *            Reference to the registry.
+	 */
+	public final void fillTblIdr(final TableIdentityRegistry tblIdr) {
+		for (ChannelListType type : tableTypes) {
+			tblIdr.addTable(experiment, getTableName(type), getTt(type),
+					RateType.TIME);
+			tblIdr.addTable(experiment, getTableName(type), getTt(type),
+					RateType.EVENT);
+		}
+	}
+
+	/**
+	 * Get the test query for a given type.
+	 * @param typ
+	 *            Type identifying the test query.
+	 * @return The test query.
+	 */
+	public final QueryChannelLists getChannelLists(final ChannelListType typ) {
 		return cl2q.get(typ);
 	};
 
-	public List<String> getChannels(ChannelListType listType) {
+	/**
+	 * Get the consolidated channel list for a given type.
+	 * @param listType
+	 *            Type identifying the test list.
+	 * @return The list.
+	 */
+	public final List<String> getChannels(final ChannelListType listType) {
 		List<String> result = new ArrayList<String>();
 		result.addAll(cl2Channels.get(listType));
 		return result;
@@ -92,32 +114,47 @@ public class ChannelListTestMaps {
 	/**
 	 * @return the experiment
 	 */
-	public String getExperiment() {
+	public final String getExperiment() {
 		return experiment;
 	}
 
 	/**
 	 * @return the queryTypes
 	 */
-	public List<ChannelListType> getQueryTypes() {
+	public final List<ChannelListType> getQueryTypes() {
 		return queryTypes;
+	}
+
+	/**
+	 * Get the table name associated with a test type.
+	 * @param type
+	 *            Test list type.
+	 * @return Table name.
+	 */
+	public final String getTableName(final ChannelListType type) {
+		return type.toString() + "name";
 	}
 
 	/**
 	 * @return the tableTypes
 	 */
-	public List<ChannelListType> getTableTypes() {
+	public final List<ChannelListType> getTableTypes() {
 		return tableTypes;
 	}
 
-	public TableType getTt(ChannelListType type) {
+	/**
+	 * Get the {@link TableType} associated with the test list.
+	 * @param type
+	 *            Test list type.
+	 * @return The table type.
+	 */
+	public final TableType getTt(final ChannelListType type) {
 		return cl2tt.get(type);
 	}
 
-	public String getTableName(ChannelListType type) {
-		return type.toString() + "name";
-	}
-
+	/**
+	 * Initialize all of the lists.
+	 */
 	private void initQueryLists() {
 		List<String> omChnls = new ArrayList<String>();
 		omChnls.add("OM/CntrlSensor/D_West_X_3");
@@ -155,8 +192,8 @@ public class ChannelListTestMaps {
 		cl2q.put(ChannelListType.QueryBefore, query);
 		cl2Channels.put(ChannelListType.QueryBefore, query.combine());
 
-		query = new QueryChannelLists(MatrixMixType.AddAfter, qOmCtl,
-				daqChnls, ChannelListType.QueryAfter.toString());
+		query = new QueryChannelLists(MatrixMixType.AddAfter, qOmCtl, daqChnls,
+				ChannelListType.QueryAfter.toString());
 		cl2q.put(ChannelListType.QueryAfter, query);
 		cl2Channels.put(ChannelListType.QueryAfter, query.combine());
 
@@ -170,8 +207,8 @@ public class ChannelListTestMaps {
 		cl2q.put(ChannelListType.QueryMixed, query);
 		cl2Channels.put(ChannelListType.QueryMixed, query.combine());
 
-		query = new QueryChannelLists(MatrixMixType.AddMiddle, query,
-				daqChnls, ChannelListType.QueryTriple.toString());
+		query = new QueryChannelLists(MatrixMixType.AddMiddle, query, daqChnls,
+				ChannelListType.QueryTriple.toString());
 		cl2q.put(ChannelListType.QueryTriple, query);
 		cl2Channels.put(ChannelListType.QueryTriple, query.combine());
 
@@ -186,6 +223,9 @@ public class ChannelListTestMaps {
 		queryTypes.add(ChannelListType.QueryMixed);
 	}
 
+	/**
+	 * Initialize the test tables.
+	 */
 	private void initTableLists() {
 		List<String> chnls = new ArrayList<String>();
 		chnls.add("OM/Cmd/LBCB1/Actuator/C_LBCB1_X1_0");
@@ -220,7 +260,7 @@ public class ChannelListTestMaps {
 	/**
 	 * @return the second
 	 */
-	public boolean isSecond() {
+	public final boolean isSecond() {
 		return second;
 	}
 }

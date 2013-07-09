@@ -3,8 +3,8 @@ package org.nees.illinois.replay.test.data;
 import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.data.MergeSet;
-import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.test.utils.ChannelDataGenerator;
 import org.nees.illinois.replay.test.utils.ChannelDataGenerator.TestingParts;
 import org.nees.illinois.replay.test.utils.ChannelListTestMaps;
@@ -52,7 +52,7 @@ public class TestMerge {
 		int[] omcsz = { omContData.size(), omContData.get(0).size() };
 		int[] daqssz = { daqStepData.size(), daqStepData.get(0).size() };
 		int[] omssz = { omStepData.size(), omStepData.get(0).size() };
-		MergeSet mset = new MergeSet(RateType.TIME);
+		MergeSet mset = new MergeSet();
 		mset.merge(daqContData);
 		log.debug("DAQ only " + mset);
 		AssertJUnit.assertEquals(3, mset.getColumnSize(false));
@@ -74,7 +74,7 @@ public class TestMerge {
 			log.info("Checking " + r);
 			AssertJUnit.assertEquals(daqcsz[1] + omcsz[1] - 4, r.size());
 		}
-		mset = new MergeSet(RateType.EVENT);
+		mset = new MergeSet();
 		mset.merge(daqStepData);
 		result = mset.getResult();
 		log.debug("DAQ only " + mset);
@@ -111,11 +111,11 @@ public class TestMerge {
 					cdg.generateParts();
 					cdg.generateWhole();
 //					cdg.mixColumns(); // Columns are not mixed until after the merge
-					MergeSet mset = new MergeSet(RateType.TIME);
+					MergeSet mset = new MergeSet();
 					mset.merge(cdg.getData(TestingParts.First).toList());
 					mset.merge(cdg.getData(TestingParts.Second).toList());
-					DoubleMatrix actual = new DoubleMatrix(mset.getResult());
-					DoubleMatrix expected = cdg.getData(TestingParts.All);
+					DoubleMatrixI actual = new DoubleMatrix(mset.getResult());
+					DoubleMatrixI expected = cdg.getData(TestingParts.All);
 					DoubleArrayDataGenerator.compareData(actual.getData(), expected.getData());
 				}
 			}

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ public class ChannelDataGenerator {
 	/**
 	 * Map of data sets used to query data.
 	 */
-	private final Map<TestingParts, DoubleMatrix> dataParts = new HashMap<TestingParts, DoubleMatrix>();
+	private final Map<TestingParts, DoubleMatrixI> dataParts = new HashMap<TestingParts, DoubleMatrixI>();
 	/**
 	 * Number of data rows to generate.
 	 */
@@ -124,8 +125,8 @@ public class ChannelDataGenerator {
 			nulls.add(null);
 		}
 
-		DoubleMatrix fData = dataParts.get(TestingParts.First);
-		DoubleMatrix sData = dataParts.get(TestingParts.Second);
+		DoubleMatrixI fData = dataParts.get(TestingParts.First);
+		DoubleMatrixI sData = dataParts.get(TestingParts.Second);
 		List<List<Double>> fLists;
 		if (fData == null) {
 			fLists = new ArrayList<List<Double>>();
@@ -262,14 +263,14 @@ public class ChannelDataGenerator {
 	 *            Which data set.
 	 * @return double matrix of data.
 	 */
-	public final DoubleMatrix getData(final TestingParts part) {
+	public final DoubleMatrixI getData(final TestingParts part) {
 		return dataParts.get(part);
 	}
 
 	/**
 	 * @return the dataParts
 	 */
-	public final Map<TestingParts, DoubleMatrix> getDataParts() {
+	public final Map<TestingParts, DoubleMatrixI> getDataParts() {
 		return dataParts;
 	}
 
@@ -328,9 +329,9 @@ public class ChannelDataGenerator {
 		time = new TimeGenerator(timeMultiplier, startTime);
 		int bef = numberOfRows / 2;
 		int aft = numberOfRows - bef;
-		DoubleMatrix fData = genSeparateSet(bef, fsz);
+		DoubleMatrixI fData = genSeparateSet(bef, fsz);
 		DoubleMatrix sData = genSeparateSet(numberOfRows, ssz);
-		DoubleMatrix aData = genSeparateSet(aft, fsz);
+		DoubleMatrixI aData = genSeparateSet(aft, fsz);
 		List<List<Double>> consolidated = fData.toList();
 		consolidated.addAll(aData.toList());
 
