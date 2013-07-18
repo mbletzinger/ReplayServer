@@ -1,9 +1,9 @@
 package org.nees.illinois.replay.db.guice;
 
+import org.nees.illinois.replay.common.registries.ExperimentModuleDeleteMe;
 import org.nees.illinois.replay.db.DbPools;
-import org.nees.illinois.replay.registries.ExperimentModule;
 
-public abstract class ResourceProviderWithDb extends ExperimentModule {
+public abstract class ResourceProviderWithDb extends ExperimentModuleDeleteMe {
 
 	private final DbPools pools;
 

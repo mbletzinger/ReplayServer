@@ -3,21 +3,21 @@ package org.nees.illinois.replay.test.db;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.nees.illinois.replay.common.registries.ChannelNameManagement;
+import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.common.registries.ExperimentModuleDeleteMe;
+import org.nees.illinois.replay.common.registries.ExperimentRegistries;
+import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.data.Mtx2Str;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.data.DbDataUpdates;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.db.statement.DbTablesMap;
-import org.nees.illinois.replay.registries.ChannelNameManagement;
-import org.nees.illinois.replay.registries.ChannelNameRegistry;
-import org.nees.illinois.replay.registries.ExperimentModule;
-import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.utils.ChannelListTestMaps;
-import org.nees.illinois.replay.test.utils.ChannelListType;
+import org.nees.illinois.replay.test.utils.TestDatasets;
+import org.nees.illinois.replay.test.utils.TestDatasetType;
 import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +46,7 @@ public class TestDataStatements {
 			.getLogger(TestDataStatements.class);
 	private ExperimentRegistries er;
 	private DbDataUpdates dbu;
-	private ExperimentModule guiceMod;
+	private ExperimentModuleDeleteMe guiceMod;
 	private boolean ismysql;
 
 	@BeforeMethod
@@ -82,7 +82,7 @@ public class TestDataStatements {
 	@AfterMethod
 	public void tearDown() throws Exception {
 
-		dbu.removeTable(TableType.OM);
+		dbu.removeTable(TableType.Control);
 		dbu.removeTable(TableType.DAQ);
 		pools.getOps().removeDatabase("HybridMasonry1");
 		pools.close();
@@ -97,15 +97,15 @@ public class TestDataStatements {
 
 	@Test
 	public void testContDataUpdate() {
-		ChannelListTestMaps cl = new ChannelListTestMaps(false,er.getExperiment());
+		TestDatasets cl = new TestDatasets(false,er.getExperiment());
 		DbTablesMap specs = new DbTablesMap(cnr, er.getExperiment());
-		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
-		dbu.update(TableType.OM, RateType.CONT, omContData);
+		dbu.createTable(TableType.Control, cl.getChannels(TestDatasetType.OM));
+		dbu.update(TableType.Control, RateType.CONT, omContData);
 
-		String tblName = specs.tableName(TableType.OM, RateType.CONT);
+		String tblName = specs.tableName(TableType.Control, RateType.CONT);
 		queryData(tblName, omContData);
 
-		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
+		dbu.createTable(TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
 		// log.debug("Adding data " +
 		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
 		dbu.update(TableType.DAQ, RateType.CONT, daqContData);
@@ -116,17 +116,17 @@ public class TestDataStatements {
 
 	@Test
 	public void testStepDataUpdate() {
-		ChannelListTestMaps cl = new ChannelListTestMaps(false,er.getExperiment());
+		TestDatasets cl = new TestDatasets(false,er.getExperiment());
 		DbTablesMap specs = new DbTablesMap(cnr, er.getExperiment());
-		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
+		dbu.createTable(TableType.Control, cl.getChannels(TestDatasetType.OM));
 		log.debug("Adding data "
 				+ Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
-		dbu.update(TableType.OM, RateType.STEP, omStepData);
+		dbu.update(TableType.Control, RateType.STEP, omStepData);
 
-		String tblName = specs.tableName(TableType.OM, RateType.STEP);
+		String tblName = specs.tableName(TableType.Control, RateType.STEP);
 		queryData(tblName, omStepData);
 
-		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
+		dbu.createTable(TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
 		log.debug("Adding data "
 				+ Mtx2Str.matrix2String(Mtx2Str.timeOffset(omStepData)));
 		dbu.update(TableType.DAQ, RateType.STEP, daqStepData);

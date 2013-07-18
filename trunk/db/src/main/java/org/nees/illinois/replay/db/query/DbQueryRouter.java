@@ -79,7 +79,7 @@ public class DbQueryRouter {
 		if(mSet.isEmpty()) {
 			return null;
 		}
-		DoubleMatrix result = new DoubleMatrix(mSet.getRecords());
+		DoubleMatrix result = new DoubleMatrix(mSet.getResult());
 		MatrixFix intpl = new MatrixFix(result);
 		intpl.fix();
 		return result;

@@ -11,18 +11,32 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+/**
+ * Class which implements database oeprations for the MySQL database.
+ * @author Michael Bletzinger
+ */
 public class MySqlDbOps implements DbOperationsI {
+	/**
+	 * Parameters for the MySQL database.
+	 */
 	private final DbInfo info;
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory.getLogger(MySqlDbOps.class);
 
+	/**
+	 * @param info
+	 *            Parameters for the MySQL database.
+	 */
 	@Inject
-	public MySqlDbOps(DbInfo info) {
+	public MySqlDbOps(final DbInfo info) {
 		super();
 		this.info = info;
 	}
 
 	@Override
-	public void createDatabase(String experiment) throws Exception {
+	public final void createDatabase(final String experiment) throws Exception {
 		Connection connection = generateConnection(false);
 		Statement stmt = null;
 		try {
@@ -44,12 +58,13 @@ public class MySqlDbOps implements DbOperationsI {
 	}
 
 	@Override
-	public String filterUrl(String url, String experiment) {
+	public final String filterUrl(final String url, final String experiment) {
 		return url + experiment;
 	}
 
 	@Override
-	public Connection generateConnection(boolean withDatabase) throws Exception {
+	public final Connection generateConnection(final boolean withDatabase)
+			throws Exception {
 		try {
 			Class.forName(info.getDriver());
 		} catch (ClassNotFoundException e1) {
@@ -81,7 +96,7 @@ public class MySqlDbOps implements DbOperationsI {
 	}
 
 	@Override
-	public boolean isDatabase(String experiment) throws Exception {
+	public final boolean isDatabase(final String experiment) throws Exception {
 		Connection connection = generateConnection(false);
 		Statement stmt = null;
 		try {
@@ -96,12 +111,12 @@ public class MySqlDbOps implements DbOperationsI {
 			stmt.execute("SHOW DATABASES");
 			rs = stmt.getResultSet();
 			while (rs.next()) {
-				  String dbName = rs.getString(1);    // "TABLE_SCHEM"
-				  log.debug("DbName "+ dbName);
-				  if(dbName.equals(experiment)) {
-					  result = true;
-				  }
+				String dbName = rs.getString(1); // "TABLE_SCHEM"
+				log.debug("DbName " + dbName);
+				if (dbName.equals(experiment)) {
+					result = true;
 				}
+			}
 		} catch (SQLException e) {
 			log.error("Drop database failed because ", e);
 			closeConnection(connection);
@@ -112,7 +127,7 @@ public class MySqlDbOps implements DbOperationsI {
 	}
 
 	@Override
-	public void removeDatabase(String experiment) throws Exception {
+	public final void removeDatabase(final String experiment) throws Exception {
 		Connection connection = generateConnection(false);
 		Statement stmt = null;
 		try {
@@ -133,7 +148,8 @@ public class MySqlDbOps implements DbOperationsI {
 	}
 
 	@Override
-	public void closeConnection(Connection connection) throws SQLException {
+	public final void closeConnection(final Connection connection)
+			throws SQLException {
 		try {
 			connection.close();
 		} catch (SQLException e) {
@@ -143,12 +159,12 @@ public class MySqlDbOps implements DbOperationsI {
 	}
 
 	@Override
-	public void setExperiment(String experiment) {
+	public final void setExperiment(final String experiment) {
 		info.setExperiment(experiment);
 	}
 
 	@Override
-	public String getExperiment() {
+	public final String getExperiment() {
 		return info.getExperiment();
 	}
 

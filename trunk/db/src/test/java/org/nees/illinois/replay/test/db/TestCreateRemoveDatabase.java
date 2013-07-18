@@ -23,20 +23,57 @@ import com.google.inject.Injector;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
+/**
+ * Class which tests database operations.
+ * @author Michael Bletzinger
+ */
+@Test(groups = { "create-db" })
 public class TestCreateRemoveDatabase {
+	/**
+	 * Connection URL to the database.
+	 */
 	private String connectionUrl;
+	/**
+	 * Operations to be tested.
+	 */
 	private DbOperationsI dbm;
+	/**
+	 * Additional controls for Derby so that it cleans up after itself.
+	 */
 	private final DerbyDbControl ddbc = new DerbyDbControl();
+	/**
+	 * JDBC wrapper for the database.
+	 */
 	private String driver;
+	/**
+	 * Experiment name.
+	 */
 	private String experiment;
+	/**
+	 * Flag that is true if we are testing MySQL.
+	 */
 	private boolean ismysql;
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory
 			.getLogger(TestCreateRemoveDatabase.class);
+	/**
+	 * Password to use for the database connection.
+	 */
 	private String passwd;
+	/**
+	 * Account name to use for the database connection.
+	 */
 	private String user;
 
+	/**
+	 * Tests if a database can be created.
+	 * @throws Exception
+	 *             If there are any problems.
+	 */
 	@Test
-	public void createDatabase() throws Exception {
+	public final void createDatabase() throws Exception {
 		Connection connection = null;
 		if (ismysql) {
 			dbm.createDatabase(experiment);
@@ -50,8 +87,11 @@ public class TestCreateRemoveDatabase {
 		}
 	}
 
+	/**
+	 * Tests if a pool can be created.
+	 */
 	@Test
-	public void createDatabasePool() {
+	public final void createDatabasePool() {
 		try {
 			// load the database driver (make sure this is in your classpath!)
 			Class.forName(driver);
@@ -72,12 +112,14 @@ public class TestCreateRemoveDatabase {
 		// setup the connection pool
 		BoneCPConfig config = new BoneCPConfig();
 		config.setJdbcUrl(dbm.filterUrl(connectionUrl, experiment)); // jdbc
-																			// url
+																		// url
 		// specific to
 		// your database,
 		// eg jdbc:mysql://127.0.0.1/yourdb
-		config.setMinConnectionsPerPartition(5);
-		config.setMaxConnectionsPerPartition(10);
+		final int minConnectionsPerPartition = 5;
+		final int maxConnectionsPerPartition = 10;
+		config.setMinConnectionsPerPartition(minConnectionsPerPartition);
+		config.setMaxConnectionsPerPartition(maxConnectionsPerPartition);
 		config.setPartitionCount(1);
 		if (user != null) {
 			config.setUsername(user);
@@ -122,12 +164,21 @@ public class TestCreateRemoveDatabase {
 		}
 	}
 
+	/**
+	 * Determines what type of database program we are testing and sets up the
+	 * test parameters accordingly.
+	 * @param db
+	 *            TestNG parameter for telling which database program to use.
+	 * @throws Exception
+	 *             If any of the preparations failed.
+	 */
 	@Parameters("db")
 	@BeforeClass
-	public void setUp(@Optional("derby") String db) throws Exception {
+	public final void setUp(@Optional("derby") final String db)
+//	public final void setUp(@Optional("mysql") final String db)
+			throws Exception {
 		DbTestsModule guiceMod = new DbTestsModule(db);
 		experiment = "HybridMasonry1";
-		guiceMod.setExperiment(experiment);
 		Injector injector = Guice.createInjector(guiceMod);
 		DbPools pools = injector.getInstance(DbPools.class);
 		DbInfo info = pools.getInfo();
@@ -142,14 +193,23 @@ public class TestCreateRemoveDatabase {
 		}
 	}
 
+	/**
+	 * Tell the Derby database to give up if that is the database we are
+	 * testing.
+	 */
 	@AfterClass
-	public void teardown() {
+	public final void teardown() {
 		if (ismysql == false) {
 			ddbc.stopDerby();
 		}
 	}
 
-	private void testWithStatement(Connection connection) {
+	/**
+	 * Try an SQL statement.
+	 * @param connection
+	 *            JDBC connection to use to execute the statement.
+	 */
+	private void testWithStatement(final Connection connection) {
 		Statement stmt = null;
 		try {
 			stmt = connection.createStatement();

@@ -1,9 +1,9 @@
 package org.nees.illinois.replay.db.query;
 
-import org.nees.illinois.replay.data.NumberOfColumns;
+import org.nees.illinois.replay.data.NumberOfColumnsReplaceMeWithTableColumnsI;
 import org.nees.illinois.replay.data.RateType;
 
-public class NumberOfColumnsWithSelect extends NumberOfColumns {
+public class NumberOfColumnsWithSelect extends NumberOfColumnsReplaceMeWithTableColumnsI {
 	/* (non-Javadoc)
 	 * @see org.nees.illinois.replay.data.NumberOfColumns#toString()
 	 */

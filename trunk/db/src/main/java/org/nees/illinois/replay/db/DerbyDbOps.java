@@ -9,19 +9,37 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 
+/**
+ * Class which implements the database operations for the Derby database.
+ * @author Michael Bletzinger
+ */
 public class DerbyDbOps implements DbOperationsI {
-	boolean gotSQLExc = false;
+	/**
+	 * Flag that is true if an SQL exception was received.
+	 */
+	private boolean gotSQLExc = false;
+	/**
+	 * Parameters of the Derby database.
+	 */
 	private final DbInfo info;
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory.getLogger(DerbyDbOps.class);
 
+	/**
+	 * @param info
+	 *            Parameters of the Derby database.
+	 */
 	@Inject
-	public DerbyDbOps(DbInfo info) {
+	public DerbyDbOps(final DbInfo info) {
 		super();
 		this.info = info;
 	}
 
 	@Override
-	public void closeConnection(Connection connection) throws Exception {
+	public final void closeConnection(final Connection connection)
+			throws Exception {
 		try {
 			DriverManager.getConnection(info.getConnectionUrl()
 					+ ";shutdown=true");
@@ -39,17 +57,18 @@ public class DerbyDbOps implements DbOperationsI {
 	}
 
 	@Override
-	public void createDatabase(String experiment) {
+	public void createDatabase(final String experiment) {
 
 	}
 
 	@Override
-	public String filterUrl(String url, String experiment) {
+	public final String filterUrl(final String url, final String experiment) {
 		return url + experiment + ";create=true";
 	}
 
 	@Override
-	public Connection generateConnection(boolean withDatabase) throws Exception {
+	public final Connection generateConnection(final boolean withDatabase)
+			throws Exception {
 		try {
 			Class.forName(info.getDriver());
 		} catch (ClassNotFoundException e1) {
@@ -81,21 +100,21 @@ public class DerbyDbOps implements DbOperationsI {
 	}
 
 	@Override
-	public String getExperiment() {
+	public final String getExperiment() {
 		return info.getExperiment();
 	}
 
 	@Override
-	public boolean isDatabase(String experiment) {
+	public final boolean isDatabase(final String experiment) {
 		return true;
 	}
 
 	@Override
-	public void removeDatabase(String experiment) {
+	public void removeDatabase(final String experiment) {
 	}
 
 	@Override
-	public void setExperiment(String experiment) {
+	public final void setExperiment(final String experiment) {
 		info.setExperiment(experiment);
 	}
 }

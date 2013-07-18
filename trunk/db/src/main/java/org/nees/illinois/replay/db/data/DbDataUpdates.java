@@ -2,18 +2,19 @@ package org.nees.illinois.replay.db.data;
 
 import java.util.List;
 
-import org.nees.illinois.replay.data.DataUpdateI;
+import org.nees.illinois.replay.common.registries.ExperimentRegistries;
+import org.nees.illinois.replay.common.registries.TableType;
+import org.nees.illinois.replay.common.types.TableIdentityI;
+import org.nees.illinois.replay.data.DataUpdateSubResourceI;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.statement.DataInsertStatement;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.db.statement.DbTablesMap;
-import org.nees.illinois.replay.registries.ExperimentRegistries;
 
 import com.google.inject.Inject;
 
-public class DbDataUpdates implements DataUpdateI {
+public class DbDataUpdates implements DataUpdateSubResourceI {
 
 	private ExperimentRegistries er;
 
@@ -27,7 +28,7 @@ public class DbDataUpdates implements DataUpdateI {
 	}
 	
 	@Override
-	public boolean createTable(TableType table, List<String> channels) {
+	public TableIdentityI createTable(TableType table, List<String> channels) {
 		boolean result = true;
 		specs = (DbTablesMap) er.getChnlNamesMgmt();
 		StatementProcessor dbSt = pools.createDbStatement(specs.getDbname(), true);
@@ -60,7 +61,7 @@ public class DbDataUpdates implements DataUpdateI {
 	}
 
 	@Override
-	public boolean removeTable(TableType table) {
+	public boolean removeTable(TableIdentityI table) {
 		boolean result = true;
 		this.specs = (DbTablesMap) er.getLookupsClone();
 		StatementProcessor dbSt = pools.createDbStatement(specs.getDbname(),false);
@@ -81,12 +82,12 @@ public class DbDataUpdates implements DataUpdateI {
 	}
 
 	@Override
-	public boolean update(TableType table, RateType rate, double[][] data) {
+	public boolean update(String tableString, RateType rate, double[][] data) {
 		boolean result = true;
 		this.specs = (DbTablesMap) er.getLookupsClone();
 		StatementProcessor dbSt = pools.createDbStatement(specs.getDbname(),false);
 		DataInsertStatement prep = DataInsertStatement.getStatement(
-				specs.tableName(table, rate), data[0].length);
+				specs.tableName(tableString, rate), data[0].length);
 		result = dbSt.createPrepStatement(prep);
 		if (result == false) {
 			dbSt.close();

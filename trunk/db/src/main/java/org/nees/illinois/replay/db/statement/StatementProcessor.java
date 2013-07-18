@@ -33,10 +33,6 @@ public class StatementProcessor {
 		}
 	}
 
-	public boolean createPrepStatement(PrepStatementProcessor prep) {
-		return prep.create(connection);
-	}
-
 	public boolean execute(String statement) {
 		Statement stmt = null;
 		// log.debug("Executing " + statement);
@@ -66,6 +62,13 @@ public class StatementProcessor {
 		log.debug("Executed \"" + statement + "\"");
 		return true;
 
+	}
+
+	/**
+	 * @return the connection
+	 */
+	public final Connection getConnection() {
+		return connection;
 	}
 
 	public void noComplaints(String statement) {
@@ -99,7 +102,7 @@ public class StatementProcessor {
 		try {
 			stmt = connection.createStatement();
 		} catch (SQLException e) {
-			log.error("Create statement \"" + statement + "\" failed because ",
+			log.error("Query statement \"" + statement + "\" failed because ",
 					e);
 			return null;
 		}

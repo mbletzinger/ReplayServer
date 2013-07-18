@@ -1,14 +1,14 @@
 package org.nees.illinois.replay.test.db;
 
-import org.nees.illinois.replay.data.TableType;
+import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.data.DbChannelNameSynch;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
-import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.utils.ChannelListTestMaps;
-import org.nees.illinois.replay.test.utils.ChannelListType;
+import org.nees.illinois.replay.test.utils.TestDatasets;
+import org.nees.illinois.replay.test.utils.TestDatasetType;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -53,10 +53,10 @@ public class TestChannelLists {
 
 	@Test
 	public void testChannelList() {
-		ChannelListTestMaps lists = new ChannelListTestMaps(false, experiment);
+		TestDatasets lists = new TestDatasets(false, experiment);
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
-		for (String c : lists.getChannels(ChannelListType.OM)) {
-			cnr.addChannel(TableType.OM, c);
+		for (String c : lists.getChannels(TestDatasetType.OM)) {
+			cnr.addChannel(TableType.Control, c);
 		}
 		StatementProcessor dbSt = pools.createDbStatement(experiment,true);
 		DbChannelNameSynch dbcs = new DbChannelNameSynch(cnr, dbSt);
