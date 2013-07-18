@@ -1,7 +1,5 @@
 package org.nees.illinois.replay.common.types;
 
-import org.nees.illinois.replay.data.RateType;
-
 /**
  * Database table name which includes a {@link RateType sample rate} label.
  * @author Michael Bletzinger
@@ -78,7 +76,6 @@ public class TableId implements TableIdentityI, Cloneable {
 	@Override
 	public final String toString() {
 		return "TableId [datasetname=" + datasetname + ", databasename="
-				+ databasename + ", tablename=" + tablename
-				+ "]";
+				+ databasename + ", tablename=" + tablename + "]";
 	}
 }

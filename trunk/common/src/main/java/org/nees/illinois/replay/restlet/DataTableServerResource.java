@@ -9,6 +9,7 @@ import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
 import org.nees.illinois.replay.subresource.DataUpdateSubResourceI;
@@ -111,7 +112,7 @@ public class DataTableServerResource extends ServerResource implements
 		Representation2DoubleMatrix rep2dbl = new Representation2DoubleMatrix(
 				data);
 		List<List<Double>> doubles = rep2dbl.getIn2dm().getNumbers();
-		DoubleMatrix dm = new DoubleMatrix(doubles);
+		DoubleMatrixI dm = new DoubleMatrix(doubles);
 		extract.extract(reqAttrsWithRate);
 		Map<RequiredAttrType, Object> attrs = extract.getAttrs();
 		String tbl = (String) attrs.get(RequiredAttrType.Table);

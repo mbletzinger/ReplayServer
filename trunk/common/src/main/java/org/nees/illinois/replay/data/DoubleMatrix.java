@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * datatype.
  * @author Michael Bletzinger
  */
-public class DoubleMatrix {
+public class DoubleMatrix implements DoubleMatrixI {
 	/**
 	 * Internal representation of data. The double list structure allows for row
 	 * swapping.
@@ -122,10 +122,10 @@ public class DoubleMatrix {
 		return createSpec(col);
 	}
 
-	/**
-	 * @return the data as a double[][] array. Null elements are replaced by
-	 *         Double.NaNs.
+	/* (non-Javadoc)
+	 * @see org.nees.illinois.replay.data.DoubleMatrixI#getData()
 	 */
+	@Override
 	public final double[][] getData() {
 		double[][] result = new double[data.size()][spec
 				.getNumberOfColumns(true)];
@@ -156,18 +156,15 @@ public class DoubleMatrix {
 	/**
 	 * @return the spec
 	 */
-	protected final MatrixSpecI getSpec() {
+	@Override
+	public final MatrixSpecI getSpec() {
 		return spec;
 	}
 
-	/**
-	 * Tells whether the element is null or not.
-	 * @param row
-	 *            Row index of element.
-	 * @param col
-	 *            Column index of element.
-	 * @return True if the element is null.
+	/* (non-Javadoc)
+	 * @see org.nees.illinois.replay.data.DoubleMatrixI#isNull(int, int)
 	 */
+	@Override
 	public final boolean isNull(final int row, final int col) {
 		List<Double> rowL = data.get(row);
 		if (rowL.size() < col) {
@@ -193,15 +190,10 @@ public class DoubleMatrix {
 		}
 	}
 
-	/**
-	 * Sets the value of an element.
-	 * @param row
-	 *            Row index of element.
-	 * @param col
-	 *            Column index of element.
-	 * @param value
-	 *            Value to be set. Can be null.
+	/* (non-Javadoc)
+	 * @see org.nees.illinois.replay.data.DoubleMatrixI#set(int, int, java.lang.Double)
 	 */
+	@Override
 	public final void set(final int row, final int col, final Double value) {
 		List<Double> rowL = data.get(row);
 		for (int c = rowL.size(); c < col + 1; c++) {
@@ -217,10 +209,10 @@ public class DoubleMatrix {
 		this.spec = spec;
 	}
 
-	/**
-	 * Returns the 2D size of the matrix.
-	 * @return Array of sizes [row, column]
+	/* (non-Javadoc)
+	 * @see org.nees.illinois.replay.data.DoubleMatrixI#sizes()
 	 */
+	@Override
 	public final int[] sizes() {
 		int[] result = new int[2];
 		result[0] = data.size();
@@ -228,10 +220,10 @@ public class DoubleMatrix {
 		return result;
 	}
 
-	/**
-	 * Returns the matrix as a double list.
-	 * @return The double list.
+	/* (non-Javadoc)
+	 * @see org.nees.illinois.replay.data.DoubleMatrixI#toList()
 	 */
+	@Override
 	public final List<List<Double>> toList() {
 		List<List<Double>> result = new ArrayList<List<Double>>();
 		for (List<Double> r : data) {
@@ -266,15 +258,10 @@ public class DoubleMatrix {
 		return result;
 	}
 
-	/**
-	 * Returns the value of an element. If the element is null returns
-	 * Double.NaN.
-	 * @param row
-	 *            Row index of element.
-	 * @param col
-	 *            Column index of element.
-	 * @return The element value.
+	/* (non-Javadoc)
+	 * @see org.nees.illinois.replay.data.DoubleMatrixI#value(int, int)
 	 */
+	@Override
 	public final double value(final int row, final int col) {
 		if (data.isEmpty() == false) {
 			List<Double> rowL = data.get(row);

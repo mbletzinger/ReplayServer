@@ -2,10 +2,7 @@ package org.nees.illinois.replay.subresource;
 
 import java.util.List;
 
-import org.nees.illinois.replay.data.DoubleMatrix;
-import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.events.StepNumber;
-
+import org.nees.illinois.replay.data.DoubleMatrixI;
 
 /**
  * Interface to the query sub-resource which serves queries to the restlet
@@ -25,28 +22,17 @@ public interface DataQuerySubResourceI extends SubResourceI {
 	boolean setQuery(String name, List<String> channels);
 
 	/**
-	 * Perform a query. Rate type is assumed to be steps. Scope is assumed to be
-	 * all steps.
+	 * Perform a query using a lists of discrete times.
 	 * @param name
 	 *            Name of the query.
+	 * @param times
+	 *            List of timestamps from Jan 1 1901.
 	 * @return Channel data.
 	 */
-	DoubleMatrix doQuery(String name);
+	DoubleMatrixI doQuery(String name, List<Double> times);
 
 	/**
-	 * Perform a query. Rate is continuous data. Scope includes data to the end
-	 * of the test.
-	 * @param name
-	 *            Name of the query.
-	 * @param start
-	 *            Timestamp in seconds from Jan 1 1901 that sets the start of
-	 *            the query.
-	 * @return Channel data.
-	 */
-	DoubleMatrix doQuery(String name, double start);
-
-	/**
-	 * Perform a query. Rate is continuous data.
+	 * Perform a query.
 	 * @param name
 	 *            Name of the query.
 	 * @param start
@@ -57,36 +43,7 @@ public interface DataQuerySubResourceI extends SubResourceI {
 	 *            query.
 	 * @return Channel data.
 	 */
-	DoubleMatrix doQuery(String name, double start, double stop);
-
-	/**
-	 * Perform a query. Rate is step data. Scope includes data to the end of the
-	 * test.
-	 * @param name
-	 *            Name of the query.
-	 * @param start
-	 *            Starting step number for the query.
-	 * @param rate
-	 *            Rate type data that should be queried.
-	 * @return Channel data.
-	 */
-	DoubleMatrix doQuery(String name, StepNumber start, RateType rate);
-
-	/**
-	 * Perform a query. Rate is step data. Scope includes data to the end of the
-	 * test.
-	 * @param name
-	 *            Name of the query.
-	 * @param start
-	 *            Starting step number for the query.
-	 * @param stop
-	 *            Ending step number for the query.
-	 * @param rate
-	 *            Rate type data that should be queried.
-	 * @return Channel data.
-	 */
-	DoubleMatrix doQuery(String name, StepNumber start, StepNumber stop,
-			RateType rate);
+	DoubleMatrixI doQuery(String name, double start, double stop);
 
 	/**
 	 * Determines if the name identifies a stored query.

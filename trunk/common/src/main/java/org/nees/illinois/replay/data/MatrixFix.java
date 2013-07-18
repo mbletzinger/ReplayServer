@@ -43,14 +43,14 @@ public class MatrixFix {
 	/**
 	 * Matrix to be fixed.
 	 */
-	private final DoubleMatrix matrix;
+	private final DoubleMatrixI matrix;
 
 	/**
 	 * Constructor.
 	 * @param indata
 	 *            Matrix to be fixed.
 	 */
-	public MatrixFix(final DoubleMatrix indata) {
+	public MatrixFix(final DoubleMatrixI indata) {
 		super();
 		this.matrix = indata;
 	};
@@ -151,7 +151,7 @@ public class MatrixFix {
 	/**
 	 * @return the matrix
 	 */
-	public final DoubleMatrix getMatrix() {
+	public final DoubleMatrixI getMatrix() {
 		return matrix;
 	}
 

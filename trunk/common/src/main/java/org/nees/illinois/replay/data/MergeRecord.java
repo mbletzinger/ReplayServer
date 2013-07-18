@@ -10,15 +10,6 @@ import java.util.List;
  */
 public class MergeRecord implements Comparable<MergeRecord> {
 	/**
-	 * Column descriptions.
-	 */
-	private MatrixSpecI spec;
-
-	/**
-	 * Rate to do the comparisons with.
-	 */
-	private final RateType compareRate;
-	/**
 	 * Flag indicating that the merge is complete for this row.
 	 */
 	private boolean merged = false;
@@ -29,19 +20,12 @@ public class MergeRecord implements Comparable<MergeRecord> {
 
 	/**
 	 * Constructor.
-	 * @param compareRate
-	 *            Used to determine which time columns.
-	 * @param spec
-	 *            Column descriptions.
 	 * @param list
 	 *            Row of data.
 	 */
-	public MergeRecord(final RateType compareRate, final MatrixSpecI spec,
-			final List<Double> list) {
+	public MergeRecord(final List<Double> list) {
 		super();
 		this.record = list;
-		this.spec = spec;
-		this.compareRate = compareRate;
 	}
 
 	/**
@@ -53,9 +37,7 @@ public class MergeRecord implements Comparable<MergeRecord> {
 	 */
 	public final void append(final List<Double> after,
 			final MatrixSpecI newCols) {
-		int i = spec.numberOfTimeColumns();
-		record.addAll(after.subList(i, after.size()));
-		spec.appendColumns(newCols);
+		record.addAll(after.subList(newCols.numberOfTimeColumns(), after.size()));
 		merged = true;
 	}
 
@@ -70,8 +52,7 @@ public class MergeRecord implements Comparable<MergeRecord> {
 		for (int n = 0; n < num; n++) {
 			nulls.add(null);
 		}
-		append(nulls, null);
-		spec.appendColumns(newCols);
+		append(nulls, newCols);
 	}
 
 	@Override
@@ -90,13 +71,6 @@ public class MergeRecord implements Comparable<MergeRecord> {
 			return false;
 		}
 		return compareTo((MergeRecord) obj) == 0;
-	}
-
-	/**
-	 * @return the noc
-	 */
-	public final MatrixSpecI getSpec() {
-		return spec;
 	}
 
 	/**
@@ -132,10 +106,12 @@ public class MergeRecord implements Comparable<MergeRecord> {
 	 */
 	public final void prepend(final List<Double> before,
 			final MatrixSpecI newCols) {
-		int i = spec.numberOfTimeColumns();
-		record.addAll(i, before.subList(i, before.size()));
-		newCols.appendColumns(spec);
-		spec = newCols;
+		List<Double> old = new ArrayList<Double>();
+		old.addAll(record);
+		record.clear();
+		record.addAll(old.subList(0, newCols.numberOfTimeColumns()));
+		record.addAll(before.subList(newCols.numberOfTimeColumns(), before.size()));
+		record.addAll(old.subList(newCols.numberOfTimeColumns(),old.size()));
 		merged = true;
 	}
 

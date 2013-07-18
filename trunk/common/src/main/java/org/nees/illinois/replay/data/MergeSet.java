@@ -30,23 +30,20 @@ public class MergeSet {
 	 * Accumulator containing the results of the merge.
 	 */
 	private final List<MergeRecord> accum = new ArrayList<MergeRecord>();
+
+	/**
+	 * Accumulator specification.
+	 */
+	private MatrixSpecI spec;
 	/**
 	 * Logger.
 	 */
 	private final Logger log = LoggerFactory.getLogger(MergeSet.class);
-	/**
-	 * Rate used to determine which columns to use for time comparisons.
-	 */
-	private final RateType rate;
 
 	/**
-	 * @param rate
-	 *            Rate used to determine which columns to use for time
-	 *            comparisons.
 	 */
-	public MergeSet(final RateType rate) {
+	public MergeSet() {
 		super();
-		this.rate = rate;
 	}
 
 	/**
@@ -56,7 +53,7 @@ public class MergeSet {
 	 * @return Number of columns.
 	 */
 	public final int getColumnSize(final boolean withTime) {
-		return accum.get(0).getSpec().getNumberOfColumns(withTime);
+		return spec.getNumberOfColumns(withTime);
 	}
 
 	/**
@@ -69,7 +66,7 @@ public class MergeSet {
 		for (MergeRecord r : accum) {
 			result.add(r.getRecord());
 		}
-		return new DoubleMatrix(result, accum.get(0).getSpec());
+		return new DoubleMatrix(result, spec);
 	}
 
 	/**
@@ -94,13 +91,13 @@ public class MergeSet {
 	 * </li>
 	 * <li>Any row from A that does not have any appended data from B is
 	 * appended with an array of null values the size of B columns.</li>
-	 * @param toMerge
+	 * @param mergee
 	 *            Matrix to merge with the accumulator.
 	 */
-	public final void merge(final DoubleMatrix toMerge) {
+	public final void merge(final DoubleMatrixI mergee) {
 		List<MergeRecord> tmr = new ArrayList<MergeRecord>();
-		for (List<Double> r : toMerge.toList()) {
-			tmr.add(new MergeRecord(rate, toMerge.getSpec(), r));
+		for (List<Double> r : mergee.toList()) {
+			tmr.add(new MergeRecord(r));
 		}
 		String msg = "Merging ";
 		for (MergeRecord mr : tmr) {
@@ -109,21 +106,21 @@ public class MergeSet {
 		log.debug(msg);
 		if (accum.isEmpty()) {
 			accum.addAll(tmr);
+			spec = new MatrixSpec(mergee.getSpec().getNumberOfColumns(true));
 			return;
 		}
 
-		MatrixSpecI tsz = tmr.get(0).getSpec();
-		MatrixSpecI asz = accum.get(0).getSpec();
+		MatrixSpecI tsz = mergee.getSpec();
 
 		log.debug("toMerge column " + tsz.getNumberOfColumns(true)
-				+ " Accum columns " + asz.getNumberOfColumns(true));
+				+ " Accum columns " + spec.getNumberOfColumns(true));
 
 		for (MergeRecord r : tmr) {
 			int i = accum.indexOf(r);
 			if (i < 0) {
 				continue;
 			}
-			accum.get(i).append(r.getRecord(), null);
+			accum.get(i).append(r.getRecord(), tsz);
 			r.setMerged(true);
 		}
 		for (MergeRecord r : accum) {
@@ -135,11 +132,11 @@ public class MergeSet {
 		}
 		for (MergeRecord r : tmr) {
 			if (r.isMerged() == false) {
-				r.prependNulls(asz);
+				r.prependNulls(spec);
 				accum.add(r);
 			}
 		}
-
+		spec.appendColumns(tsz);
 	}
 
 	/**
