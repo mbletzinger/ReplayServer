@@ -4,7 +4,7 @@ package org.nees.illinois.replay.test.utils;
  * Enumerates the various channel list used for the mock test data.
  * @author Michael Bletzinger
  */
-public enum ChannelListType {
+public enum TestDatasetType {
 	/**
 	 * Channels from the DAQ system.
 	 */

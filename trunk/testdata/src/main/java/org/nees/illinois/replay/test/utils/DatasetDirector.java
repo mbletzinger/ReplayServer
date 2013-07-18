@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.common.registries.TableIdentityRegistry;
+import org.nees.illinois.replay.common.registries.TableRegistry;
+import org.nees.illinois.replay.common.types.TableColumnsI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.data.RateType;
@@ -38,13 +41,13 @@ public class DatasetDirector {
 	 */
 	public enum QueryParaTypes {
 		/**
-		 * Include a single dataset based on a time stamp.
-		 */
-		ContWithTime,
-		/**
 		 * Include a slice of continuous data from start to stop.
 		 */
 		ContWithStartStop,
+		/**
+		 * Include a single dataset based on a time stamp.
+		 */
+		ContWithTime,
 		/**
 		 * Include a single data set based on the event.
 		 */
@@ -98,13 +101,27 @@ public class DatasetDirector {
 	}
 
 	/**
-	 * {@link ChannelListTestMaps} used for query testing.
+	 * List checker.
 	 */
-	private final ChannelListTestMaps cltm;
+	private final CompareLists<String> check = new CompareLists<String>();
+
+	/**
+	 * {@link TestDatasets} used for query testing.
+	 */
+	private final TestDatasets cltm;
 	/**
 	 * The {@link ChannelNameRegistry} that is supposed to exist after testing.
 	 */
 	private final ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
+	/**
+	 * The {@link TableRegistry} that is supposed to exist after testing.
+	 */
+	private final TableRegistry expectedTblr = new TableRegistry();
+	/**
+	 * The {@link TableIdentityRegistry} that is supposed to exist after
+	 * testing.
+	 */
+	private final TableIdentityRegistry expectedTidr = new TableIdentityRegistry();
 	/**
 	 * The experiment associated with this dataset.
 	 */
@@ -159,7 +176,7 @@ public class DatasetDirector {
 	public DatasetDirector(final ExperimentNames experiment) {
 		super();
 		this.experiment = experiment;
-		this.cltm = new ChannelListTestMaps(
+		this.cltm = new TestDatasets(
 				experiment.equals(ExperimentNames.HybridMasonry2),
 				experiment.name());
 		this.cltm.fillCnr(expectedCnr);
@@ -172,7 +189,7 @@ public class DatasetDirector {
 	 * @param channels
 	 *            Channels to check.
 	 */
-	public final void checkChannels(final ChannelListType typ,
+	public final void checkChannels(final TestDatasetType typ,
 			final List<String> channels) {
 		checkChannels(cltm.getChannels(typ), channels);
 	}
@@ -205,7 +222,7 @@ public class DatasetDirector {
 	 *            Data being checked.
 	 */
 	public final void checkData(final ExperimentNames experiment,
-			final QueryParaTypes qt, final ChannelListType quy,
+			final QueryParaTypes qt, final TestDatasetType quy,
 			final DoubleMatrixI data) {
 		DoubleMatrixI expected = generate(experiment, qt, quy);
 		log.debug("For " + qt + " and " + quy);
@@ -216,15 +233,51 @@ public class DatasetDirector {
 
 	/**
 	 * Check if the channel name registry is as expected.
-	 * @param experiment
-	 *            Name of the experiment data set.
 	 * @param cnr
 	 *            Channel name registry to be checked.
 	 */
-	public final void checkExpectedCnr(final ExperimentNames experiment,
-			final ChannelNameRegistry cnr) {
-		log.debug("CHECKING  expected " + expectedCnr + "\nWITH actual " + cnr);
-		Assert.assertEquals(cnr.toString(), expectedCnr.toString());
+	public final void checkExpectedCnr(final ChannelNameRegistry cnr) {
+		check.compare(cnr.getNames(), expectedCnr.getNames());
+	}
+
+	/**
+	 * Check to see if the table identity registry has the expected entries.
+	 * @param actual
+	 *            The registry to be checked.
+	 */
+	public final void checkExpectedTableIdRegistry(
+			final TableIdentityRegistry actual) {
+		check.compare(actual.getNames(), expectedTidr.getNames());
+	}
+
+	/**
+	 * Check to see if the table registry has the expected entries.
+	 * @param actual
+	 *            The registry to be checked.
+	 */
+	public final void checkExpectedTableRegistry(final TableRegistry actual) {
+		check.compare(actual.getNames(), expectedTblr.getNames());
+		for (String exname : expectedTblr.getNames()) {
+			log.debug("Checking table " + exname);
+			checkTableDefinitions(actual.getTable(exname),
+					expectedTblr.getTable(exname));
+		}
+	}
+
+	/**
+	 * Compares two table definitions.
+	 * @param actual
+	 *            first.
+	 * @param expected
+	 *            second.
+	 */
+	private void checkTableDefinitions(final TableColumnsI actual,
+			final TableColumnsI expected) {
+		Assert.assertEquals(actual.getTableId().getDatasetName(), expected
+				.getTableId().getDatasetName());
+		Assert.assertEquals(actual.getNumberOfColumns(true),
+				expected.getNumberOfColumns(true));
+		check.compare(actual.getColumns(true), expected.getColumns(true));
 	}
 
 	/**
@@ -238,7 +291,7 @@ public class DatasetDirector {
 	 * @return matrix of data.
 	 */
 	public final DoubleMatrixI generate(final ExperimentNames experiment,
-			final QueryParaTypes qt, final ChannelListType quy) {
+			final QueryParaTypes qt, final TestDatasetType quy) {
 		int row = queryTableSizes.get(qt);
 		List<String> channels = cltm.getChannels(quy);
 		RateType rate = queryRates.get(qt);
@@ -284,9 +337,9 @@ public class DatasetDirector {
 	 * @return Instance of ChannelDataGenerator.
 	 */
 	public final ChannelDataGenerator generateQueryData(
-			final ChannelListType quy, final QueryParaTypes qt,
+			final TestDatasetType quy, final QueryParaTypes qt,
 			final MatrixMixType rowMix) {
-		QueryChannelLists qctl = cltm.getChannelLists(quy);
+		QueryChannelLists qctl = cltm.getTestQuery(quy);
 		int row = queryTableSizes.get(qt);
 		return new ChannelDataGenerator(qctl, rowMix, row);
 	}
@@ -294,7 +347,7 @@ public class DatasetDirector {
 	/**
 	 * @return the cltm
 	 */
-	public final ChannelListTestMaps getCltm() {
+	public final TestDatasets getCltm() {
 		return cltm;
 	}
 

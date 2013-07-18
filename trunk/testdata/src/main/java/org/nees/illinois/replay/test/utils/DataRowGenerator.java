@@ -16,7 +16,7 @@ public class DataRowGenerator {
 	/**
 	 * number of time columns.
 	 */
-	private final int timeColumns = 4;
+	private final int timeColumns = 1;
 
 	/**
 	 * Generate a row.
@@ -26,11 +26,7 @@ public class DataRowGenerator {
 	 */
 	public final double[] genRecord(final TimeGenerator time) {
 		double[] result = genData(timeColumns, time.getRecordNumber());
-		int[] stepNumber = time.getStepNumber();
 		result[0] = time.getTime();
-		for (int s = 0; s < timeColumns - 1; s++) {
-			result[s + 1] = stepNumber[s];
-		}
 		return result;
 	}
 
@@ -69,5 +65,4 @@ public class DataRowGenerator {
 		return result;
 
 	}
-
 }
