@@ -8,11 +8,13 @@ import org.nees.illinois.replay.common.registries.ExperimentRegistries;
 import org.nees.illinois.replay.common.types.CompositeQueryI;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
-import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.data.RateType;
+import org.nees.illinois.replay.events.EventListI;
 import org.nees.illinois.replay.events.StepNumber;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
 import org.nees.illinois.replay.subresource.DataQuerySubResourceI;
+import org.nees.illinois.replay.subresource.EventSubResourceI;
 import org.nees.illinois.replay.subresource.SubResourceI;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
@@ -37,6 +39,13 @@ public class DataQueryServerResource extends ServerResource implements
 	 * of the restlet context so that it can be configured with Google GUICE.
 	 */
 	private DataQuerySubResourceI dquery;
+
+	/**
+	 * Subresource to query for events. This is passed in as part of the restlet
+	 * context so that it can be configured with Google GUICE.
+	 */
+	private EventSubResourceI qevents;
+
 	/**
 	 * Used to extract attributes from the request URI.
 	 */
@@ -95,7 +104,7 @@ public class DataQueryServerResource extends ServerResource implements
 	@Override
 	@Get("bin")
 	public final Representation getBin() {
-		DoubleMatrix data = getDm();
+		DoubleMatrixI data = getDm();
 		if (data == null) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
 					"Query \"" + query + "\" returned an empty dataset");
@@ -111,7 +120,7 @@ public class DataQueryServerResource extends ServerResource implements
 	 * using the {@link DataQuerySubResourceI dquery} subresource.
 	 * @return the data in double matrix form.
 	 */
-	private DoubleMatrix getDm() {
+	private DoubleMatrixI getDm() {
 		final List<RequiredAttrType> reqAttrs = new ArrayList<AttributeExtraction.RequiredAttrType>();
 
 		log.debug("Query Resource handling " + getRequest().getMethod()
@@ -134,26 +143,16 @@ public class DataQueryServerResource extends ServerResource implements
 		if (rate.equals(RateType.EVENT)) {
 			StepNumber strt = (StepNumber) attrs.get(RequiredAttrType.Start);
 			StepNumber stp = (StepNumber) attrs.get(RequiredAttrType.Stop);
-			DoubleMatrix data;
-			if (strt == null) {
-				data = dquery.doQuery(query);
-			} else if (stp == null) {
-				data = dquery.doQuery(query, strt, null, null);
-			} else {
-				data = dquery.doQuery(query, strt, stp, null);
-			}
+			DoubleMatrixI data;
+			EventListI events;
+			events = qevents.getEvents(strt.getName(), stp.getName());
+			data = dquery.doQuery(query, events.getTimeline());
 			return data;
 		}
 		Double strt = (Double) attrs.get(RequiredAttrType.Start);
 		Double stp = (Double) attrs.get(RequiredAttrType.Stop);
-		DoubleMatrix data;
-		if (strt == null) {
-			data = dquery.doQuery(query);
-		} else if (stp == null) {
-			data = dquery.doQuery(query, strt);
-		} else {
-			data = dquery.doQuery(query, strt, stp);
-		}
+		DoubleMatrixI data;
+		data = dquery.doQuery(query, strt, stp);
 		return data;
 
 	}
@@ -175,7 +174,8 @@ public class DataQueryServerResource extends ServerResource implements
 	@Override
 	@Delete
 	public final void removeList(final String query) {
-		throw new ResourceException(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, "Remove not implemented yet.");
+		throw new ResourceException(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED,
+				"Remove not implemented yet.");
 	}
 
 	@Override

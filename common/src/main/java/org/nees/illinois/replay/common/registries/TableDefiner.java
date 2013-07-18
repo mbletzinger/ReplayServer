@@ -9,7 +9,6 @@ import java.util.List;
 import org.nees.illinois.replay.common.types.TableColumns;
 import org.nees.illinois.replay.common.types.TableColumnsI;
 import org.nees.illinois.replay.common.types.TableIdentityI;
-import org.nees.illinois.replay.data.RateType;
 
 /**
  * Create a table {@link TableColumnsI definition} and adds it to the
@@ -79,13 +78,11 @@ public class TableDefiner {
 	 *            Table name.
 	 * @param type
 	 *            Table {@link TableType type}.
-	 * @param rate
-	 *            Data sampling {@link RateType rate}.
 	 * @return Table {@link TableIdentityI identity}.
 	 */
 	private TableIdentityI lookupTableId(final String name,
-			final TableType type, final RateType rate) {
-		return tnr.addTable(experiment, name, type, rate);
+			final TableType type) {
+		return tnr.addTable(experiment, name, type);
 	}
 
 	/**
@@ -94,16 +91,13 @@ public class TableDefiner {
 	 *            Table name
 	 * @param type
 	 *            Table {@link TableType type}.
-	 * @param rate
-	 *            Data sampling {@link RateType rate}.
 	 * @param channels
 	 *            List of channels.
 	 * @return New table {@link TableColumnsI definition}.
 	 */
 	public final TableColumnsI define(final String name,
-			final TableType type, final RateType rate,
-			final List<String> channels) {
-		TableIdentityI tableid = lookupTableId(name, type, rate);
+			final TableType type, final List<String> channels) {
+		TableIdentityI tableid = lookupTableId(name, type);
 		List<String> dataColumns = lookupChannels(tableid.getDbName(), channels);
 		TableColumnsI result = new TableColumns(dataColumns, tableid);
 		tr.setTable(name, result);

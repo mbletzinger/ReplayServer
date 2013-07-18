@@ -3,12 +3,14 @@
  */
 package org.nees.illinois.replay.common.registries;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nees.illinois.replay.common.types.TableId;
 import org.nees.illinois.replay.common.types.TableIdentityI;
-import org.nees.illinois.replay.data.RateType;
 
 /**
  * Class which manages the database table names for an experiment. The names are
@@ -46,15 +48,13 @@ public class TableIdentityRegistry {
 	 *            New name.
 	 * @param type
 	 *            {@link TableType Table type}.
-	 * @param rate
-	 *            Data sampling {@link RateType rate}.
 	 * @return The table {@link TableIdentityI identity}.
 	 */
 	public final TableIdentityI addTable(final String experiment,
-			final String datasetname, final TableType type, final RateType rate) {
+			final String datasetname, final TableType type) {
 		TableIdentityI result = identities.get(datasetname);
 		if (result == null) {
-			String dbtn = newName(type, rate);
+			String dbtn = newName(type);
 			result = new TableId(datasetname, experiment, dbtn);
 			identities.put(datasetname, result);
 		}
@@ -82,6 +82,16 @@ public class TableIdentityRegistry {
 	}
 
 	/**
+	 * @return the table names
+	 */
+	public final List<String> getNames() {
+		List<String> keys = new ArrayList<String>();
+		keys.addAll(identities.keySet());
+		Collections.sort(keys);
+		return keys;
+	}
+
+	/**
 	 * Initialization function used to synchronize with the database. For
 	 * internal use only.
 	 * @param identities
@@ -101,14 +111,11 @@ public class TableIdentityRegistry {
 	 * Create a new table name.
 	 * @param type
 	 *            Table type.
-	 * @param rate
-	 *            Rate type.
 	 * @return New name.
 	 */
-	private String newName(final TableType type, final RateType rate) {
+	private String newName(final TableType type) {
 		int idx = afterLastIndex.get(type);
-		String result = type.toString().toLowerCase() + "_"
-				+ rate.toString().toLowerCase();
+		String result = type.toString().toLowerCase() + "_";
 		result += idx;
 		afterLastIndex.put(type, new Integer(idx + 1));
 		return result;

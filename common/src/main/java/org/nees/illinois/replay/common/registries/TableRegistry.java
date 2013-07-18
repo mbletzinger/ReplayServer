@@ -3,7 +3,10 @@
  */
 package org.nees.illinois.replay.common.registries;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nees.illinois.replay.common.types.TableColumnsI;
@@ -66,5 +69,15 @@ public class TableRegistry {
 		}
 		return null;
 	}
+	/**
+	 * @return the table names
+	 */
+	public final List<String> getNames() {
+		List<String> keys = new ArrayList<String>();
+		keys.addAll(tableMap.keySet());
+		Collections.sort(keys);
+		return keys;
+	}
+
 
 }

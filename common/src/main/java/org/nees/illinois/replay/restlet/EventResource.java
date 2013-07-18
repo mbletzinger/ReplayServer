@@ -2,8 +2,6 @@ package org.nees.illinois.replay.restlet;
 
 import org.restlet.representation.Representation;
 import org.restlet.resource.Put;
-import org.restlet.resource.ResourceException;
-
 /**
  * Interface for the restlet resource used for data updates. The interface
  * expects a event definition with a representation that contains the description and a timestamp.

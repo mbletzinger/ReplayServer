@@ -26,10 +26,6 @@ public class TableColumns implements TableColumnsI {
 	private final List<String> timeColumns = new ArrayList<String>();
 	{
 		timeColumns.add("time");
-		timeColumns.add("step");
-		timeColumns.add("substep");
-		timeColumns.add("correctionstep");
-
 	}
 
 	/**

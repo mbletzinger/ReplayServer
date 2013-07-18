@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,7 @@ public class InputStream2DoubleMatrix {
 	 * Get double matrix as a DoubleMatrix.
 	 * @return the DoubleMatrix instance.
 	 */
-	public final DoubleMatrix getMatrix() {
+	public final DoubleMatrixI getMatrix() {
 		return new DoubleMatrix(numbers);
 	}
 

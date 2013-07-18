@@ -12,6 +12,13 @@ import org.nees.illinois.replay.data.MatrixSpecI;
 public interface TableColumnsI extends MatrixSpecI {
 	/**
 	 * @param withTime
+	 *            include the time columns
+	 * @return number of columns
+	 */
+	int getNumberOfColumns(boolean withTime);
+
+	/**
+	 * @param withTime
 	 *            include the time and step columns
 	 * @return List of column names
 	 */
