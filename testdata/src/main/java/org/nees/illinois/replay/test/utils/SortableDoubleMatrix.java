@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
+import org.nees.illinois.replay.data.MatrixSpecI;
 
 /**
  * Class which sorts the rows by the first column assumed to be time in seconds.
@@ -82,5 +83,10 @@ public class SortableDoubleMatrix implements DoubleMatrixI {
 	@Override
 	public final double value(final int row, final int col) {
 		return dm.value(row, col);
+	}
+
+	@Override
+	public final MatrixSpecI getSpec() {
+		return dm.getSpec();
 	}
 }

@@ -68,6 +68,10 @@ public class ChannelDataGenerator {
 	 */
 	private final double timeMultiplier = .02;
 	/**
+	 * Number of time columns.
+	 */
+	private final int timeColumns = 1;
+	/**
 	 * Logger.
 	 */
 	private final Logger log = LoggerFactory
@@ -119,7 +123,6 @@ public class ChannelDataGenerator {
 		int fsz = existing.size();
 		int ssz = newChannels.size();
 		int moreColumns = fsz > ssz ? fsz : ssz;
-		final int fourTimeColumns = 4;
 		List<Double> nulls = new ArrayList<Double>();
 		for (int i = 0; i < moreColumns; i++) {
 			nulls.add(null);
@@ -141,7 +144,7 @@ public class ChannelDataGenerator {
 				List<Double> row = new ArrayList<Double>();
 				row.addAll(fLists.get(r));
 				List<Double> second = sLists.get(r);
-				row.addAll(second.subList(fourTimeColumns, second.size()));
+				row.addAll(second.subList(timeColumns, second.size()));
 				allL.add(row);
 			}
 		} else {
@@ -153,10 +156,10 @@ public class ChannelDataGenerator {
 				tmp.clear();
 				tmp.addAll(row);
 				row.clear();
-				row.addAll(tmp.subList(0, fourTimeColumns)); // add time columns
+				row.addAll(tmp.subList(0, timeColumns)); // add time columns
 				row.addAll(nulls.subList(0, fsz));
-				row.addAll(tmp.subList(fourTimeColumns, tmp.size())); // add
-																		// data
+				row.addAll(tmp.subList(timeColumns, tmp.size())); // add
+																	// data
 			}
 
 			if (fData != null) {
@@ -178,7 +181,6 @@ public class ChannelDataGenerator {
 	public final void mixColumns() {
 		int fcsz = ctl.getExistingList().size();
 		int scsz = ctl.getNewChannels().size();
-		final int fourTimeColumns = 4;
 		MatrixMixType mix = ctl.getMix();
 		List<List<Double>> accum = (dataParts.get(TestingParts.All)).toList();
 		if (mix.equals(MatrixMixType.AddAfter)) {
@@ -192,18 +194,17 @@ public class ChannelDataGenerator {
 			List<Double> tmp = new ArrayList<Double>();
 			tmp.addAll(row);
 			row.clear();
-			row.addAll(tmp.subList(0, fourTimeColumns));
+			row.addAll(tmp.subList(0, timeColumns));
 			if (mix.equals(MatrixMixType.AddBefore)) {
-				row.addAll(tmp.subList(fcsz + fourTimeColumns, tmp.size()));
-				row.addAll(tmp.subList(fourTimeColumns, fcsz + fourTimeColumns));
+				row.addAll(tmp.subList(fcsz + timeColumns, tmp.size()));
+				row.addAll(tmp.subList(timeColumns, fcsz + timeColumns));
 			}
 			if (mix.equals(MatrixMixType.AddMiddle)) {
 				int hscsz = scsz / 2;
-				row.addAll(tmp.subList(fcsz + fourTimeColumns, fcsz
-						+ fourTimeColumns + hscsz));
-				row.addAll(tmp.subList(fourTimeColumns, fcsz + fourTimeColumns));
-				row.addAll(tmp.subList(fcsz + fourTimeColumns + hscsz,
-						tmp.size()));
+				row.addAll(tmp.subList(fcsz + timeColumns, fcsz + timeColumns
+						+ hscsz));
+				row.addAll(tmp.subList(timeColumns, fcsz + timeColumns));
+				row.addAll(tmp.subList(fcsz + timeColumns + hscsz, tmp.size()));
 			}
 			if (mix.equals(MatrixMixType.AddInterleaved)) {
 				int smaller = fcsz;
@@ -213,13 +214,13 @@ public class ChannelDataGenerator {
 					firstIsBigger = true;
 				}
 				for (int c = 0; c < smaller; c++) {
-					row.add(tmp.get(fourTimeColumns + fcsz + c));
-					row.add(tmp.get(fourTimeColumns + c));
+					row.add(tmp.get(timeColumns + fcsz + c));
+					row.add(tmp.get(timeColumns + c));
 				}
 				if (firstIsBigger) {
-					row.addAll(tmp.subList(fourTimeColumns + smaller, fcsz));
+					row.addAll(tmp.subList(timeColumns + smaller, fcsz));
 				} else {
-					row.addAll(tmp.subList(fourTimeColumns + fcsz + smaller,
+					row.addAll(tmp.subList(timeColumns + fcsz + smaller,
 							tmp.size()));
 				}
 			}

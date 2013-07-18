@@ -10,27 +10,42 @@ import org.nees.illinois.replay.test.utils.InterpolateTestData;
 import org.nees.illinois.replay.test.utils.InterpolateTestData.ColumnTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+/**
+ * Class to test the interpolate/extrapolate functionality of the replay server.
+ * @author Michael Bletzinger
+ */
 @Test(groups = { "test_data" })
 public class TestInterpolate {
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory.getLogger(TestInterpolate.class);
-	private InterpolateTestData dmg = new InterpolateTestData(10, 0.02);
+	/**
+	 * Size of the matrix to test.
+	 */
+	private final int numberOfChannels = 4;
+	/**
+	 * Size of the matrix to test.
+	 */
+	private final int numberOfRecords = 8;
+	/**
+	 * Time interval.
+	 */
+	private final int timeInterval = 4;
+	/**
+	 * Interpolate data sets.
+	 */
+	private InterpolateTestData dmg = new InterpolateTestData(numberOfRecords, timeInterval);
 
-	@BeforeMethod
-	public void setUp() throws Exception {
-	}
-
-	@AfterMethod
-	public void tearDown() throws Exception {
-	}
-
+	/**
+	 * Test a matrix that has no missing values.
+	 */
 	@Test
-	public void testFull() {
+	public final void testFull() {
 		List<ColumnTypes> spec = new ArrayList<InterpolateTestData.ColumnTypes>();
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			spec.add(ColumnTypes.Full);
 		}
 		List<List<Double>> actualL = dmg.generate(spec, false);
@@ -45,10 +60,13 @@ public class TestInterpolate {
 		dmg.compareList2Doubles(expected, actual);
 	}
 
+	/**
+	 * Test a matrix with no values.
+	 */
 	@Test
-	public void testEmpty() {
+	public final void testEmpty() {
 		List<ColumnTypes> spec = new ArrayList<InterpolateTestData.ColumnTypes>();
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < numberOfChannels; i++) {
 			spec.add((i % 2 == 0 ? ColumnTypes.Empty : ColumnTypes.Full));
 		}
 		List<List<Double>> actualL = dmg.generate(spec, false);
@@ -63,8 +81,11 @@ public class TestInterpolate {
 		dmg.compareList2Doubles(expected, actual);
 	}
 
+	/**
+	 * Test a matrix with columns that have various missing elements.
+	 */
 	@Test
-	public void testNulls() {
+	public final void testNulls() {
 		List<ColumnTypes> spec = new ArrayList<InterpolateTestData.ColumnTypes>();
 		spec.add(ColumnTypes.Empty);
 		spec.add(ColumnTypes.Full);
@@ -80,12 +101,15 @@ public class TestInterpolate {
 		log.debug("Fixed: " + actual);
 		List<List<Double>> expectedL = dmg.generate(spec, true);
 		DoubleMatrixI expected = new DoubleMatrix(expectedL);
-		// log.debug("Expected: " + expected);
+		 log.debug("Expected: " + expected);
 		dmg.compareList2Doubles(expected, actual);
 	}
 
+	/**
+	 * Test a matrix with columns that either start late or end early.
+	 */
 	@Test
-	public void testExtrapolate() {
+	public final void testExtrapolate() {
 		List<ColumnTypes> spec = new ArrayList<InterpolateTestData.ColumnTypes>();
 		spec.add(ColumnTypes.Empty);
 		spec.add(ColumnTypes.Full);
