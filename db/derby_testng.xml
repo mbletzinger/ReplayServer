@@ -3,6 +3,24 @@
 <suite name="DerbyDbSuite" parallel="false">
  <parameter name="db"  value="derby"/>
    <test name="DerbyTest">
+  		<groups>
+			<dependencies>
+				<!-- cool uri tests mess up the suite because they have different guice 
+					bindings -->
+				<group
+					name="db-pools"
+					depends-on="create-db.*" />
+				<group
+					name="db-statement"
+					depends-on="db-pools.*" />
+				<group
+					name="restlet-errors-client-test"
+					depends-on="restlet-client-test.*" />
+				<group
+					name="http-test"
+					depends-on="resources-test.*" />
+			</dependencies>
+		</groups>
     <classes>
       <class name="org.nees.illinois.replay.test.db.TestDbControl"/>
       <class name="org.nees.illinois.replay.test.db.TestCreateRemoveDatabase"/>

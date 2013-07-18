@@ -5,9 +5,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.db.statement.ChannelInsertStatement;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
-import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,9 +62,9 @@ public class DbChannelNameSynch {
 	public void synchronize() {
 		removeTable();
 		createTable();
-		Map<String, String> reg = cnr.getClone();
+		Map<String, String> reg = cnr.getNamesMap();
 		ChannelInsertStatement prep = new ChannelInsertStatement(channelTable);
-		db.createPrepStatement(prep);
+		db.;
 		for (String n : reg.keySet()) {
 			prep.add(n, reg.get(n));
 		}

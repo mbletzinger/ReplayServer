@@ -6,13 +6,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbInfo;
 import org.nees.illinois.replay.db.DbOperationsI;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.statement.DbTablesMap;
-import org.nees.illinois.replay.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
 import org.slf4j.Logger;
@@ -61,7 +61,7 @@ public class TestTableUpdates {
 		channels.add("OM_Disp_LBCB1_Cartesian_D__LBCB1__RY");
 		channels.add("OM_Load_LBCB1_Actuator_L__LBCB2__Z1");
 		channels.add("OM_CntrlSensor_D__West__X");
-		dbT.addTable(TableType.OM, channels);
+		dbT.addTable(TableType.Control, channels);
 		channels.clear();
 		channels.add("DAQ_DisplacementSensor_WestFlange_FirstFloor_DTV02F1A__W7__LinPot05");
 		channels.add("DAQ_StrainGauge_Steel_Web_SecondFloor_SGWWF2WL05K__W7__SG__K5");
@@ -106,7 +106,7 @@ public class TestTableUpdates {
 	public void teardown() {
 		Connection connection = fetchConnection();
 		for (RateType r : RateType.values()) {
-			executeStatement("DROP TABLE " + dbT.tableName(TableType.OM, r),
+			executeStatement("DROP TABLE " + dbT.tableName(TableType.Control, r),
 					connection);
 			executeStatement("DROP TABLE " + dbT.tableName(TableType.DAQ, r),
 					connection);
@@ -172,9 +172,9 @@ public class TestTableUpdates {
 	@Test
 	public void testCreateTableStatement() {
 		Connection connection = fetchConnection();
-		String result = dbT.createTableStatement(TableType.OM, RateType.CONT);
+		String result = dbT.createTableStatement(TableType.Control, RateType.CONT);
 		executeStatement(result, connection);
-		result = dbT.createTableStatement(TableType.OM, RateType.STEP);
+		result = dbT.createTableStatement(TableType.Control, RateType.STEP);
 		executeStatement(result, connection);
 		result = dbT.createTableStatement(TableType.DAQ, RateType.CONT);
 		executeStatement(result, connection);

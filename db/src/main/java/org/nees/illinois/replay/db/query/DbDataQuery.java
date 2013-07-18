@@ -2,7 +2,8 @@ package org.nees.illinois.replay.db.query;
 
 import java.util.List;
 
-import org.nees.illinois.replay.data.DataQueryI;
+import org.nees.illinois.replay.common.registries.ExperimentRegistries;
+import org.nees.illinois.replay.data.DataQuerySubResourceI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
@@ -10,11 +11,10 @@ import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.query.DbQueryRouter.QueryType;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.db.statement.DbTablesMap;
-import org.nees.illinois.replay.registries.ExperimentRegistries;
 
 import com.google.inject.Inject;
 
-public class DbDataQuery implements DataQueryI {
+public class DbDataQuery implements DataQuerySubResourceI {
 
 	private final DbPools pools;
 	private ExperimentRegistries experiment;
@@ -29,7 +29,7 @@ public class DbDataQuery implements DataQueryI {
 			double stop) {
 		StatementProcessor dbSt = pools.createDbStatement(experiment.getExperiment(),false);
 		SavedQueryWTablesList dbSpec;
-		dbSpec = (SavedQueryWTablesList) experiment.getQueries().getQuery(name, RateType.CONT);
+		dbSpec = (SavedQueryWTablesList) experiment.getQueries().getQuery(name);
 		DbQueryRouter dbQuerySt = new DbQueryRouter(dbSt, dbSpec);
 		return dbQuerySt.getData(qtype, start, stop);
 	}
@@ -38,7 +38,7 @@ public class DbDataQuery implements DataQueryI {
 			StepNumber start, StepNumber stop) {
 		StatementProcessor dbSt = pools.createDbStatement(experiment.getExperiment(),false);
 		SavedQueryWTablesList dbSpec;
-		dbSpec = (SavedQueryWTablesList) experiment.getQueries().getQuery(name, RateType.STEP);
+		dbSpec = (SavedQueryWTablesList) experiment.getQueries().getQuery(name);
 		DbQueryRouter dbQuerySt = new DbQueryRouter(dbSt, dbSpec);
 		return dbQuerySt.getData(qtype, start, stop);
 	}
@@ -59,18 +59,18 @@ public class DbDataQuery implements DataQueryI {
 	}
 
 	@Override
-	public DoubleMatrix doQuery(String name, StepNumber start) {
+	public DoubleMatrix doQuery(String name, StepNumber start, RateType rate) {
 		return doQuery(QueryType.StepWithStart, name, start, null);
 	}
 
 	@Override
-	public DoubleMatrix doQuery(String name, StepNumber start, StepNumber stop) {
+	public DoubleMatrix doQuery(String name, StepNumber start, StepNumber stop, RateType rate) {
 		return doQuery(QueryType.StepWithStop, name, start, stop);
 	}
 
 	@Override
 	public boolean isQuery(String name) {
-		return experiment.getQueries().getQuery(name, null) != null;
+		return experiment.getQueries().getQuery(name) != null;
 	}
 
 	@Override
@@ -78,9 +78,9 @@ public class DbDataQuery implements DataQueryI {
 		// DbTableSpecs is getting a clone because query tables are either added or removed; never changed.
 		DbTablesMap specs = (DbTablesMap) experiment.getChnlNamesMgmt().clone();
 		SavedQueryWTablesList dq = new SavedQueryWTablesList(channels, name, specs, RateType.CONT);
-		experiment.getQueries().setQuery(name, RateType.CONT, dq);
+		experiment.getQueries().setQuery(name, dq);
 		dq = new SavedQueryWTablesList(channels, name, specs, RateType.STEP);
-		experiment.getQueries().setQuery(name, RateType.STEP, dq);
+		experiment.getQueries().setQuery(name, dq);
 		return true;
 	}
 

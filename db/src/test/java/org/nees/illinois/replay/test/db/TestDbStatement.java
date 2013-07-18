@@ -21,20 +21,69 @@ import org.testng.annotations.Test;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+/**
+ * Test various database statements.
+ * @author Michael Bletzinger
+ */
+@Test(groups = { "db-statement" })
 public class TestDbStatement {
-	private double[][] data = new double[5][2];
+	/**
+	 * Data property.
+	 */
+	private final int numDataRows = 5;
+	/**
+	 * Data property.
+	 */
+	private final int numDataColumns = 2;
+	/**
+	 * Data property.
+	 */
+	private final double[] dataMultipliers = { 0.5, -0.02 };
+	/**
+	 * Data property.
+	 */
+	private final double tolerance = 0.001;
+	/**
+	 * Data to use.
+	 */
+	private double[][] data = new double[numDataRows][numDataColumns];
+	/**
+	 * Map of database pools.
+	 */
 	private DbPools pools;
+	/**
+	 * Extra Derby controls.
+	 */
 	private final DerbyDbControl ddbc = new DerbyDbControl();
-	final String experiment = "HybridMasonry1";
-	DbTestsModule guiceMod;
+	/**
+	 * Experiment name.
+	 */
+	private final String experiment = "HybridMasonry1";
+	/**
+	 * Module for injecting database properties.
+	 */
+	private DbTestsModule guiceMod;
+	/**
+	 * Flag that is true if the database is MySQL.
+	 */
 	private boolean ismysql;
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory.getLogger(TestDbStatement.class);
 
+	/**
+	 * Set up the data for the tests.
+	 * @param db
+	 *            Label for database.
+	 * @throws Exception
+	 *             if something breaks.
+	 */
 	@Parameters("db")
 	@BeforeClass
-	public void setUp(@Optional("derby") String db) throws Exception {
+	public final void setUp(@Optional("derby") final String db)
+			throws Exception {
 		guiceMod = new DbTestsModule(db);
-		guiceMod.setExperiment("HybridMasonry1");
 		Injector injector = Guice.createInjector(guiceMod);
 		pools = injector.getInstance(DbPools.class);
 		ismysql = db.equals("mysql");
@@ -42,22 +91,30 @@ public class TestDbStatement {
 			ddbc.startDerby();
 		}
 		pools.getOps().createDatabase(experiment);
-		
-		for (int i = 0; i < 5; i++) {
-			data[i][0] = i * 0.5 + .001;
-			data[i][1] = i * -0.02 + .001;
+
+		for (int i = 0; i < numDataRows; i++) {
+			data[i][0] = i * dataMultipliers[0] + tolerance;
+			data[i][1] = i * dataMultipliers[1] + tolerance;
 		}
 	}
 
+	/**
+	 * Clean up the databases.
+	 * @throws Exception
+	 *             If anything breaks.
+	 */
 	@AfterMethod
-	public void tearDown() throws Exception {
-		StatementProcessor dbSt = pools.createDbStatement(experiment,false);
+	public final void tearDown() throws Exception {
+		StatementProcessor dbSt = pools.createDbStatement(experiment, false);
 		dbSt.noComplaints("DROP TABLE TestTable");
 		dbSt.close();
 	}
 
+	/**
+	 * Remove the database and shut down the pools.
+	 */
 	@AfterClass
-	public void teardown1() {
+	public final void teardown1() {
 		try {
 			pools.getOps().removeDatabase("HybridMasonry1");
 		} catch (Exception e) {
@@ -69,25 +126,31 @@ public class TestDbStatement {
 		}
 	}
 
+	/**
+	 * Test a prepared statement.
+	 */
 	@Test
-	public void testCreatePrepStatement() {
+	public final void testCreatePrepStatement() {
 		String tblName = "TestTable";
-		StatementProcessor dbSt = pools.createDbStatement(experiment,true);
+		StatementProcessor dbSt = pools.createDbStatement(experiment, true);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
-		TestPrepStatement prep = new TestPrepStatement(tblName);
-		dbSt.createPrepStatement(prep);
-		for (int i = 0; i < 5; i++) {
+		TestPrepStatement prep = new TestPrepStatement(tblName,
+				dbSt.getConnection());
+		for (int i = 0; i < numDataRows; i++) {
 			prep.add(data[i][0], data[i][1]);
 		}
-		int[] result = prep.execute();
+		int[] result = prep.getBuilder().execute();
 		AssertJUnit.assertNotNull(result);
 		dbSt.execute("DROP TABLE TestTable");
 		dbSt.close();
 	}
 
+	/**
+	 * Test table management.
+	 */
 	@Test
-	public void testExecute() {
-		StatementProcessor dbSt = pools.createDbStatement(experiment,true);
+	public final void testCreateAndDropTable() {
+		StatementProcessor dbSt = pools.createDbStatement(experiment, true);
 		boolean result = dbSt
 				.execute("CREATE TABLE TestTable (col1 double, col2 double)");
 		AssertJUnit.assertTrue(result);
@@ -96,17 +159,19 @@ public class TestDbStatement {
 		dbSt.close();
 	}
 
+	/**
+	 * Test a select statement.
+	 */
 	@Test
-	public void testQuery1() {
+	public final void testQuery1() {
 		String tblName = "TestTable";
-		StatementProcessor dbSt = pools.createDbStatement(experiment,false);
+		StatementProcessor dbSt = pools.createDbStatement(experiment, false);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
-		double[][] result = new double[5][2];
-		for (int i = 0; i < 5; i++) {
-			TestPrepStatement prep = new TestPrepStatement(tblName);
-			dbSt.createPrepStatement(prep);
+		double[][] result = new double[numDataRows][numDataColumns];
+		for (int i = 0; i < numDataRows; i++) {
+			TestPrepStatement prep = new TestPrepStatement(tblName, dbSt.getConnection());
 			prep.add(data[i][0], data[i][1]);
-			prep.execute();
+			prep.getBuilder().execute();
 			ResultSet rs = dbSt.query("SELECT * FROM " + tblName);
 			int r = 0;
 			try {
@@ -121,34 +186,37 @@ public class TestDbStatement {
 			}
 			String rStr1 = "Result = [";
 			String rStr2 = "              [";
-			for (int k = 0; k < 5; k++) {
+			for (int k = 0; k < numDataRows; k++) {
 				rStr1 += (k == 0 ? "" : ", ") + result[k][0];
 				rStr2 += (k == 0 ? "" : ", ") + result[k][1];
 			}
 			log.info(rStr1 + "]\n" + rStr2 + "]");
 			dbSt.closeQuery(rs);
 		}
-		for (int i = 0; i < 5; i++) {
-			AssertJUnit.assertEquals(data[i][0], result[i][0], .001);
-			AssertJUnit.assertEquals(data[i][1], result[i][1], .001);
+		for (int i = 0; i < numDataRows; i++) {
+			AssertJUnit.assertEquals(data[i][0], result[i][0], tolerance);
+			AssertJUnit.assertEquals(data[i][1], result[i][1], tolerance);
 		}
 		dbSt.execute("DROP TABLE TestTable");
 		dbSt.close();
 	}
 
+	/**
+	 * Test a different query.
+	 */
 	@Test
-	public void testQuery2() {
+	public final void testQuery2() {
 		String tblName = "TestTable";
-		StatementProcessor dbSt = pools.createDbStatement(experiment,false);
+		StatementProcessor dbSt = pools.createDbStatement(experiment, false);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
-		TestPrepStatement prep = new TestPrepStatement(tblName);
-		dbSt.createPrepStatement(prep);
-		for (int i = 0; i < 5; i++) {
+		TestPrepStatement prep = new TestPrepStatement(tblName,
+				dbSt.getConnection());
+		for (int i = 0; i < numDataRows; i++) {
 			prep.add(data[i][0], data[i][1]);
 		}
-		prep.execute();
+		prep.getBuilder().execute();
 		ResultSet rs = dbSt.query("SELECT * FROM " + tblName);
-		double[][] result = new double[5][2];
+		double[][] result = new double[numDataRows][numDataColumns];
 		log.info("result size is [" + result.length + "][" + result[0].length
 				+ "]");
 		int r = 0;
@@ -163,9 +231,9 @@ public class TestDbStatement {
 			AssertJUnit.fail();
 		}
 		dbSt.closeQuery(rs);
-		for (int i = 0; i < 5; i++) {
-			AssertJUnit.assertEquals(data[i][0], result[i][0], .001);
-			AssertJUnit.assertEquals(data[i][1], result[i][1], .001);
+		for (int i = 0; i < numDataRows; i++) {
+			AssertJUnit.assertEquals(data[i][0], result[i][0], tolerance);
+			AssertJUnit.assertEquals(data[i][1], result[i][1], tolerance);
 		}
 		dbSt.execute("DROP TABLE TestTable");
 		dbSt.close();

@@ -5,16 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nees.illinois.replay.common.registries.ChannelNameManagement;
+import org.nees.illinois.replay.common.registries.SavedQueryDeleteMe;
+import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
-import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.statement.DbTablesMap;
-import org.nees.illinois.replay.registries.ChannelNameManagement;
-import org.nees.illinois.replay.registries.SavedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SavedQueryWTablesList extends SavedQuery {
+public class SavedQueryWTablesList extends SavedQueryDeleteMe {
 
 	private final Logger log = LoggerFactory.getLogger(SavedQueryWTablesList.class);
 

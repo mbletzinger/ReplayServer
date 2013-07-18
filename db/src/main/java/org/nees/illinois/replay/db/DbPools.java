@@ -14,30 +14,62 @@ import com.google.inject.Singleton;
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 
+/**
+ * Class which manages a set of Bone Connection Pools. Information found at
+ * http://jolbox.com
+ * @author Michael Bletzinger
+ */
 @Singleton
 public class DbPools {
+	/**
+	 * Map of pools for each experiment.
+	 */
 	private final Map<String, BoneCP> connectionPools = new HashMap<String, BoneCP>();
-
+	/**
+	 * Information of the database being used.
+	 */
 	private final DbInfo info;
-
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory.getLogger(DbPools.class);
-
+	/**
+	 * Operations for the database.
+	 */
 	private final DbOperationsI ops;
-	
+
+	/**
+	 * @param info
+	 *            Information of the database being used.
+	 * @param filters
+	 *            Operations for the database.
+	 */
 	@Inject
-	public DbPools(DbInfo info, DbOperationsI filters) {
+	public DbPools(final DbInfo info, final DbOperationsI filters) {
 		this.info = info;
 		this.ops = filters;
 	}
 
-	public void close() {
+	/**
+	 * Close all of the pools.
+	 */
+	public final void close() {
 		for (BoneCP c : connectionPools.values()) {
 			c.shutdown();
 		}
 		connectionPools.clear();
 	}
 
-	private void createConnection(String experiment, boolean createDb) {
+	/**
+	 * Open a connection for an experiment database.
+	 * @param experiment
+	 *            Name of the experiment.
+	 * @param createDb
+	 *            True of if the database should be created if it does not
+	 *            exist.
+	 */
+	private void createConnection(final String experiment,
+			final boolean createDb) {
 		String connectionUrl = ops.filterUrl(info.getConnectionUrl(),
 				experiment);
 		try {
@@ -62,8 +94,11 @@ public class DbPools {
 		BoneCPConfig config = new BoneCPConfig();
 		config.setJdbcUrl(connectionUrl); // jdbc url specific to your database,
 											// eg jdbc:mysql://127.0.0.1/yourdb
-		config.setMinConnectionsPerPartition(5);
-		config.setMaxConnectionsPerPartition(10);
+		final int minConnectionsPerPartition = 5;
+		final int maxConnectionsPerPartition = 10;
+
+		config.setMinConnectionsPerPartition(minConnectionsPerPartition);
+		config.setMaxConnectionsPerPartition(maxConnectionsPerPartition);
 		config.setPartitionCount(1);
 		if (info.getUser() != null) {
 			config.setUsername(info.getUser());
@@ -82,7 +117,18 @@ public class DbPools {
 		connectionPools.put(experiment, pool);
 	}
 
-	public StatementProcessor createDbStatement(String experiment, boolean createDb) {
+	/**
+	 * Open a connection to the database associated with the experiment and
+	 * return a statement processor.
+	 * @param experiment
+	 *            Name of the experiment.
+	 * @param createDb
+	 *            True of if the database should be created if it does not
+	 *            exist.
+	 * @return the statement processor.
+	 */
+	public final StatementProcessor createDbStatement(final String experiment,
+			final boolean createDb) {
 		Connection connection = fetchConnection(experiment, createDb);
 		if (connection == null) {
 			return null;
@@ -90,7 +136,18 @@ public class DbPools {
 		return new StatementProcessor(connection);
 	}
 
-	public Connection fetchConnection(String experiment, boolean createDb) {
+	/**
+	 * Open a connection to the database associated with the experiment and
+	 * return a JDBC connection reference.
+	 * @param experiment
+	 *            Name of the experiment.
+	 * @param createDb
+	 *            True of if the database should be created if it does not
+	 *            exist.
+	 * @return the connection.
+	 */
+	public final Connection fetchConnection(final String experiment,
+			final boolean createDb) {
 		Connection connection = null;
 		if (connectionPools.containsKey(experiment) == false) {
 			createConnection(experiment, createDb);
@@ -106,14 +163,14 @@ public class DbPools {
 	/**
 	 * @return the info
 	 */
-	public DbInfo getInfo() {
+	public final DbInfo getInfo() {
 		return info;
 	}
 
 	/**
 	 * @return the ops
 	 */
-	public DbOperationsI getOps() {
+	public final DbOperationsI getOps() {
 		return ops;
 	}
 

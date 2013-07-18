@@ -3,10 +3,13 @@ package org.nees.illinois.replay.test.db;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nees.illinois.replay.common.registries.ChannelNameManagement;
+import org.nees.illinois.replay.common.registries.ExperimentModuleDeleteMe;
+import org.nees.illinois.replay.common.registries.ExperimentRegistries;
+import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.Mtx2Str;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.data.DbDataUpdates;
 import org.nees.illinois.replay.db.query.DbQueryRouter;
@@ -15,14 +18,11 @@ import org.nees.illinois.replay.db.query.NumberOfColumnsWithSelect;
 import org.nees.illinois.replay.db.query.SavedQueryWTablesList;
 import org.nees.illinois.replay.db.statement.DbTablesMap;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
-import org.nees.illinois.replay.registries.ChannelNameManagement;
-import org.nees.illinois.replay.registries.ExperimentModule;
-import org.nees.illinois.replay.registries.ExperimentRegistries;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.utils.ChannelListTestMaps;
-import org.nees.illinois.replay.test.utils.ChannelListType;
-import org.nees.illinois.replay.test.utils.ChannelTestingList;
+import org.nees.illinois.replay.test.utils.TestDatasets;
+import org.nees.illinois.replay.test.utils.TestDatasetType;
+import org.nees.illinois.replay.test.utils.QueryChannelLists;
 import org.nees.illinois.replay.test.utils.CompareLists;
 import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ public class TestDbQuery {
 	private DbDataUpdates dbu;
 	private final DerbyDbControl ddbc = new DerbyDbControl();
 	private ExperimentRegistries er;
-	private ExperimentModule guiceMod;
+	private ExperimentModuleDeleteMe guiceMod;
 	private boolean ismysql;
 	private final Logger log = LoggerFactory.getLogger(TestDbQuery.class);
 	private double[][] omContData = new double[20][7];
@@ -84,7 +84,7 @@ public class TestDbQuery {
 	public void tearDown() throws Exception {
 		DbDataUpdates dbu = new DbDataUpdates(pools);
 		dbu.setExperiment(er);
-		dbu.removeTable(TableType.OM);
+		dbu.removeTable(TableType.Control);
 		dbu.removeTable(TableType.DAQ);
 	}
 
@@ -100,13 +100,13 @@ public class TestDbQuery {
 	@Test
 	public void testQuerySpec() {  // Need more test for query types
 
-		ChannelListTestMaps cl = new ChannelListTestMaps(false,er.getExperiment());
+		TestDatasets cl = new TestDatasets(false,er.getExperiment());
 
-		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
-		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
+		dbu.createTable(TableType.Control, cl.getChannels(TestDatasetType.OM));
+		dbu.createTable(TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
 		DbTablesMap specs = dbu.getSpecs();
 
-		ChannelTestingList ctl = cl.getChannelLists(ChannelListType.QueryOm);
+		QueryChannelLists ctl = cl.getTestQuery(TestDatasetType.QueryOm);
 		log.debug("ctl = " + ctl);
 		SavedQueryWTablesList dbs = new SavedQueryWTablesList(ctl.combine(), "OM_Channels", specs,
 				RateType.CONT);
@@ -119,7 +119,7 @@ public class TestDbQuery {
 		selectList.addAll(ctl.getNewChannels());
 		compare.compare(dbs.getSelectOrder(), cl.getCnrNames(selectList));
 
-		ctl = cl.getChannelLists(ChannelListType.QueryDaq);
+		ctl = cl.getTestQuery(TestDatasetType.QueryDaq);
 		log.debug("ctl = " + ctl);
 		specs = dbu.getSpecs();
 		dbs = new SavedQueryWTablesList(ctl.combine(), "Mixed_Channels", specs, RateType.STEP);
@@ -133,23 +133,23 @@ public class TestDbQuery {
 
 	@Test
 	public void testSelectData() {  // Need expected results here
-		ChannelListTestMaps cl = new ChannelListTestMaps(false,er.getExperiment());
+		TestDatasets cl = new TestDatasets(false,er.getExperiment());
 
-		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
-		dbu.update(TableType.OM, RateType.CONT, omContData);
-		dbu.update(TableType.OM, RateType.STEP, omStepData);
-		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
+		dbu.createTable(TableType.Control, cl.getChannels(TestDatasetType.OM));
+		dbu.update(TableType.Control, RateType.CONT, omContData);
+		dbu.update(TableType.Control, RateType.STEP, omStepData);
+		dbu.createTable(TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
 		dbu.update(TableType.DAQ, RateType.CONT, daqContData);
 		dbu.update(TableType.DAQ, RateType.STEP, daqStepData);
 		DbTablesMap specs = dbu.getSpecs();
-		ChannelTestingList chnls = cl.getChannelLists(ChannelListType.QueryOm);
+		QueryChannelLists chnls = cl.getTestQuery(TestDatasetType.QueryOm);
 		SavedQueryWTablesList dbs = new SavedQueryWTablesList(chnls.combine(), "OM_Channels", specs,
 				RateType.STEP);
 		StatementProcessor dbSt = pools.createDbStatement(er.getExperiment(),false);
 		DbQueryRouter ddr = new DbQueryRouter(dbSt, dbs);
 		DoubleMatrix r1 = ddr.getData(QueryType.Step, null, null);
 		log.debug("Results: " + r1.toString());
-		chnls = cl.getChannelLists(ChannelListType.QueryDaq);
+		chnls = cl.getTestQuery(TestDatasetType.QueryDaq);
 		dbs = new SavedQueryWTablesList(chnls.combine(), "Mixed_Channels", specs, RateType.CONT);
 		DbQueryRouter ddr2 = new DbQueryRouter(dbSt, dbs);
 		DoubleMatrix r2 = ddr2.getData(QueryType.Cont, 0, 0);
@@ -160,13 +160,13 @@ public class TestDbQuery {
 	@Test
 	public void testSelects() {
 
-		ChannelListTestMaps cl = new ChannelListTestMaps(false,er.getExperiment());
+		TestDatasets cl = new TestDatasets(false,er.getExperiment());
 
-		dbu.createTable(TableType.OM, cl.getChannels(ChannelListType.OM));
-		dbu.createTable(TableType.DAQ, cl.getChannels(ChannelListType.DAQ));
+		dbu.createTable(TableType.Control, cl.getChannels(TestDatasetType.OM));
+		dbu.createTable(TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
 		DbTablesMap specs = dbu.getSpecs();
 
-		ChannelTestingList chnls = cl.getChannelLists(ChannelListType.QueryOm);
+		QueryChannelLists chnls = cl.getTestQuery(TestDatasetType.QueryOm);
 		for (RateType r : RateType.values()) {
 			SavedQueryWTablesList dbs = new SavedQueryWTablesList(chnls.combine(), "OM_Channels", specs, r);
 			List<NumberOfColumnsWithSelect> selects = dbs.getSelect();
@@ -186,7 +186,7 @@ public class TestDbQuery {
 			AssertJUnit.assertTrue(selects.get(0).getSelect()
 					.contains("900.85"));
 		}
-		chnls = cl.getChannelLists(ChannelListType.QueryDaq);
+		chnls = cl.getTestQuery(TestDatasetType.QueryDaq);
 		for (RateType r : RateType.values()) {
 			SavedQueryWTablesList dbs = new SavedQueryWTablesList(chnls.combine(), "OM_Channels", specs, r);
 			List<NumberOfColumnsWithSelect> selects = dbs.getSelect();

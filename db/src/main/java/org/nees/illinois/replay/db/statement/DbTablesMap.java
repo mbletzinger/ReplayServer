@@ -5,22 +5,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.illinois.replay.data.NumberOfColumns;
+import org.nees.illinois.replay.common.registries.ChannelNameManagement;
+import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.common.registries.TableType;
+import org.nees.illinois.replay.common.types.TableColumnsI;
+import org.nees.illinois.replay.data.NumberOfColumnsReplaceMeWithTableColumnsI;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.data.TableType;
-import org.nees.illinois.replay.registries.ChannelNameManagement;
-import org.nees.illinois.replay.registries.ChannelNameRegistry;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-public class DbTablesMap extends ChannelNameManagement {
+public class DbTablesMap implements TableColumnsI {
 
 	private final Map<TableType, List<String>> columns = new HashMap<TableType, List<String>>();
+	private final ChannelNameRegistry cnr;
 
 	private String dbname;
 	public DbTablesMap(ChannelNameRegistry cnr, String dbname) {
-		super(cnr);
+		this.cnr
 		this.dbname = dbname;
 	}
 
@@ -31,7 +33,7 @@ public class DbTablesMap extends ChannelNameManagement {
 	}
 
 	private String addHeaders(RateType rate) {
-		NumberOfColumns noc = new NumberOfColumns(1, rate);
+		NumberOfColumnsReplaceMeWithTableColumnsI noc = new NumberOfColumnsReplaceMeWithTableColumnsI(1, rate);
 		String result = "";
 		boolean first = true;
 		for (String h : noc.getHeaders()) {
