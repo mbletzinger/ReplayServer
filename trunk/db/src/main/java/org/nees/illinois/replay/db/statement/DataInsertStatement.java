@@ -3,33 +3,61 @@ package org.nees.illinois.replay.db.statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.nees.illinois.replay.data.Mtx2Str;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DataInsertStatement  implements InsertStatementI {
-	private final PrepStatementBuilder prep;
+/**
+ * Class for inserting data with a prepared statement.
+ * @author Michael Bletzinger
+ */
+public class DataInsertStatement extends InsertStatement {
+	/**
+	 * Logger.
+	 */
 	private final Logger log = LoggerFactory
 			.getLogger(DataInsertStatement.class);
-	private final 
-	public static DataInsertStatement getStatement(String dataTableName,
-			int numberOfChannels) {
+
+	/**
+	 * Builds the initial string of a prepared statement and returns an
+	 * instance.
+	 * @param connection
+	 *            JDBC connection.
+	 * @param dataTableName
+	 *            Name of the table which the data is being inserted into.
+	 * @param numberOfChannels
+	 *            Number of fields.
+	 * @return The instance.
+	 */
+	public static DataInsertStatement getStatement(final Connection connection,
+			final String dataTableName, final int numberOfChannels) {
 		String statement = "INSERT INTO " + dataTableName + " VALUES (";
 		for (int c = 0; c < numberOfChannels; c++) {
 			statement += (c == 0 ? "" : ", ") + "?";
 		}
 		statement += ")";
-		return new DataInsertStatement(dataTableName, statement);
+		return new DataInsertStatement(connection, statement);
 	}
 
-	public DataInsertStatement(Connection connection) {
-		this.prep = new PrepStatementBuilder(connection, prepped);
+	/**
+	 * @param connection
+	 *            JDBC connection.
+	 * @param prepped
+	 *            Initial string of the prepared statement.
+	 */
+	public DataInsertStatement(final Connection connection, final String prepped) {
+		super(connection, prepped);
 	}
 
-	public boolean add(double[] data) {
-		PreparedStatement statement = prep.getStatement();
+	/**
+	 * Add a data record.
+	 * @param data
+	 *            array of doubles to be inserted.
+	 * @return True if successful.
+	 */
+	public final boolean add(final double[] data) {
+		PreparedStatement statement = getBuilder().getStatement();
 		log.debug("Adding " + Mtx2Str.array2String(data));
 		try {
 			for (int c = 0; c < data.length; c++) {
@@ -41,29 +69,5 @@ public class DataInsertStatement  implements InsertStatementI {
 			return false;
 		}
 		return true;
-	}
-
-	@Override
-	public void start() throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void add(List<Object> record) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void getBuilder() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setConnection(Connection connection) {
-		// TODO Auto-generated method stub
-		
 	}
 }

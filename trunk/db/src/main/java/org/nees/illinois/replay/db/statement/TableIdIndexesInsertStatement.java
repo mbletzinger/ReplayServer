@@ -4,44 +4,45 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.nees.illinois.replay.common.registries.TableType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class for inserting channel identities into the database.
+ * Class for inserting table identity register indexes into the database.
  * @author Michael Bletzinger
  */
-public class ChannelInsertStatement extends InsertStatement {
+public class TableIdIndexesInsertStatement extends InsertStatement {
 	/**
 	 * Logger.
 	 **/
 	private final Logger log = LoggerFactory
-			.getLogger(ChannelInsertStatement.class);
+			.getLogger(TableIdIndexesInsertStatement.class);
 
 	/**
 	 * @param connection
 	 *            JDBC connection.
-	 * @param channelTableName
+	 * @param tableName
 	 *            Name of the table containing the channels.
 	 */
-	public ChannelInsertStatement(final Connection connection,
-			final String channelTableName) {
-		super(connection, "INSERT INTO " + channelTableName + " VALUES (?, ?)");
+	public TableIdIndexesInsertStatement(final Connection connection,
+			final String tableName) {
+		super(connection, "INSERT INTO " + tableName + " VALUES (?, ?)");
 	}
 
 	/**
 	 * Add a channel to the statement.
-	 * @param name
-	 *            Name of channel.
-	 * @param id
-	 *            Database ID of the channel.
+	 * @param type
+	 *            Table type.
+	 * @param idx
+	 *            Current index.
 	 * @return True if successful.
 	 */
-	public final boolean add(final String name, final String id) {
+	public final boolean add(final TableType type, final int idx) {
 		PreparedStatement statement = getBuilder().getStatement();
 		try {
-			statement.setString(1, name);
-			statement.setString(2, id);
+			statement.setString(1, type.name());
+			statement.setInt(2, idx);
 			statement.addBatch();
 		} catch (SQLException e) {
 			log.error("Cannot add id and string because ", e);

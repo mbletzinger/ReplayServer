@@ -8,16 +8,34 @@ import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class for executing database statements other than prepared statements.
+ * @author Michael Bletzinger
+ */
 public class StatementProcessor {
+	/**
+	 * JDBC connection.
+	 */
 	private final Connection connection;
-	private final Logger log = LoggerFactory.getLogger(StatementProcessor.class);
+	/**
+	 * Logger.
+	 */
+	private final Logger log = LoggerFactory
+			.getLogger(StatementProcessor.class);
 
-	public StatementProcessor(Connection connection) {
+	/**
+	 * @param connection
+	 *            JDBC connection.
+	 */
+	public StatementProcessor(final Connection connection) {
 		super();
 		this.connection = connection;
 	}
 
-	public void close() {
+	/**
+	 * Closes the connection.
+	 */
+	public final void close() {
 		try {
 			connection.close();
 		} catch (SQLException e) {
@@ -25,7 +43,12 @@ public class StatementProcessor {
 		}
 	}
 
-	public void closeQuery(ResultSet rs) {
+	/**
+	 * Closes the query statement.
+	 * @param rs
+	 *            ResultSet which points to the query statement.
+	 */
+	public final void closeQuery(final ResultSet rs) {
 		try {
 			rs.getStatement().close();
 		} catch (SQLException e) {
@@ -33,7 +56,13 @@ public class StatementProcessor {
 		}
 	}
 
-	public boolean execute(String statement) {
+	/**
+	 * Executes a statement.
+	 * @param statement
+	 *            The statement.
+	 * @return True if successful.
+	 */
+	public final boolean execute(final String statement) {
 		Statement stmt = null;
 		// log.debug("Executing " + statement);
 		try {
@@ -71,7 +100,13 @@ public class StatementProcessor {
 		return connection;
 	}
 
-	public void noComplaints(String statement) {
+	/**
+	 * Executes a statement without any error reporting. Useful for shutting
+	 * down stuff.
+	 * @param statement
+	 *            The statement.
+	 */
+	public final void noComplaints(final String statement) {
 		// log.debug("Executing " + statement);
 		Statement stmt = null;
 		try {
@@ -95,7 +130,13 @@ public class StatementProcessor {
 		log.debug("Executed \"" + statement + "\"");
 	}
 
-	public ResultSet query(String statement) {
+	/**
+	 * Executes a select statement.
+	 * @param statement
+	 *            The statement.
+	 * @return The results.
+	 */
+	public final ResultSet query(final String statement) {
 		log.debug("Querying " + statement);
 		Statement stmt = null;
 		ResultSet rs = null;
