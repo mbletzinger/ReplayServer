@@ -55,10 +55,17 @@ public class TableIdentityRegistry {
 		TableIdentityI result = identities.get(datasetname);
 		if (result == null) {
 			String dbtn = newName(type);
-			result = new TableId(datasetname, experiment, dbtn);
+			result = new TableId(datasetname, dbtn);
 			identities.put(datasetname, result);
 		}
 		return result;
+	}
+
+	/**
+	 * @return the afterLastIndex.  Used only for synchronization.
+	 */
+	public final Map<TableType, Integer> getAfterLastIndex() {
+		return afterLastIndex;
 	}
 
 	/**
@@ -79,6 +86,13 @@ public class TableIdentityRegistry {
 	 */
 	public final TableIdentityI getId(final String name) {
 		return identities.get(name);
+	}
+
+	/**
+	 * @return the identities. Used only for synchronization.
+	 */
+	public final Map<String, TableIdentityI> getIdentities() {
+		return identities;
 	}
 
 	/**
