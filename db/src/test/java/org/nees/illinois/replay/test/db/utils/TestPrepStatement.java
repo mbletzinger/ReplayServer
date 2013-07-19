@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.nees.illinois.replay.db.statement.PrepStatementBuilder;
+import org.nees.illinois.replay.db.statement.InsertStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,11 +12,7 @@ import org.slf4j.LoggerFactory;
  * Class used to test prepared statements.
  * @author Michael Bletzinger
  */
-public class TestPrepStatement {
-	/**
-	 * Statement builder.
-	 */
-	private final PrepStatementBuilder builder;
+public class TestPrepStatement extends InsertStatement {
 	/**
 	 * Logger.
 	 **/
@@ -30,9 +26,7 @@ public class TestPrepStatement {
 	 */
 	public TestPrepStatement(final String dbTableName,
 			final Connection connection) {
-		this.builder = new PrepStatementBuilder(connection, "INSERT INTO "
-				+ dbTableName + "  VALUES(?,?)");
-		builder.create();
+		super(connection, "INSERT INTO " + dbTableName + "  VALUES(?,?)");
 	}
 
 	/**
@@ -44,7 +38,7 @@ public class TestPrepStatement {
 	 * @return True if successful.
 	 */
 	public final boolean add(final double x1, final double x2) {
-		PreparedStatement statement = builder.getStatement();
+		PreparedStatement statement = getBuilder().getStatement();
 		try {
 			statement.setDouble(1, x1);
 			statement.setDouble(2, x2);
@@ -54,12 +48,5 @@ public class TestPrepStatement {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * @return the builder
-	 */
-	public final PrepStatementBuilder getBuilder() {
-		return builder;
 	}
 }

@@ -3,7 +3,8 @@ package org.nees.illinois.replay.test.db;
 import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.db.DbPools;
-import org.nees.illinois.replay.db.data.DbChannelNameSynch;
+import org.nees.illinois.replay.db.registry.synch.DbChannelNameSynch;
+import org.nees.illinois.replay.db.registry.synch.RegistrySynchI;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
@@ -41,7 +42,7 @@ public class TestChannelLists {
 	@AfterClass
 	public void tearDown() throws Exception {
 		StatementProcessor dbSt = pools.createDbStatement(experiment,false);
-		DbChannelNameSynch dbcs = new DbChannelNameSynch(null, dbSt);
+		RegistrySynchI dbcs = new DbChannelNameSynch(null, dbSt);
 		dbcs.removeTable();
 		dbSt.close();
 		pools.getOps().removeDatabase(experiment);
@@ -59,13 +60,13 @@ public class TestChannelLists {
 			cnr.addChannel(TableType.Control, c);
 		}
 		StatementProcessor dbSt = pools.createDbStatement(experiment,true);
-		DbChannelNameSynch dbcs = new DbChannelNameSynch(cnr, dbSt);
-		dbcs.synchronize();
+		RegistrySynchI dbcs = new DbChannelNameSynch(cnr, dbSt);
+		dbcs.save();
 		dbSt.close();
 		ChannelNameRegistry cnr1 = new ChannelNameRegistry();
 		dbSt = pools.createDbStatement(experiment,false);
 		dbcs = new DbChannelNameSynch(cnr1, dbSt);
-		dbcs.initialize();
+		dbcs.load();
 		AssertJUnit.assertEquals(cnr.toString(), cnr1.toString());
 	}
 

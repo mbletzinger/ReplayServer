@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
  * Class to build and execute a prepared statement.
  * @author Michael Bletzinger
  */
-public class PrepStatementBuilder {
+public class PrepStatementProcessor {
 	/**
 	 * JDBC connection.
 	 */
@@ -20,7 +20,7 @@ public class PrepStatementBuilder {
 	 * Logger.
 	 */
 	private final Logger log = LoggerFactory
-			.getLogger(PrepStatementBuilder.class);
+			.getLogger(PrepStatementProcessor.class);
 	/**
 	 * Initial string for the prepared statement.
 	 */
@@ -36,7 +36,7 @@ public class PrepStatementBuilder {
 	 * @param prepInit
 	 *            Initial string for the prepared statement.
 	 */
-	public PrepStatementBuilder(final Connection connection,
+	public PrepStatementProcessor(final Connection connection,
 			final String prepInit) {
 		super();
 		this.connection = connection;
