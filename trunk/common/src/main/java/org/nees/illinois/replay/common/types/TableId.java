@@ -6,34 +6,25 @@ package org.nees.illinois.replay.common.types;
  */
 public class TableId implements TableIdentityI, Cloneable {
 	/**
-	 * Database name.
-	 */
-	private final String databasename;
-
-	/**
 	 * Researcher version of the table name.
 	 */
-	private final String datasetname;
+	private final String researchName;
 
 	/**
-	 * Name of the table.
+	 * Name of the table that has the data for this channel.
 	 */
-	private final String tablename;
+	private final String dbTable;
 
 	/**
-	 * @param datasetname
+	 * @param researchName
 	 *            Researcher version of the table name.
-	 * @param databasename
-	 *            Database name.
-	 * @param tablename
-	 *            Name of the table.
+	 * @param dbTable
+	 *            Database column name.
 	 */
-	public TableId(final String datasetname, final String databasename,
-			final String tablename) {
+	public TableId(final String researchName, final String dbTable) {
 		super();
-		this.databasename = databasename;
-		this.tablename = tablename;
-		this.datasetname = datasetname;
+		this.dbTable = dbTable;
+		this.researchName = researchName;
 	}
 
 	/*
@@ -42,31 +33,24 @@ public class TableId implements TableIdentityI, Cloneable {
 	 */
 	@Override
 	public final Object clone() {
-		return new TableId(null, databasename, tablename);
-	}
-
-	/**
-	 * @return the dbname
-	 */
-	public final String getDatabasename() {
-		return databasename;
+		return new TableId(researchName, dbTable);
 	}
 
 	@Override
 	public final String getDatasetName() {
-		return datasetname;
+		return researchName;
 	}
 
 	@Override
 	public final String getDbName() {
-		return databasename + "." + tablename;
+		return getDbTable();
 	}
 
 	/**
 	 * @return the table name.
 	 */
-	public final String getTablename() {
-		return tablename;
+	public final String getDbTable() {
+		return dbTable;
 	}
 
 	/*
@@ -75,7 +59,7 @@ public class TableId implements TableIdentityI, Cloneable {
 	 */
 	@Override
 	public final String toString() {
-		return "TableId [datasetname=" + datasetname + ", databasename="
-				+ databasename + ", tablename=" + tablename + "]";
+		return "TableId [datasetname=" + researchName + ", tablename="
+				+ dbTable + "]";
 	}
 }

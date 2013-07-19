@@ -25,7 +25,7 @@ public class ChannelNameRegistry implements Cloneable {
 	 * map is concurrent because an experiment is expected to handle several
 	 * concurrent requests.
 	 */
-	private final ConcurrentMap<String, String> names = new ConcurrentHashMap<String, String>();
+	private final ConcurrentMap<String, String> namesMap = new ConcurrentHashMap<String, String>();
 
 	/**
 	 * Adds a channel name to the registry.
@@ -39,7 +39,7 @@ public class ChannelNameRegistry implements Cloneable {
 		String result = getId(channel);
 		if (result == null) {
 			result = newChannel(table);
-			names.put(channel, result);
+			namesMap.put(channel, result);
 		}
 		return result;
 	}
@@ -51,7 +51,7 @@ public class ChannelNameRegistry implements Cloneable {
 	@Override
 	public final Object clone() {
 		ChannelNameRegistry result = new ChannelNameRegistry();
-		result.init(names, afterLastChannel);
+		result.init(namesMap, afterLastChannel);
 		return result;
 	}
 
@@ -69,7 +69,7 @@ public class ChannelNameRegistry implements Cloneable {
 	 * @return Database friendly version.
 	 */
 	public final String getId(final String channel) {
-		return names.get(channel);
+		return namesMap.get(channel);
 	}
 
 	/**
@@ -79,8 +79,8 @@ public class ChannelNameRegistry implements Cloneable {
 	 * @return Original channel name.
 	 */
 	public final String getName(final String id) {
-		for (String key : names.keySet()) {
-			if (id.equals(names.get(key))) {
+		for (String key : namesMap.keySet()) {
+			if (id.equals(namesMap.get(key))) {
 				return key;
 			}
 		}
@@ -92,9 +92,16 @@ public class ChannelNameRegistry implements Cloneable {
 	 */
 	public final List<String> getNames() {
 		List<String> keys = new ArrayList<String>();
-		keys.addAll(names.keySet());
+		keys.addAll(namesMap.keySet());
 		Collections.sort(keys);
 		return keys;
+	}
+
+	/**
+	 * @return the names map. Don't use this unless you are needing the entire map.
+	 */
+	public final Map<String, String> getNamesMap() {
+		return namesMap;
 	}
 
 	/**
@@ -122,8 +129,8 @@ public class ChannelNameRegistry implements Cloneable {
 	 */
 
 	public final void init(final Map<String, String> values, final long alc) {
-		names.clear();
-		names.putAll(values);
+		namesMap.clear();
+		namesMap.putAll(values);
 		afterLastChannel = alc;
 	}
 
@@ -172,7 +179,7 @@ public class ChannelNameRegistry implements Cloneable {
 		String result = "";
 		boolean first = true;
 		for (String k : getNames()) {
-			result += (first ? "\n\t" : ",\n\t") + k + " = " + names.get(k);
+			result += (first ? "\n\t" : ",\n\t") + k + " = " + namesMap.get(k);
 			first = false;
 		}
 		return result + " last = " + afterLastChannel;
