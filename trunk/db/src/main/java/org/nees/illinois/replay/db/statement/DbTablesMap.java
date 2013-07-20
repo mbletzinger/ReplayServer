@@ -57,7 +57,7 @@ public class DbTablesMap implements TableColumnsI {
 	@Override
 	public ChannelNameManagement clone() {
 		ChannelNameRegistry clone = new ChannelNameRegistry();
-		clone.init(getCnr().getClone(), getCnr().getAfterLastChannel());
+		clone.init(getCnr().getClone());
 		DbTablesMap result = new DbTablesMap(clone, dbname);
 		result.columns.putAll(columns);
 		return result;

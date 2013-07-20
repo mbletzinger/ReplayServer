@@ -1,15 +1,18 @@
 package org.nees.illinois.replay.test.db;
 
 import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
-import org.nees.illinois.replay.common.registries.TableType;
+import org.nees.illinois.replay.common.registries.TableIdentityRegistry;
+import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.registry.synch.DbChannelNameSynch;
+import org.nees.illinois.replay.db.registry.synch.DbTableDefinitionsSynch;
 import org.nees.illinois.replay.db.registry.synch.RegistrySynchI;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
+import org.nees.illinois.replay.test.utils.DatasetDirector;
+import org.nees.illinois.replay.test.utils.DatasetDirector.ExperimentNames;
 import org.nees.illinois.replay.test.utils.TestDatasets;
-import org.nees.illinois.replay.test.utils.TestDatasetType;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -20,17 +23,39 @@ import org.testng.annotations.Test;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+/**
+ * Test registry synchronization.
+ * @author Michael Bletzinger
+ */
 public class TestChannelLists {
+	/**
+	 * Pools under test.
+	 */
 	private DbPools pools;
-	final String experiment = "HybridMasonry1";
+	/**
+	 * Experiment test name.
+	 */
+	private final String experiment = "HybridMasonry1";
+	/**
+	 * True if database used for testing is MySQL.
+	 */
 	private boolean ismysql;
+	/**
+	 * Extra controls for Derby.
+	 */
 	private final DerbyDbControl ddbc = new DerbyDbControl();
 
+	/**
+	 * Stand up a database for testing.
+	 * @param db
+	 *            label of database to set up.
+	 * @throws Exception
+	 *             If something goes wrong with the database.
+	 */
 	@Parameters("db")
 	@BeforeClass
-	public void setUp(@Optional("derby") String db) throws Exception {
+	public final void setUp(@Optional("derby") final String db) throws Exception {
 		DbTestsModule guiceMod = new DbTestsModule(db);
-		guiceMod.setExperiment("HybridMasonry1");
 		Injector injector = Guice.createInjector(guiceMod);
 		pools = injector.getInstance(DbPools.class);
 		ismysql = db.equals("mysql");
@@ -39,9 +64,14 @@ public class TestChannelLists {
 		}
 	}
 
+	/**
+	 * Shut down the database and clean up everything.
+	 * @throws Exception
+	 *             If something goes wrong with the database.
+	 */
 	@AfterClass
-	public void tearDown() throws Exception {
-		StatementProcessor dbSt = pools.createDbStatement(experiment,false);
+	public final void tearDown() throws Exception {
+		StatementProcessor dbSt = pools.createDbStatement(experiment, false);
 		RegistrySynchI dbcs = new DbChannelNameSynch(null, dbSt);
 		dbcs.removeTable();
 		dbSt.close();
@@ -52,22 +82,46 @@ public class TestChannelLists {
 		}
 	}
 
+	/**
+	 * Test the synchronization of the channel name registry.
+	 */
 	@Test
-	public void testChannelList() {
+	public final void testChannelNameRegistrySynch() {
 		TestDatasets lists = new TestDatasets(false, experiment);
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
-		for (String c : lists.getChannels(TestDatasetType.OM)) {
-			cnr.addChannel(TableType.Control, c);
-		}
-		StatementProcessor dbSt = pools.createDbStatement(experiment,true);
+		lists.fillCnr(cnr);
+		StatementProcessor dbSt = pools.createDbStatement(experiment, true);
 		RegistrySynchI dbcs = new DbChannelNameSynch(cnr, dbSt);
 		dbcs.save();
 		dbSt.close();
 		ChannelNameRegistry cnr1 = new ChannelNameRegistry();
-		dbSt = pools.createDbStatement(experiment,false);
+		dbSt = pools.createDbStatement(experiment, false);
 		dbcs = new DbChannelNameSynch(cnr1, dbSt);
 		dbcs.load();
 		AssertJUnit.assertEquals(cnr.toString(), cnr1.toString());
 	}
-
+/**
+ * Test the synchronization of the table registries
+ */
+	@Test
+	public final void testTableRegistrySynch() {
+		DatasetDirector dd = new DatasetDirector(ExperimentNames.HybridMasonry1);
+		TestDatasets set = dd.getSet();
+		TableIdentityRegistry tir = new TableIdentityRegistry();
+		TableRegistry tr = new TableRegistry();
+		set.fillTblIdr(tir);
+		set.fillTblr(tr, tir);
+		StatementProcessor dbSt = pools.createDbStatement(experiment, true);
+		RegistrySynchI dbSynch = new DbTableDefinitionsSynch(tir, tr, dbSt);
+		dbSynch.save();
+		dbSt.close();
+		TableIdentityRegistry tir1 = new TableIdentityRegistry();
+		TableRegistry tr1 = new TableRegistry();
+		dbSt = pools.createDbStatement(experiment, false);
+		dbSynch = new DbTableDefinitionsSynch(tir1, tr1,dbSt);
+		dbSynch.load();
+		dbSt.close();
+		dd.checkExpectedTableIdRegistry(tir1);
+		dd.checkExpectedTableRegistry(tr1);
+	}
 }

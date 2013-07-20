@@ -12,12 +12,12 @@ import org.slf4j.LoggerFactory;
  * Class for inserting table identities into the database.
  * @author Michael Bletzinger
  */
-public class TableIdInsertStatement extends InsertStatement {
+public class TableDefInsertStatement extends InsertStatement {
 	/**
 	 * Logger.
 	 **/
 	private final Logger log = LoggerFactory
-			.getLogger(TableIdInsertStatement.class);
+			.getLogger(TableDefInsertStatement.class);
 
 	/**
 	 * @param connection
@@ -25,9 +25,9 @@ public class TableIdInsertStatement extends InsertStatement {
 	 * @param tableName
 	 *            Name of the table containing the identities.
 	 */
-	public TableIdInsertStatement(final Connection connection,
+	public TableDefInsertStatement(final Connection connection,
 			final String tableName) {
-		super(connection, "INSERT INTO " + tableName + " VALUES (?, ?)");
+		super(connection, "INSERT INTO " + tableName + " VALUES (?, ?, ?)");
 	}
 
 	/**
@@ -36,13 +36,18 @@ public class TableIdInsertStatement extends InsertStatement {
 	 *            Name of table.
 	 * @param id
 	 *            Table ID.
+	 * @param channelStr
+	 *            String of channel names.
 	 * @return True if successful.
 	 */
-	public final boolean add(final String name, final TableIdentityI id) {
+	public final boolean add(final String name, final TableIdentityI id,
+			final String channelStr) {
 		PreparedStatement statement = getBuilder().getStatement();
+		final int thirdColumn = 3;
 		try {
 			statement.setString(1, name);
 			statement.setString(2, id.getDbName());
+			statement.setString(thirdColumn, channelStr);
 			statement.addBatch();
 		} catch (SQLException e) {
 			log.error("Cannot add " + id + " because ", e);

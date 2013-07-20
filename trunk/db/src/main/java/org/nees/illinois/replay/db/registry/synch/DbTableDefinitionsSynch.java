@@ -7,12 +7,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nees.illinois.replay.common.registries.TableIdentityRegistry;
+import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.common.registries.TableType;
+import org.nees.illinois.replay.common.types.TableDef;
+import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.common.types.TableId;
 import org.nees.illinois.replay.common.types.TableIdentityI;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.db.statement.TableIdIndexesInsertStatement;
-import org.nees.illinois.replay.db.statement.TableIdInsertStatement;
+import org.nees.illinois.replay.db.statement.TableDefInsertStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,11 +23,11 @@ import org.slf4j.LoggerFactory;
  * Synchronizes the {@link TableIdentityRegistry} with the experiment database.
  * @author Michael Bletzinger
  */
-public class DbTableIdSynch implements RegistrySynchI {
+public class DbTableDefinitionsSynch implements RegistrySynchI {
 	/**
 	 * Name of the table id table.
 	 */
-	private final String tableIdTable = "TABLE_IDENTITIES";
+	private final String defTable = "TABLE_DEFINITIONS";
 	/**
 	 * Name of the index table.
 	 */
@@ -36,23 +39,36 @@ public class DbTableIdSynch implements RegistrySynchI {
 	/**
 	 * Logger.
 	 */
-	private final Logger log = LoggerFactory.getLogger(DbTableIdSynch.class);
+	private final Logger log = LoggerFactory
+			.getLogger(DbTableDefinitionsSynch.class);
 	/**
-	 * Registry to synchronize.
+	 * Table ID registry to synchronize.
 	 */
 	private final TableIdentityRegistry tir;
+	/**
+	 * Table definitions registry to synchronize.
+	 */
+	private final TableRegistry tableReg;
+	/**
+	 * Encode and decode channel lists.
+	 */
+	private final EncodeDecodeList<String, ParseElement<String>> encoder = new EncodeDecodeList<String, ParseElement<String>>(
+			new StringDecoder());
 
 	/**
 	 * @param tir
-	 *            Registry to synchronize.
+	 *            ID registry to synchronize.
 	 * @param db
 	 *            Database statement processor for queries.
+	 * @param tableReg
+	 *            Definitions registry to synchronize.
 	 */
-	public DbTableIdSynch(final TableIdentityRegistry tir,
-			final StatementProcessor db) {
+	public DbTableDefinitionsSynch(final TableIdentityRegistry tir,
+			final TableRegistry tableReg, final StatementProcessor db) {
 		super();
 		this.tir = tir;
 		this.db = db;
+		this.tableReg = tableReg;
 	}
 
 	/*
@@ -62,31 +78,41 @@ public class DbTableIdSynch implements RegistrySynchI {
 	 */
 	@Override
 	public final void createTable() {
-		db.execute("CREATE TABLE " + tableIdTable
-				+ "(rname varchar(100), dbname varchar(50))");
+		db.execute("CREATE TABLE "
+				+ defTable
+				+ "(rname varchar(100), dbname varchar(50), channels varchar(2000))");
 		db.execute("CREATE TABLE " + tableIdIndexesTable
 				+ "(type varchar(100), index int)");
 	}
 
 	/**
-	 * Get all of the table names from the database.
-	 * @return Map of names and IDs.
+	 * Get all of the table definitions from the database.
+	 * @return Map of names and definitions.
 	 */
-	private Map<String, TableIdentityI> getValues() {
-		ResultSet rs = db.query("SELECT rname, dbname FROM " + tableIdTable);
-		Map<String, TableIdentityI> names = new HashMap<String, TableIdentityI>();
+	private Map<String, TableDefinitionI> getValues() {
+		ResultSet rs = db.query("SELECT rname, dbname, channels FROM "
+				+ defTable);
+		Map<String, TableDefinitionI> defs = new HashMap<String, TableDefinitionI>();
 		try {
 			while (rs.next()) {
 				String name = rs.getString("rname");
 				String id = rs.getString("dbname");
+				String channelStr = rs.getString("channels");
 				TableIdentityI tblId = new TableId(name, id);
-				names.put(name, tblId);
+				TableDefinitionI tbldef;
+				try {
+					tbldef = new TableDef(encoder.parse(channelStr), tblId);
+				} catch (IllegalParameterException e) {
+					log.error("Could not parse [" + channelStr + "] because", e);
+					return null;
+				}
+				defs.put(name, tbldef);
 			}
 		} catch (SQLException e) {
-			log.error("Query to table " + tableIdTable + " failed because ", e);
+			log.error("Query to table " + defTable + " failed because ", e);
 		}
 		db.closeQuery(rs);
-		return names;
+		return defs;
 	}
 
 	/**
@@ -117,9 +143,15 @@ public class DbTableIdSynch implements RegistrySynchI {
 	 */
 	@Override
 	public final void load() {
-		Map<String, TableIdentityI> names = getValues();
+		Map<String, TableDefinitionI> defs = getValues();
 		Map<TableType, Integer> indexes = getIndexes();
-		if (names.isEmpty() == false) {
+		if (defs.isEmpty() == false) {
+			tableReg.init(defs);
+			Map<String, TableIdentityI> names = new HashMap<String, TableIdentityI>();
+			for (TableDefinitionI d : defs.values()) {
+				TableIdentityI id = d.getTableId();
+				names.put(id.getDatasetName(), id);
+			}
 			tir.init(names, indexes);
 		}
 	}
@@ -131,7 +163,7 @@ public class DbTableIdSynch implements RegistrySynchI {
 	 */
 	@Override
 	public final void removeTable() {
-		db.noComplaints("DROP TABLE " + tableIdTable);
+		db.noComplaints("DROP TABLE " + defTable);
 	}
 
 	/*
@@ -143,19 +175,22 @@ public class DbTableIdSynch implements RegistrySynchI {
 		Connection connection = db.getConnection();
 		removeTable();
 		createTable();
-		Map<String, TableIdentityI> reg = tir.getIdentities();
-		TableIdInsertStatement prep = new TableIdInsertStatement(connection,
-				tableIdTable);
+		Map<String, TableDefinitionI> reg = tableReg.getDefinitions();
+		TableDefInsertStatement prep = new TableDefInsertStatement(connection,
+				defTable);
 		for (String n : reg.keySet()) {
-			prep.add(n, reg.get(n));
+			TableDefinitionI def = reg.get(n);
+			prep.add(n, def.getTableId(),
+					encoder.encode(def.getColumns(false)));
 		}
 		if (prep.getBuilder().execute() == null) {
-			log.error("Table identity synchronize failed");
+			log.error("Table definition synchronize failed");
 			return;
 		}
 
 		Map<TableType, Integer> indexes = tir.getAfterLastIndex();
-		TableIdIndexesInsertStatement prepI = new TableIdIndexesInsertStatement(connection, tableIdIndexesTable);
+		TableIdIndexesInsertStatement prepI = new TableIdIndexesInsertStatement(
+				connection, tableIdIndexesTable);
 		for (TableType t : indexes.keySet()) {
 			prepI.add(t, indexes.get(t));
 		}
