@@ -27,7 +27,7 @@ import com.google.inject.Injector;
  * Test registry synchronization.
  * @author Michael Bletzinger
  */
-public class TestChannelLists {
+public class TestRegistrySynchronization {
 	/**
 	 * Pools under test.
 	 */

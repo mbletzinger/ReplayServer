@@ -25,7 +25,7 @@
       <class name="org.nees.illinois.replay.test.db.TestDbControl"/>
       <class name="org.nees.illinois.replay.test.db.TestCreateRemoveDatabase"/>
       <class name="org.nees.illinois.replay.test.db.TestDbPools"/>
-      <class name="org.nees.illinois.replay.test.db.TestChannelLists"/>
+      <class name="org.nees.illinois.replay.test.db.TestRegistrySynchronization"/>
       <class name="org.nees.illinois.replay.test.db.TestDataStatements"/>
       <class name="org.nees.illinois.replay.test.db.TestTableUpdates"/>
       <class name="org.nees.illinois.replay.test.db.TestDbQuery"/>
