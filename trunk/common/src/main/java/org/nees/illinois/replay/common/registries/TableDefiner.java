@@ -6,12 +6,12 @@ package org.nees.illinois.replay.common.registries;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nees.illinois.replay.common.types.TableColumns;
-import org.nees.illinois.replay.common.types.TableColumnsI;
+import org.nees.illinois.replay.common.types.TableDef;
+import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.common.types.TableIdentityI;
 
 /**
- * Create a table {@link TableColumnsI definition} and adds it to the
+ * Create a table {@link TableDefinitionI definition} and adds it to the
  * {@link TableIdentityRegistry id} and {@link TableRegistry table} registries.
  * @author Michael Bletzinger
  */
@@ -93,13 +93,13 @@ public class TableDefiner {
 	 *            Table {@link TableType type}.
 	 * @param channels
 	 *            List of channels.
-	 * @return New table {@link TableColumnsI definition}.
+	 * @return New table {@link TableDefinitionI definition}.
 	 */
-	public final TableColumnsI define(final String name,
+	public final TableDefinitionI define(final String name,
 			final TableType type, final List<String> channels) {
 		TableIdentityI tableid = lookupTableId(name, type);
 		List<String> dataColumns = lookupChannels(tableid.getDbName(), channels);
-		TableColumnsI result = new TableColumns(dataColumns, tableid);
+		TableDefinitionI result = new TableDef(dataColumns, tableid);
 		tr.setTable(name, result);
 		return result;
 	}

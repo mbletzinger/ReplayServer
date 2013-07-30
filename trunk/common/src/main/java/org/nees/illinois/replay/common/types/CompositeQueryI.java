@@ -21,7 +21,7 @@ public interface CompositeQueryI {
 	 * @return map of database tables that need to be searched for this query
 	 *         and the channels fore each table
 	 */
-	Map<TableIdentityI, TableColumnsI> getTableQueries();
+	Map<TableIdentityI, TableDefinitionI> getTableQueries();
 
 	/**
 	 * @return list of channels for the query that describes the column order of

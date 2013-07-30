@@ -122,7 +122,8 @@ public class DoubleMatrix implements DoubleMatrixI {
 		return createSpec(col);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.nees.illinois.replay.data.DoubleMatrixI#getData()
 	 */
 	@Override
@@ -161,7 +162,8 @@ public class DoubleMatrix implements DoubleMatrixI {
 		return spec;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.nees.illinois.replay.data.DoubleMatrixI#isNull(int, int)
 	 */
 	@Override
@@ -190,8 +192,10 @@ public class DoubleMatrix implements DoubleMatrixI {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.nees.illinois.replay.data.DoubleMatrixI#set(int, int, java.lang.Double)
+	/*
+	 * (non-Javadoc)
+	 * @see org.nees.illinois.replay.data.DoubleMatrixI#set(int, int,
+	 * java.lang.Double)
 	 */
 	@Override
 	public final void set(final int row, final int col, final Double value) {
@@ -203,13 +207,15 @@ public class DoubleMatrix implements DoubleMatrixI {
 	}
 
 	/**
-	 * @param spec the spec to set
+	 * @param spec
+	 *            the spec to set
 	 */
 	protected final void setSpec(final MatrixSpecI spec) {
 		this.spec = spec;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.nees.illinois.replay.data.DoubleMatrixI#sizes()
 	 */
 	@Override
@@ -220,7 +226,8 @@ public class DoubleMatrix implements DoubleMatrixI {
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.nees.illinois.replay.data.DoubleMatrixI#toList()
 	 */
 	@Override
@@ -258,7 +265,8 @@ public class DoubleMatrix implements DoubleMatrixI {
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.nees.illinois.replay.data.DoubleMatrixI#value(int, int)
 	 */
 	@Override
@@ -276,5 +284,15 @@ public class DoubleMatrix implements DoubleMatrixI {
 			return rowL.get(col);
 		}
 		return Double.NaN;
+	}
+
+	@Override
+	public final void append(final List<Double> row) {
+		data.add(row);
+	}
+
+	@Override
+	public final void clear() {
+		data.clear();
 	}
 }
