@@ -9,7 +9,7 @@ import org.nees.illinois.replay.data.MatrixSpecI;
  * allows the time columns such as timestamps and step to be excluded.
  * @author Michael Bletzinger
  */
-public interface TableColumnsI extends MatrixSpecI {
+public interface TableDefinitionI extends MatrixSpecI {
 	/**
 	 * @param withTime
 	 *            include the time columns

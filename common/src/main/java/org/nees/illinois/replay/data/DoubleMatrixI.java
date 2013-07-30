@@ -63,4 +63,15 @@ public interface DoubleMatrixI {
 	 */
 	MatrixSpecI getSpec();
 
+	/**
+	 * Append a row to the matrix.
+	 * @param row
+	 *            to append.
+	 */
+	void append(List<Double> row);
+
+	/**
+	 * Empty the matrix.
+	 */
+	void clear();
 }

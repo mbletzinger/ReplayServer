@@ -94,7 +94,7 @@ public class DataTableServerResource extends ServerResource implements
 		extract.extract(reqAttrs);
 		Map<RequiredAttrType, Object> attrs = extract.getAttrs();
 		TableType tbl = (TableType) attrs.get(RequiredAttrType.Table);
-		updates.createTable(tbl, list);
+		updates.createTable(null, tbl, list);
 
 	}
 
@@ -117,7 +117,7 @@ public class DataTableServerResource extends ServerResource implements
 		Map<RequiredAttrType, Object> attrs = extract.getAttrs();
 		String tbl = (String) attrs.get(RequiredAttrType.Table);
 		RateType rate = (RateType) attrs.get(RequiredAttrType.Rate);
-		updates.update(tbl, rate, dm.getData());
+		updates.update(tbl, dm.getData());
 	}
 
 }

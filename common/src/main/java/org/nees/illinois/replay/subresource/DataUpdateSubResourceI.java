@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.common.types.TableIdentityI;
-import org.nees.illinois.replay.data.RateType;
 
 /**
  * Interface to the data sub-resource which manages data updates for the restlet
@@ -15,13 +14,16 @@ import org.nees.illinois.replay.data.RateType;
 public interface DataUpdateSubResourceI extends SubResourceI {
 	/**
 	 * Creates a data table for a set of channels.
+	 * @param name
+	 *            of the table.
 	 * @param table
 	 *            Table type.
 	 * @param channels
 	 *            List of channels for the table.
 	 * @return Table identity
 	 */
-	TableIdentityI createTable(TableType table, List<String> channels);
+	TableIdentityI createTable(String name, TableType table,
+			List<String> channels);
 
 	/**
 	 * Removes a table.
@@ -35,11 +37,9 @@ public interface DataUpdateSubResourceI extends SubResourceI {
 	 * Add data to a table.
 	 * @param tableString
 	 *            Table identity.
-	 * @param rate
-	 *            Table rate type.
 	 * @param data
 	 *            Data to add.
 	 * @return True if successful.
 	 */
-	boolean update(String tableString, RateType rate, double[][] data);
+	boolean update(String tableString, double[][] data);
 }

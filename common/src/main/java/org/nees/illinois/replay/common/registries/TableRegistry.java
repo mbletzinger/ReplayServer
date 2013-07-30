@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nees.illinois.replay.common.types.TableColumnsI;
+import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.common.types.TableIdentityI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,39 +20,13 @@ import org.slf4j.LoggerFactory;
  */
 public class TableRegistry {
 	/**
-	 * Map of table id's to the table {@link TableColumnsI definitions}.
-	 */
-	private final Map<String, TableColumnsI> tableMap = new HashMap<String, TableColumnsI>();
-	/**
 	 * Logger.
 	 */
 	private final Logger log = LoggerFactory.getLogger(TableRegistry.class);
-
 	/**
-	 * Get the table definition associated with the name.
-	 * @param name
-	 *            Name of table
-	 * @return Table {@link TableColumnsI definition}
+	 * Map of table id's to the table {@link TableDefinitionI definitions}.
 	 */
-	public final TableColumnsI getTable(final String name) {
-		return tableMap.get(name);
-	}
-
-	/**
-	 * Set the table definition associated with the name.
-	 * @param name
-	 *            Name of table
-	 * @param table
-	 *            Table {@link TableColumnsI definition}
-	 */
-	public final void setTable(final String name, final TableColumnsI table) {
-		TableColumnsI old = getTable(name);
-		if (old != null) {
-			log.error("Table " + name + " already in the registry as " + old);
-			return;
-		}
-		tableMap.put(name, table);
-	}
+	private final Map<String, TableDefinitionI> definitions = new HashMap<String, TableDefinitionI>();
 
 	/**
 	 * Find the table that *owns* a channel.
@@ -62,21 +36,64 @@ public class TableRegistry {
 	 *         channel.
 	 */
 	public final TableIdentityI findTable(final String dbchannel) {
-		for (TableColumnsI t : tableMap.values()) {
+		for (TableDefinitionI t : definitions.values()) {
 			if (t.getColumns(false).contains(dbchannel)) {
 				return t.getTableId();
 			}
 		}
 		return null;
 	}
+
 	/**
 	 * @return the table names
 	 */
 	public final List<String> getNames() {
 		List<String> keys = new ArrayList<String>();
-		keys.addAll(tableMap.keySet());
+		keys.addAll(definitions.keySet());
 		Collections.sort(keys);
 		return keys;
+	}
+
+	/**
+	 * Get the table definition associated with the name.
+	 * @param name
+	 *            Name of table
+	 * @return Table {@link TableDefinitionI definition}
+	 */
+	public final TableDefinitionI getTable(final String name) {
+		return definitions.get(name);
+	}
+	/**
+	 * Initialization function used to synchronize with the database. For
+	 * internal use only.
+	 * @param definitions
+	 *            Map of table definitions.
+	 */
+	public final void init(final Map<String, TableDefinitionI> definitions) {
+		this.definitions.clear();
+		this.definitions.putAll(definitions);
+	}
+	/**
+	 * Set the table definition associated with the name.
+	 * @param name
+	 *            Name of table
+	 * @param table
+	 *            Table {@link TableDefinitionI definition}
+	 */
+	public final void setTable(final String name, final TableDefinitionI table) {
+		TableDefinitionI old = getTable(name);
+		if (old != null) {
+			log.error("Table " + name + " already in the registry as " + old);
+			return;
+		}
+		definitions.put(name, table);
+	}
+
+	/**
+	 * @return the definitions.  Used only for synchronization.
+	 */
+	public final Map<String, TableDefinitionI> getDefinitions() {
+		return definitions;
 	}
 
 

@@ -10,7 +10,7 @@ import org.nees.illinois.replay.data.MatrixSpecI;
  * differentiates between data columns and columns which contain time data.
  * @author Michael Bletzinger
  */
-public class TableColumns implements TableColumnsI {
+public class TableDef implements TableDefinitionI {
 	/**
 	 * List of data column names.
 	 */
@@ -34,7 +34,7 @@ public class TableColumns implements TableColumnsI {
 	 * @param tableId
 	 *            Table name info.
 	 */
-	public TableColumns(final List<String> dataColumns,
+	public TableDef(final List<String> dataColumns,
 			final TableIdentityI tableId) {
 		super();
 		this.dataColumns = dataColumns;
@@ -102,7 +102,7 @@ public class TableColumns implements TableColumnsI {
 
 	@Override
 	public final void appendColumns(final MatrixSpecI other) {
-		TableColumnsI otherTC = (TableColumnsI) other;
+		TableDefinitionI otherTC = (TableDefinitionI) other;
 		dataColumns.addAll(otherTC.getColumns(false));
 	}
 }

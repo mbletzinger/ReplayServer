@@ -1,64 +1,44 @@
 package org.nees.illinois.replay.events;
 
+import org.nees.illinois.replay.common.types.TableIdentityI;
+
 /**
  * Class to manage step numbers. A step number is a triplet of the form step,
  * substep, and correction step. This class converts the step number to string
  * and does comparisons.
  * @author Michael Bletzinger
  */
-public class StepNumber implements Comparable<StepNumber>, IterationStepI {
+public class StepNumber implements IterationStepI {
 	/**
 	 * Correction step number.
 	 */
-	private final long correctionStep;
-	/**
-	 * Step number.
-	 */
-	private final long step;
-	/**
-	 * Substep number.
-	 */
-	private final long substep;
+	private final int correctionStep;
+
 	/**
 	 * Database ID of the step number.
 	 */
 	private final String id;
-	/**
-	 * Time stamp of the step number.
-	 */
-	private final TimeAndSource time;
 
 	/**
 	 * Step index used for comparing with other steps.
 	 */
-	private final double index;
-
+	private double index;
 	/**
-	 * Constructor for doubles from a data matrix.
-	 * @param step
-	 *            Step number.
-	 * @param substep
-	 *            Substep number.
-	 * @param correctionStep
-	 *            Correction step number.
-	 * @param time
-	 *            timestamp for step number.
-	 * @param id
-	 *            Database ID of the step number.
-	 * @param index
-	 *            Step index used for comparing with other steps.
+	 * Source which recorded the event.
 	 */
-	public StepNumber(final double step, final double substep,
-			final double correctionStep, final TimeAndSource time,
-			final String id, final double index) {
-		super();
-		this.step = Math.round(step);
-		this.substep = Math.round(substep);
-		this.correctionStep = Math.round(correctionStep);
-		this.time = time;
-		this.id = id;
-		this.index = index;
-	}
+	private final TableIdentityI source;
+	/**
+	 * Step number.
+	 */
+	private final int step;
+	/**
+	 * Substep number.
+	 */
+	private final int substep;
+	/**
+	 * Time stamp of the step number.
+	 */
+	private final double time;
 
 	/**
 	 * Constructor for an integer triple.
@@ -72,21 +52,20 @@ public class StepNumber implements Comparable<StepNumber>, IterationStepI {
 	 *            Time stamp of the step number.
 	 * @param id
 	 *            Database ID of the step number.
-	 * @param index
+	 * @param source
 	 *            Step index used for comparing with other steps.
 	 */
 	public StepNumber(final int step, final int substep,
-			final int correctionStep, final TimeAndSource time,
-			final String id, final double index) {
+			final int correctionStep, final double time,
+			final String id, final TableIdentityI source) {
 		super();
 		this.step = step;
 		this.substep = substep;
 		this.correctionStep = correctionStep;
 		this.time = time;
 		this.id = id;
-		this.index = index;
+		this.source = source;
 	}
-
 	/**
 	 * Constructor from a String. The "_" underline character is the delimiter.
 	 * @param steps
@@ -95,11 +74,11 @@ public class StepNumber implements Comparable<StepNumber>, IterationStepI {
 	 *            Time stamp of the step number.
 	 * @param id
 	 *            Database ID of the step number.
-	 * @param index
+	 * @param source
 	 *            Step index used for comparing with other steps.
 	 */
-	public StepNumber(final String steps, final TimeAndSource time,
-			final String id, final double index) {
+	public StepNumber(final String steps, final double time,
+			final String id, final TableIdentityI source) {
 		super();
 		String[] ssteps = steps.split("_");
 		this.step = Integer.parseInt(ssteps[0]);
@@ -107,54 +86,84 @@ public class StepNumber implements Comparable<StepNumber>, IterationStepI {
 		this.correctionStep = Integer.parseInt(ssteps[2]);
 		this.time = time;
 		this.id = id;
-		this.index = index;
+		this.source = source;
 	}
 
 	@Override
-	public final int compareTo(final StepNumber other) {
-		if (other.step != step) {
-			return compareToLong(step, other.step);
-		}
-		if (other.substep != substep) {
-			return compareToLong(substep, other.substep);
-		}
-		return compareToLong(correctionStep, other.correctionStep);
-
-	}
-
-	/**
-	 * Compare long values.
-	 * @param me
-	 *            First value.
-	 * @param other
-	 *            Second value.
-	 * @return comparison.
-	 */
-	private int compareToLong(final long me, final long other) {
-		Long meL = new Long(me);
-		Long othL = new Long(other);
-		return meL.compareTo(othL);
+	public final int compareTo(final EventI other) {
+		Double me = new Double(this.time);
+		Double them = new Double(other.getTime());
+		return me.compareTo(them);
 	}
 
 	/**
 	 * @return the correctionStep
 	 */
-	public final long getCorrectionStep() {
+	public final int getCorrectionStep() {
 		return correctionStep;
+	}
+
+	@Override
+	public final String getDescription() {
+		return toString();
+	}
+
+	@Override
+	public final String getid() {
+		return id;
+	}
+
+	/**
+	 * @return the index
+	 */
+	public final double getIndex() {
+		return index;
+	}
+
+	@Override
+	public final String getName() {
+		return toString();
+	}
+
+	@Override
+	public final TableIdentityI getSource() {
+		return source;
 	}
 
 	/**
 	 * @return the step
 	 */
-	public final long getStep() {
+	public final int getStep() {
 		return step;
+	}
+
+	@Override
+	public final double getStepIndex() {
+		return index;
 	}
 
 	/**
 	 * @return the substep
 	 */
-	public final long getSubstep() {
+	public final int getSubstep() {
 		return substep;
+	}
+
+	@Override
+	public final double getTime() {
+		return time;
+	}
+
+	@Override
+	public final EventType getType() {
+		return EventType.StepNumber;
+	}
+
+	/**
+	 * @param index the index to set
+	 */
+	public final void setIndex(final double index) {
+		this.index = index;
 	}
 
 	/*
@@ -164,35 +173,5 @@ public class StepNumber implements Comparable<StepNumber>, IterationStepI {
 	@Override
 	public final String toString() {
 		return step + "_" + substep + "_" + correctionStep;
-	}
-
-	@Override
-	public final String getName() {
-		return toString();
-	}
-
-	@Override
-	public final String getid() {
-		return id;
-	}
-
-	@Override
-	public final String getDescription() {
-		return toString();
-	}
-
-	@Override
-	public final double getStepIndex() {
-		return index;
-	}
-
-	@Override
-	public final TimeAndSource getTime() {
-		return time;
-	}
-
-	@Override
-	public final EventType getType() {
-		return EventType.StepNumber;
 	}
 }
