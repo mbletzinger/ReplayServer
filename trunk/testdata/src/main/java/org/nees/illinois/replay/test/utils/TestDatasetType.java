@@ -10,9 +10,21 @@ public enum TestDatasetType {
 	 */
 	DAQ,
 	/**
+	 * Channels from the 2nd DAQ system.
+	 */
+	DAQ2,
+	/**
 	 * Channels from the LBCB Operations Manager.
 	 */
 	OM,
+	/**
+	 * Channels from the 2nd LBCB.
+	 */
+	OM2,
+	/**
+	 * Channels from the Krypton System.
+	 */
+	Krypton,
 	/**
 	 * Query with a columns-after merge.
 	 */

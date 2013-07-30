@@ -89,4 +89,14 @@ public class SortableDoubleMatrix implements DoubleMatrixI {
 	public final MatrixSpecI getSpec() {
 		return dm.getSpec();
 	}
+
+	@Override
+	public final void append(final List<Double> row) {
+		dm.append(row);
+	}
+
+	@Override
+	public final void clear() {
+		dm.clear();
+	}
 }

@@ -7,7 +7,7 @@ import java.util.Map;
 import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.common.registries.TableIdentityRegistry;
 import org.nees.illinois.replay.common.registries.TableRegistry;
-import org.nees.illinois.replay.common.types.TableColumnsI;
+import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.data.RateType;
@@ -108,7 +108,7 @@ public class DatasetDirector {
 	/**
 	 * {@link TestDatasets} used for query testing.
 	 */
-	private final TestDatasets cltm;
+	private final TestDatasets set;
 	/**
 	 * The {@link ChannelNameRegistry} that is supposed to exist after testing.
 	 */
@@ -176,10 +176,12 @@ public class DatasetDirector {
 	public DatasetDirector(final ExperimentNames experiment) {
 		super();
 		this.experiment = experiment;
-		this.cltm = new TestDatasets(
+		this.set = new TestDatasets(
 				experiment.equals(ExperimentNames.HybridMasonry2),
 				experiment.name());
-		this.cltm.fillCnr(expectedCnr);
+		this.set.fillCnr(expectedCnr);
+		this.set.fillTblIdr(expectedTidr);
+		this.set.fillTblr(expectedTblr, expectedTidr);
 	}
 
 	/**
@@ -191,7 +193,7 @@ public class DatasetDirector {
 	 */
 	public final void checkChannels(final TestDatasetType typ,
 			final List<String> channels) {
-		checkChannels(cltm.getChannels(typ), channels);
+		checkChannels(set.getChannels(typ), channels);
 	}
 
 	/**
@@ -271,8 +273,8 @@ public class DatasetDirector {
 	 * @param expected
 	 *            second.
 	 */
-	private void checkTableDefinitions(final TableColumnsI actual,
-			final TableColumnsI expected) {
+	private void checkTableDefinitions(final TableDefinitionI actual,
+			final TableDefinitionI expected) {
 		Assert.assertEquals(actual.getTableId().getDatasetName(), expected
 				.getTableId().getDatasetName());
 		Assert.assertEquals(actual.getNumberOfColumns(true),
@@ -293,7 +295,7 @@ public class DatasetDirector {
 	public final DoubleMatrixI generate(final ExperimentNames experiment,
 			final QueryParaTypes qt, final TestDatasetType quy) {
 		int row = queryTableSizes.get(qt);
-		List<String> channels = cltm.getChannels(quy);
+		List<String> channels = set.getChannels(quy);
 		RateType rate = queryRates.get(qt);
 		return generate(quy.name(), row, channels.size(), rate);
 	}
@@ -339,7 +341,7 @@ public class DatasetDirector {
 	public final ChannelDataGenerator generateQueryData(
 			final TestDatasetType quy, final QueryParaTypes qt,
 			final MatrixMixType rowMix) {
-		QueryChannelLists qctl = cltm.getTestQuery(quy);
+		QueryChannelLists qctl = set.getTestQuery(quy);
 		int row = queryTableSizes.get(qt);
 		return new ChannelDataGenerator(qctl, rowMix, row);
 	}
@@ -347,8 +349,8 @@ public class DatasetDirector {
 	/**
 	 * @return the cltm
 	 */
-	public final TestDatasets getCltm() {
-		return cltm;
+	public final TestDatasets getSet() {
+		return set;
 	}
 
 	/**

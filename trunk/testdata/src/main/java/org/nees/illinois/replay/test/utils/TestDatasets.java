@@ -9,8 +9,8 @@ import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.common.registries.TableIdentityRegistry;
 import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.common.registries.TableType;
-import org.nees.illinois.replay.common.types.TableColumns;
-import org.nees.illinois.replay.common.types.TableColumnsI;
+import org.nees.illinois.replay.common.types.TableDef;
+import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.common.types.TableIdentityI;
 
 /**
@@ -101,7 +101,7 @@ public class TestDatasets {
 		for (TestDatasetType type : tableTypes) {
 			List<String> channels = cl2Channels.get(type);
 			TableIdentityI tableid = tblIdr.getId(getTableName(type));
-			TableColumnsI tc = new TableColumns(channels, tableid);
+			TableDefinitionI tc = new TableDef(channels, tableid);
 			tblr.setTable(getTableName(type), tc);
 		}
 	}
@@ -149,7 +149,7 @@ public class TestDatasets {
 	 * @return Table name.
 	 */
 	public final String getTableName(final TestDatasetType type) {
-		return type.toString() + "name";
+		return type.toString() + "dbTable";
 	}
 
 	/**
@@ -229,9 +229,6 @@ public class TestDatasets {
 		cl2q.put(TestDatasetType.QueryTriple, query);
 		cl2Channels.put(TestDatasetType.QueryTriple, query.combine());
 
-		tableTypes.add(TestDatasetType.OM);
-		tableTypes.add(TestDatasetType.DAQ);
-
 		queryTypes.add(TestDatasetType.QueryDaq);
 		queryTypes.add(TestDatasetType.QueryOm);
 		queryTypes.add(TestDatasetType.QueryAfter);
@@ -260,6 +257,16 @@ public class TestDatasets {
 		cl2tt.put(TestDatasetType.OM, TableType.Control);
 
 		chnls = new ArrayList<String>();
+		chnls.add("OM/Cmd/LBCB2/Actuator/C_LBCB2_X1_0");
+		chnls.add("OM/Disp/LBCB2/Cartesian/D_LBCB2_RY_1");
+		chnls.add("OM/Load/LBCB2/Actuator/L_LBCB2_Z1_2");
+		chnls.add("OM/CntrlSensor/D_West_X_3");
+		chnls.add("OM/Cmd/LBCB2/Actuator/C_LBCB2_Z1_4");
+		chnls.add("OM/Disp/LBCB2/Cartesian/D_LBCB2_RZ_5");
+		cl2Channels.put(TestDatasetType.OM2, chnls);
+		cl2tt.put(TestDatasetType.OM2, TableType.Control);
+
+		chnls = new ArrayList<String>();
 		chnls.add("DAQ/DisplacementSensor/WestFlange/FirstFloor/DTV02F1A_W7_LinPot05_0");
 		chnls.add("DAQ/StrainGauge/Steel/Web/SecondFloor/SGWWF2WL05K_W7_SG_K5_2");
 		chnls.add("DAQ/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
@@ -272,12 +279,41 @@ public class TestDatasets {
 		}
 		cl2Channels.put(TestDatasetType.DAQ, chnls);
 		cl2tt.put(TestDatasetType.DAQ, TableType.DAQ);
+
+		chnls = new ArrayList<String>();
+		chnls.add("DAQ2/DisplacementSensor/WestFlange/FirstFloor/DTV02F1A_W7_LinPot05_0");
+		chnls.add("DAQ2/StrainGauge/Steel/Web/SecondFloor/SGWWF2WL05K_W7_SG_K5_2");
+		chnls.add("DAQ2/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
+		chnls.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL06K_W7_SG_K13_2");
+		chnls.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL07K_W7_SG_K14_7");
+		cl2Channels.put(TestDatasetType.DAQ2, chnls);
+		cl2tt.put(TestDatasetType.DAQ2, TableType.DAQ);
+
+		chnls = new ArrayList<String>();
+		chnls.add("4/X/4_1");
+		chnls.add("4/X/4_2");
+		chnls.add("4/X/4_3");
+		chnls.add("4/X/4_4");
+		chnls.add("4/X/4_5");
+		chnls.add("4/Y/4_1");
+		chnls.add("4/Y/4_2");
+		chnls.add("4/Y/4_3");
+		chnls.add("4/Y/4_4");
+		chnls.add("4/Y/4_5");
+		chnls.add("4/Z/4_1");
+		chnls.add("4/Z/4_2");
+		chnls.add("4/Z/4_3");
+		chnls.add("4/Z/4_4");
+		chnls.add("4/Z/4_5");
+		cl2Channels.put(TestDatasetType.Krypton, chnls);
+		cl2tt.put(TestDatasetType.Krypton, TableType.Krypton);
+
+		tableTypes.add(TestDatasetType.OM);
+		tableTypes.add(TestDatasetType.OM2);
+		tableTypes.add(TestDatasetType.DAQ);
+		tableTypes.add(TestDatasetType.DAQ2);
+		tableTypes.add(TestDatasetType.Krypton);
+
 	}
 
-	/**
-	 * @return the second
-	 */
-	public final boolean isSecond() {
-		return second;
-	}
 }
