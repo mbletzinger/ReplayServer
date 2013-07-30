@@ -24,7 +24,8 @@ public class DerbyDbControl {
 		createDirectory();
 		ProcessManagement pm = new ProcessManagement(derbyHome
 				+ "/bin/startNetworkServer", 4000);
-		pm.addEnv("DERBY_OPTS", "-Dderby.system.home=" + derbyData.getAbsolutePath());
+		pm.addEnv("DERBY_OPTS",
+				"-Dderby.system.home=" + derbyData.getAbsolutePath());
 		pm.execute();
 		localStart = true;
 	}
@@ -49,21 +50,27 @@ public class DerbyDbControl {
 		}
 		return true;
 	}
+
 	private void createDirectory() {
 		Properties p = System.getProperties();
 		String userDir = p.getProperty("user.dir");
 		derbyData = new FileWithContentDelete(userDir, "derbyDb");
-		if(derbyData.exists() == false) {
-			log.debug("creating folder " + derbyData);
+		if (derbyData.exists() == false) {
+			log.debug("Creating folder " + derbyData);
 			derbyData.mkdir();
+		} else {
+			log.debug("Derby data folder " + derbyData + " already exists.");
+
 		}
+
 		p.setProperty("derby.system.home", derbyData.getAbsolutePath());
 	}
+
 	private void cleanup() {
-		if(derbyData.exists()) {
+		if (derbyData.exists()) {
 			log.debug("removing folder " + derbyData);
 			boolean done = derbyData.delete();
-			if(done) {
+			if (done) {
 				return;
 			}
 			log.error("Could not delete " + derbyData.getAbsolutePath());

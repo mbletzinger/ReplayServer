@@ -102,8 +102,8 @@ public class TestDbQuery {
 
 		TestDatasets cl = new TestDatasets(false,er.getExperiment());
 
-		dbu.createTable(TableType.Control, cl.getChannels(TestDatasetType.OM));
-		dbu.createTable(TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
+		dbu.createTable(null, TableType.Control, cl.getChannels(TestDatasetType.OM));
+		dbu.createTable(null, TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
 		DbTablesMap specs = dbu.getSpecs();
 
 		QueryChannelLists ctl = cl.getTestQuery(TestDatasetType.QueryOm);
@@ -135,12 +135,12 @@ public class TestDbQuery {
 	public void testSelectData() {  // Need expected results here
 		TestDatasets cl = new TestDatasets(false,er.getExperiment());
 
-		dbu.createTable(TableType.Control, cl.getChannels(TestDatasetType.OM));
-		dbu.update(TableType.Control, RateType.CONT, omContData);
-		dbu.update(TableType.Control, RateType.STEP, omStepData);
-		dbu.createTable(TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
-		dbu.update(TableType.DAQ, RateType.CONT, daqContData);
-		dbu.update(TableType.DAQ, RateType.STEP, daqStepData);
+		dbu.createTable(null, TableType.Control, cl.getChannels(TestDatasetType.OM));
+		dbu.update(TableType.Control, omContData);
+		dbu.update(TableType.Control, omStepData);
+		dbu.createTable(null, TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
+		dbu.update(TableType.DAQ, daqContData);
+		dbu.update(TableType.DAQ, daqStepData);
 		DbTablesMap specs = dbu.getSpecs();
 		QueryChannelLists chnls = cl.getTestQuery(TestDatasetType.QueryOm);
 		SavedQueryWTablesList dbs = new SavedQueryWTablesList(chnls.combine(), "OM_Channels", specs,
@@ -162,8 +162,8 @@ public class TestDbQuery {
 
 		TestDatasets cl = new TestDatasets(false,er.getExperiment());
 
-		dbu.createTable(TableType.Control, cl.getChannels(TestDatasetType.OM));
-		dbu.createTable(TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
+		dbu.createTable(null, TableType.Control, cl.getChannels(TestDatasetType.OM));
+		dbu.createTable(null, TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
 		DbTablesMap specs = dbu.getSpecs();
 
 		QueryChannelLists chnls = cl.getTestQuery(TestDatasetType.QueryOm);

@@ -99,16 +99,16 @@ public class TestDataStatements {
 	public void testContDataUpdate() {
 		TestDatasets cl = new TestDatasets(false,er.getExperiment());
 		DbTablesMap specs = new DbTablesMap(cnr, er.getExperiment());
-		dbu.createTable(TableType.Control, cl.getChannels(TestDatasetType.OM));
-		dbu.update(TableType.Control, RateType.CONT, omContData);
+		dbu.createTable(null, TableType.Control, cl.getChannels(TestDatasetType.OM));
+		dbu.update(TableType.Control, omContData);
 
 		String tblName = specs.tableName(TableType.Control, RateType.CONT);
 		queryData(tblName, omContData);
 
-		dbu.createTable(TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
+		dbu.createTable(null, TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
 		// log.debug("Adding data " +
 		// Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
-		dbu.update(TableType.DAQ, RateType.CONT, daqContData);
+		dbu.update(TableType.DAQ, daqContData);
 
 		tblName = specs.tableName(TableType.DAQ, RateType.CONT);
 		queryData(tblName, daqContData);
@@ -118,18 +118,18 @@ public class TestDataStatements {
 	public void testStepDataUpdate() {
 		TestDatasets cl = new TestDatasets(false,er.getExperiment());
 		DbTablesMap specs = new DbTablesMap(cnr, er.getExperiment());
-		dbu.createTable(TableType.Control, cl.getChannels(TestDatasetType.OM));
+		dbu.createTable(null, TableType.Control, cl.getChannels(TestDatasetType.OM));
 		log.debug("Adding data "
 				+ Mtx2Str.matrix2String(Mtx2Str.timeOffset(omContData)));
-		dbu.update(TableType.Control, RateType.STEP, omStepData);
+		dbu.update(TableType.Control, omStepData);
 
 		String tblName = specs.tableName(TableType.Control, RateType.STEP);
 		queryData(tblName, omStepData);
 
-		dbu.createTable(TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
+		dbu.createTable(null, TableType.DAQ, cl.getChannels(TestDatasetType.DAQ));
 		log.debug("Adding data "
 				+ Mtx2Str.matrix2String(Mtx2Str.timeOffset(omStepData)));
-		dbu.update(TableType.DAQ, RateType.STEP, daqStepData);
+		dbu.update(TableType.DAQ, daqStepData);
 
 		tblName = specs.tableName(TableType.DAQ, RateType.STEP);
 		queryData(tblName, daqStepData);
