@@ -71,10 +71,6 @@ public class TestRegistrySynchronization {
 	 */
 	@AfterClass
 	public final void tearDown() throws Exception {
-		StatementProcessor dbSt = pools.createDbStatement(experiment, false);
-		RegistrySynchI dbcs = new DbChannelNameSynch(null, dbSt);
-		dbcs.removeTable();
-		dbSt.close();
 		pools.getOps().removeDatabase(experiment);
 		pools.close();
 		if (ismysql == false) {
@@ -101,7 +97,7 @@ public class TestRegistrySynchronization {
 		AssertJUnit.assertEquals(cnr.toString(), cnr1.toString());
 	}
 /**
- * Test the synchronization of the table registries
+ * Test the synchronization of the table registries.
  */
 	@Test
 	public final void testTableRegistrySynch() {

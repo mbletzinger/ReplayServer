@@ -1,10 +1,11 @@
 package org.nees.illinois.replay.test.db;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.junit.AfterClass;
 import org.nees.illinois.replay.db.DbInfo;
 import org.nees.illinois.replay.db.DbOperationsI;
 import org.nees.illinois.replay.db.DbPools;
@@ -13,7 +14,9 @@ import org.nees.illinois.replay.test.db.utils.DbTestsModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
@@ -167,17 +170,14 @@ public class TestCreateRemoveDatabase {
 	/**
 	 * Determines what type of database program we are testing and sets up the
 	 * test parameters accordingly.
-	 * @param db
-	 *            TestNG parameter for telling which database program to use.
 	 * @throws Exception
 	 *             If any of the preparations failed.
 	 */
-	@Parameters("db")
-	@BeforeClass
-	public final void setUp(@Optional("derby") final String db)
-//	public final void setUp(@Optional("mysql") final String db)
+	@BeforeMethod
+	public final void setUp()
+	// public final void setUp(@Optional("mysql") final String db)
 			throws Exception {
-		DbTestsModule guiceMod = new DbTestsModule(db);
+		DbTestsModule guiceMod = new DbTestsModule(ismysql ? "mysql" : "derby");
 		experiment = "HybridMasonry1";
 		Injector injector = Guice.createInjector(guiceMod);
 		DbPools pools = injector.getInstance(DbPools.class);
@@ -187,6 +187,16 @@ public class TestCreateRemoveDatabase {
 		connectionUrl = info.getConnectionUrl();
 		user = info.getUser();
 		passwd = info.getPasswd();
+	}
+
+	/**
+	 * Determines the database application used and does extra stuff for derby.
+	 * @param db
+	 *            TestNG parameter for telling which database program to use.
+	 */
+	@Parameters("db")
+	@BeforeClass
+	public final void startDb(@Optional("derby") final String db) {
 		ismysql = db.equals("mysql");
 		if (ismysql == false) {
 			ddbc.startDerby();
@@ -211,6 +221,7 @@ public class TestCreateRemoveDatabase {
 	 */
 	private void testWithStatement(final Connection connection) {
 		Statement stmt = null;
+		final String table = "TestTable";
 		try {
 			stmt = connection.createStatement();
 		} catch (SQLException e) {
@@ -218,11 +229,41 @@ public class TestCreateRemoveDatabase {
 			Assert.fail();
 		}
 		try {
-			stmt.execute("CREATE TABLE TestTable (col1 double, col2 double)");
+			stmt.execute("CREATE TABLE " + table
+					+ " (col1 double, col2 double)");
 		} catch (SQLException e) {
 			log.error("Create table failed because ", e);
 			Assert.fail();
 		} // do something with the connection.
+		DatabaseMetaData databaseMetaData = null;
+		try {
+			databaseMetaData = connection.getMetaData();
+		} catch (SQLException e1) {
+			log.error("Metadata query failed ", e1);
+			Assert.fail();
+		}
+		ResultSet result = null;
+		try {
+			result = databaseMetaData.getTables(null, null, null, null);
+		} catch (SQLException e1) {
+			log.error("Metadata query failed ", e1);
+			Assert.fail();
+		}
+		boolean found = false;
+		try {
+			while (result.next()) {
+				final int nameColumn = 3;
+				String tableName = result.getString(nameColumn);
+				log.debug("Checking table name " + tableName);
+				if (tableName.equals(table.toUpperCase())) {
+					found = true;
+				}
+			}
+		} catch (SQLException e1) {
+			log.error("Metadata query failed ", e1);
+			Assert.fail();
+		}
+		Assert.assertTrue(found);
 		try {
 			stmt.execute("DROP TABLE TestTable");
 		} catch (SQLException e) {
