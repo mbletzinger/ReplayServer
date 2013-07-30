@@ -10,8 +10,8 @@ import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.common.types.CompositeQuery;
 import org.nees.illinois.replay.common.types.CompositeQueryI;
-import org.nees.illinois.replay.common.types.TableColumns;
-import org.nees.illinois.replay.common.types.TableColumnsI;
+import org.nees.illinois.replay.common.types.TableDef;
+import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.common.types.TableIdentityI;
 import org.nees.illinois.replay.test.utils.CompareLists;
 import org.nees.illinois.replay.test.utils.QueryChannelLists;
@@ -97,13 +97,13 @@ public class TestRegistries {
 		for (TestDatasetType t : cltm.getTableTypes()) {
 			TableIdentityI tableId = tir.addTable(experiment, cltm.getTableName(t),
 					cltm.getTt(t));
-			TableColumnsI table = new TableColumns(cltm.getChannels(t), tableId);
+			TableDefinitionI table = new TableDef(cltm.getChannels(t), tableId);
 			tr.setTable(tableId.getDatasetName(), table);
 		}
 		for (TestDatasetType t : cltm.getTableTypes()) {
 			String name = cltm.getTableName(t);
 			log.debug("Checking dataet " + t + " with name " + name);
-			TableColumnsI table = tr.getTable(name);
+			TableDefinitionI table = tr.getTable(name);
 			Assert.assertNotNull(table);
 			compL.compare(table.getColumns(false), cltm.getChannels(t));
 		}

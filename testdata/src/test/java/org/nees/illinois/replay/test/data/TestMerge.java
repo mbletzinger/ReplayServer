@@ -97,7 +97,7 @@ public class TestMerge {
 	@Test(dependsOnMethods = { "testRawMerge" })
 	public final void testQueryMerges() {
 		DatasetDirector dd = new DatasetDirector(ExperimentNames.HybridMasonry1);
-		TestDatasets cltm = dd.getCltm();
+		TestDatasets cltm = dd.getSet();
 		for (TestDatasetType clt : cltm.getQueryTypes()) {
 			if (clt.equals(TestDatasetType.QueryDaq)
 					|| clt.equals(TestDatasetType.QueryOm)) {
