@@ -63,7 +63,7 @@ public class DerbyDbOps implements DbOperationsI {
 
 	@Override
 	public final String filterUrl(final String url, final String experiment) {
-		return url + experiment + ";create=true";
+		return url + "\"" + experiment + "\";create=true";
 	}
 
 	@Override

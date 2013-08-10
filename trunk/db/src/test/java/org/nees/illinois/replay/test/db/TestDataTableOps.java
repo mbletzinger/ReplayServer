@@ -7,11 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
-import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.common.registries.ExperimentRegistries;
 import org.nees.illinois.replay.common.registries.TableDefiner;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
-import org.nees.illinois.replay.common.types.TableIdentityI;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.data.DataTableOps;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
@@ -107,9 +105,7 @@ public class TestDataTableOps {
 					sets.getTt(t), sets.getChannels(t));
 			DataTableOps dto = new DataTableOps(td, dbSt);
 			Assert.assertTrue(dto.create());
-			TableIdentityI ti = registries.getTableIds().getId(
-					sets.getTableName(t));
-			check4Table(ti.getDbName(), sets.getChannels(t));
+			check4Table(td.getTableId(), td.getColumns(true));
 			dbSt = pools.createDbStatement(registries.getExperiment(), false);
 			dto = new DataTableOps(td, dbSt);
 			Assert.assertTrue(dto.remove());
@@ -134,8 +130,6 @@ public class TestDataTableOps {
 	 */
 	private void check4Table(final String name, final List<String> channels) {
 		List<String> expected = new ArrayList<String>();
-		expected.add("TIME");
-		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		DatabaseMetaData databaseMetaData = null;
 		try {
 			databaseMetaData = pools.fetchConnection(
@@ -157,7 +151,7 @@ public class TestDataTableOps {
 				final int nameColumn = 3;
 				String tableName = result.getString(nameColumn);
 				log.debug("Checking table name " + tableName + " with " + name);
-				if (tableName.equals(name.toUpperCase())) {
+				if (tableName.equals(name)) {
 					found = true;
 				}
 			}
@@ -168,7 +162,7 @@ public class TestDataTableOps {
 		Assert.assertTrue(found);
 		try {
 			result = databaseMetaData.getColumns(null, null,
-					name.toUpperCase(), null);
+					"\"" + name + "\"", null);
 		} catch (SQLException e) {
 			log.error("Metadata query failed ", e);
 			Assert.fail();

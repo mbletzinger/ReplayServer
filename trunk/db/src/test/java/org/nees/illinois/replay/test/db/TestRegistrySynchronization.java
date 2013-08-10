@@ -1,7 +1,6 @@
 package org.nees.illinois.replay.test.db;
 
 import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
-import org.nees.illinois.replay.common.registries.TableIdentityRegistry;
 import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.registry.synch.DbChannelNameSynch;
@@ -10,8 +9,8 @@ import org.nees.illinois.replay.db.registry.synch.RegistrySynchI;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.utils.DatasetDirector;
-import org.nees.illinois.replay.test.utils.DatasetDirector.ExperimentNames;
+import org.nees.illinois.replay.test.utils.QuerySetsDirector;
+import org.nees.illinois.replay.test.utils.QuerySetsDirector.ExperimentNames;
 import org.nees.illinois.replay.test.utils.TestDatasets;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterClass;
@@ -101,23 +100,19 @@ public class TestRegistrySynchronization {
  */
 	@Test
 	public final void testTableRegistrySynch() {
-		DatasetDirector dd = new DatasetDirector(ExperimentNames.HybridMasonry1);
+		QuerySetsDirector dd = new QuerySetsDirector(ExperimentNames.HybridMasonry1);
 		TestDatasets set = dd.getSet();
-		TableIdentityRegistry tir = new TableIdentityRegistry();
 		TableRegistry tr = new TableRegistry();
-		set.fillTblIdr(tir);
-		set.fillTblr(tr, tir);
+		set.fillTblr(tr);
 		StatementProcessor dbSt = pools.createDbStatement(experiment, true);
-		RegistrySynchI dbSynch = new DbTableDefinitionsSynch(tir, tr, dbSt);
+		RegistrySynchI dbSynch = new DbTableDefinitionsSynch(tr, dbSt);
 		dbSynch.save();
 		dbSt.close();
-		TableIdentityRegistry tir1 = new TableIdentityRegistry();
 		TableRegistry tr1 = new TableRegistry();
 		dbSt = pools.createDbStatement(experiment, false);
-		dbSynch = new DbTableDefinitionsSynch(tir1, tr1,dbSt);
+		dbSynch = new DbTableDefinitionsSynch(tr1, dbSt);
 		dbSynch.load();
 		dbSt.close();
-		dd.checkExpectedTableIdRegistry(tir1);
 		dd.checkExpectedTableRegistry(tr1);
 	}
 }

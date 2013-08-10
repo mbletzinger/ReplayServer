@@ -68,6 +68,11 @@ public class TestDbStatement {
 	 */
 	private boolean ismysql;
 	/**
+	 * Table name.
+	 */
+	private final String tblName = "\"Test Table\"";
+
+	/**
 	 * Logger.
 	 */
 	private final Logger log = LoggerFactory.getLogger(TestDbStatement.class);
@@ -106,7 +111,7 @@ public class TestDbStatement {
 	@AfterMethod
 	public final void tearDown() throws Exception {
 		StatementProcessor dbSt = pools.createDbStatement(experiment, false);
-		dbSt.noComplaints("DROP TABLE TestTable");
+		dbSt.noComplaints("DROP TABLE " + tblName);
 		dbSt.close();
 	}
 
@@ -131,17 +136,16 @@ public class TestDbStatement {
 	 */
 	@Test
 	public final void testCreatePrepStatement() {
-		String tblName = "TestTable";
 		StatementProcessor dbSt = pools.createDbStatement(experiment, true);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
-		TestPrepStatement prep = new TestPrepStatement(tblName,
+		TestPrepStatement prep = new TestPrepStatement(tblName.replaceAll("\"", ""),
 				dbSt.getConnection());
 		for (int i = 0; i < numDataRows; i++) {
 			prep.add(data[i][0], data[i][1]);
 		}
 		int[] result = prep.getBuilder().execute();
 		AssertJUnit.assertNotNull(result);
-		dbSt.execute("DROP TABLE TestTable");
+		dbSt.execute("DROP TABLE " + tblName);
 		dbSt.close();
 	}
 
@@ -152,9 +156,9 @@ public class TestDbStatement {
 	public final void testCreateAndDropTable() {
 		StatementProcessor dbSt = pools.createDbStatement(experiment, true);
 		boolean result = dbSt
-				.execute("CREATE TABLE TestTable (col1 double, col2 double)");
+				.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
 		AssertJUnit.assertTrue(result);
-		result = dbSt.execute("DROP TABLE TestTable");
+		result = dbSt.execute("DROP TABLE " + tblName);
 		AssertJUnit.assertTrue(result);
 		dbSt.close();
 	}
@@ -164,12 +168,12 @@ public class TestDbStatement {
 	 */
 	@Test
 	public final void testQuery1() {
-		String tblName = "TestTable";
 		StatementProcessor dbSt = pools.createDbStatement(experiment, false);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
 		double[][] result = new double[numDataRows][numDataColumns];
 		for (int i = 0; i < numDataRows; i++) {
-			TestPrepStatement prep = new TestPrepStatement(tblName, dbSt.getConnection());
+			TestPrepStatement prep = new TestPrepStatement(tblName.replaceAll("\"", ""),
+					dbSt.getConnection());
 			prep.add(data[i][0], data[i][1]);
 			prep.getBuilder().execute();
 			ResultSet rs = dbSt.query("SELECT * FROM " + tblName);
@@ -197,7 +201,7 @@ public class TestDbStatement {
 			AssertJUnit.assertEquals(data[i][0], result[i][0], tolerance);
 			AssertJUnit.assertEquals(data[i][1], result[i][1], tolerance);
 		}
-		dbSt.execute("DROP TABLE TestTable");
+		dbSt.execute("DROP TABLE " + tblName);
 		dbSt.close();
 	}
 
@@ -206,10 +210,9 @@ public class TestDbStatement {
 	 */
 	@Test
 	public final void testQuery2() {
-		String tblName = "TestTable";
 		StatementProcessor dbSt = pools.createDbStatement(experiment, false);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
-		TestPrepStatement prep = new TestPrepStatement(tblName,
+		TestPrepStatement prep = new TestPrepStatement(tblName.replaceAll("\"", ""),
 				dbSt.getConnection());
 		for (int i = 0; i < numDataRows; i++) {
 			prep.add(data[i][0], data[i][1]);
@@ -235,7 +238,7 @@ public class TestDbStatement {
 			AssertJUnit.assertEquals(data[i][0], result[i][0], tolerance);
 			AssertJUnit.assertEquals(data[i][1], result[i][1], tolerance);
 		}
-		dbSt.execute("DROP TABLE TestTable");
+		dbSt.execute("DROP TABLE " + tblName);
 		dbSt.close();
 	}
 

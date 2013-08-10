@@ -73,6 +73,7 @@ public class PrepStatementProcessor {
 		}
 		try {
 			statement.close();
+			connection.close();
 		} catch (SQLException e) {
 			log.error("Closing prep statement \"" + prepInit
 					+ "\" failed because", e);

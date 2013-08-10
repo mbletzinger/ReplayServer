@@ -26,7 +26,7 @@ public class TestPrepStatement extends InsertStatement {
 	 */
 	public TestPrepStatement(final String dbTableName,
 			final Connection connection) {
-		super(connection, "INSERT INTO " + dbTableName + "  VALUES(?,?)");
+		super(connection, "INSERT INTO \"" + dbTableName + "\"  VALUES(?,?)");
 	}
 
 	/**

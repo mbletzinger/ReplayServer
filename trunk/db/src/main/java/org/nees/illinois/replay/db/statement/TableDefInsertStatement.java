@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.nees.illinois.replay.common.types.TableIdentityI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,13 +39,13 @@ public class TableDefInsertStatement extends InsertStatement {
 	 *            String of channel names.
 	 * @return True if successful.
 	 */
-	public final boolean add(final String name, final TableIdentityI id,
+	public final boolean add(final String name, final String id,
 			final String channelStr) {
 		PreparedStatement statement = getBuilder().getStatement();
 		final int thirdColumn = 3;
 		try {
 			statement.setString(1, name);
-			statement.setString(2, id.getDbName());
+			statement.setString(2, id);
 			statement.setString(thirdColumn, channelStr);
 			statement.addBatch();
 		} catch (SQLException e) {

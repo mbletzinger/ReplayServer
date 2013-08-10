@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 /**
- * Class which implements database oeprations for the MySQL database.
+ * Class which implements database operations for the MySQL database.
  * @author Michael Bletzinger
  */
 public class MySqlDbOps implements DbOperationsI {
@@ -59,7 +59,7 @@ public class MySqlDbOps implements DbOperationsI {
 
 	@Override
 	public final String filterUrl(final String url, final String experiment) {
-		return url + experiment;
+		return url + "\"" + experiment + "\"";
 	}
 
 	@Override
