@@ -32,7 +32,7 @@ public class DataInsertStatement extends InsertStatement {
 	 */
 	public static DataInsertStatement getStatement(final Connection connection,
 			final String dataTableName, final int numberOfChannels) {
-		String statement = "INSERT INTO " + dataTableName + " VALUES (";
+		String statement = "INSERT INTO \"" + dataTableName + "\" VALUES (";
 		for (int c = 0; c < numberOfChannels; c++) {
 			statement += (c == 0 ? "" : ", ") + "?";
 		}

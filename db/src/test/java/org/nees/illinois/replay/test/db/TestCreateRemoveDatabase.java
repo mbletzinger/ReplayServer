@@ -178,7 +178,7 @@ public class TestCreateRemoveDatabase {
 	// public final void setUp(@Optional("mysql") final String db)
 			throws Exception {
 		DbTestsModule guiceMod = new DbTestsModule(ismysql ? "mysql" : "derby");
-		experiment = "HybridMasonry1";
+		experiment = "Hybrid Masonry #1";
 		Injector injector = Guice.createInjector(guiceMod);
 		DbPools pools = injector.getInstance(DbPools.class);
 		DbInfo info = pools.getInfo();

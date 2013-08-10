@@ -37,6 +37,7 @@ public class StatementProcessor {
 	 */
 	public final void close() {
 		try {
+			log.debug("Connection closed");
 			connection.close();
 		} catch (SQLException e) {
 			log.error("Connection could not be closed because ", e);

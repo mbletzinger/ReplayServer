@@ -6,7 +6,6 @@ import org.nees.illinois.replay.common.registries.ExperimentRegistries;
 import org.nees.illinois.replay.common.registries.TableDefiner;
 import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
-import org.nees.illinois.replay.common.types.TableIdentityI;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.statement.DataInsertStatement;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
@@ -47,7 +46,7 @@ public class DbDataUpdates implements DataUpdateSubResourceI {
 	}
 
 	@Override
-	public final TableIdentityI createTable(final String name,
+	public final String createTable(final String name,
 			final TableType table, final List<String> channels) {
 		if (er == null) {
 			log.error("Need to set the experiment before creating a table");
@@ -59,6 +58,7 @@ public class DbDataUpdates implements DataUpdateSubResourceI {
 		TableDefinitionI td = def.define(name, table, channels);
 		DataTableOps dtc = new DataTableOps(td, dbSt);
 		boolean success = dtc.create();
+		dbSt.close();
 		return (success ? td.getTableId() : null);
 	}
 
@@ -75,12 +75,17 @@ public class DbDataUpdates implements DataUpdateSubResourceI {
 	}
 
 	@Override
-	public final boolean removeTable(final TableIdentityI table) {
+	public final boolean removeTable(final String table) {
 		boolean result = true;
 		StatementProcessor dbSt = pools.createDbStatement(er.getExperiment(),
 				false);
 		TableDefinitionI td = er.getTableDefs()
-				.getTable(table.getDatasetName());
+				.getTable(table);
+		if(td == null) {
+			log.error(table +" does not exist in registry");
+			return false;
+		}
+		log.debug("Removing table " + td);
 		DataTableOps dtc = new DataTableOps(td, dbSt);
 		result = dtc.remove();
 		return result;
@@ -93,10 +98,11 @@ public class DbDataUpdates implements DataUpdateSubResourceI {
 
 	@Override
 	public final boolean update(final String tableString, final double[][] data) {
-		TableIdentityI tid = er.getTableIds().getId(tableString);
+		TableDefinitionI td = er.getTableDefs()
+				.getTable(tableString);
 		DataInsertStatement prep = DataInsertStatement.getStatement(
 				pools.fetchConnection(er.getExperiment(), false),
-				tid.getDbName(), data[0].length);
+				td.getTableId(), data[0].length);
 		for (int r = 0; r < data.length; r++) {
 			prep.add(data[r]);
 		}

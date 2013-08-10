@@ -131,6 +131,7 @@ public class DbPools {
 			final boolean createDb) {
 		Connection connection = fetchConnection(experiment, createDb);
 		if (connection == null) {
+			log.equals("No connection received");
 			return null;
 		}
 		return new StatementProcessor(connection);
@@ -153,10 +154,12 @@ public class DbPools {
 			createConnection(experiment, createDb);
 		}
 		try {
-			connection = connectionPools.get(experiment).getConnection();
+			BoneCP pool = connectionPools.get(experiment);
+			connection = pool.getConnection();
 		} catch (SQLException e1) {
 			log.error("getConnection failed because ", e1);
 		} // fetch a connection
+		log.debug("Connection fetched for " + experiment);
 		return connection;
 	}
 

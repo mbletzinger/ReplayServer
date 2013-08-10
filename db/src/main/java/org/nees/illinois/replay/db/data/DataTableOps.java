@@ -21,7 +21,7 @@ public class DataTableOps {
 	 * @return the SQL statement to create the table.
 	 */
 	private String createTableStatement() {
-		String result = "CREATE TABLE " + def.getTableId().getDbName() + "(";
+		String result = "CREATE TABLE \"" + def.getTableId() + "\"(";
 		boolean first = true;
 		for (String h : def.getColumns(true)) {
 			result += (first ? "" : ", ") + h + " double NOT NULL";
@@ -56,11 +56,11 @@ public class DataTableOps {
 
 	/**
 	 * Remove a table from the database.
-	 * @return True iof successful.
+	 * @return True if successful.
 	 */
 	public final boolean remove() {
-		boolean result = statement.execute("DROP TABLE "
-				+ def.getTableId().getDbName());
+		boolean result = statement.execute("DROP TABLE \""
+				+ def.getTableId() + "\"");
 		statement.close();
 		return result;
 	}
