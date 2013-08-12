@@ -3,13 +3,14 @@ package org.nees.illinois.replay.test.data;
 import java.util.List;
 
 import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
+import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.conversions.ChannelList2Representation;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
-import org.nees.illinois.replay.test.utils.DatasetDirector.ExperimentNames;
+import org.nees.illinois.replay.test.utils.QuerySetsDirector.ExperimentNames;
 import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
 import org.nees.illinois.replay.test.utils.TestDatasetType;
 import org.nees.illinois.replay.test.utils.TestDatasets;
@@ -39,7 +40,7 @@ public class TestStreamConversion {
 				ExperimentNames.HybridMasonry1.toString());
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
-		String tname = lists.getTableName(TestDatasetType.OM);
+		TableType tname = lists.getTt(TestDatasetType.OM);
 		for (String c : lists.getChannels(TestDatasetType.OM)) {
 			cnr.addChannel(tname, c);
 			expectedCnr.addChannel(tname, c);
