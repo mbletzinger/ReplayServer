@@ -29,7 +29,7 @@ public class EventInsertStatement extends InsertStatement {
 	public EventInsertStatement(final Connection connection,
 			final String eventTableName) {
 		super(connection, "INSERT INTO \"" + eventTableName
-				+ "\" VALUES (? ? ? ? ?)");
+				+ "\" VALUES (?, ?, ?, ?, ?, ?)");
 	}
 
 	/**
@@ -42,11 +42,12 @@ public class EventInsertStatement extends InsertStatement {
 		PreparedStatement statement = getBuilder().getStatement();
 		log.debug("Adding " + event.getName());
 		try {
-			statement.setDouble(0, event.getTime());
-			statement.setString(1, event.getName());
-			statement.setString(1, event.getType().name());
-			statement.setString(1, event.getSource());
-			statement.setString(1, event.getDescription());
+			statement.setDouble(1, event.getTime());
+			statement.setString(2, event.getName());
+			statement.setString(3, event.getType().name());
+			statement.setString(4, event.getSource());
+			statement.setString(5, event.getDescription());
+			// need to add step index
 			statement.addBatch();
 		} catch (SQLException e) {
 			log.error("Cannot add data because ", e);

@@ -17,6 +17,27 @@ import org.slf4j.LoggerFactory;
  */
 public class EventsTableOps {
 	/**
+	 * @return the eventTableName
+	 */
+	public final String getEventTableName() {
+		return eventTableName;
+	}
+
+	/**
+	 * @return the experiment
+	 */
+	public final String getExperiment() {
+		return experiment;
+	}
+
+	/**
+	 * @return the pools
+	 */
+	public final DbPools getPools() {
+		return pools;
+	}
+
+	/**
 	 * Name of the events table.
 	 */
 	private final String eventTableName = "EXPERIMENT_EVENTS";
@@ -62,10 +83,10 @@ public class EventsTableOps {
 	 */
 	public final boolean create() {
 		final String createTable = "CREATE TABLE " + eventTableName + "("
-				+ "TIME DOUBLE NOT NULL" + " NAME VARCHAR(200) NOT NULL"
-				+ " TYPE VARCHAR(50) NOT NULL"
-				+ " SOURCE VARCHAR(200) NOT NULL"
-				+ " DESCRIPTION VARCHAR(2000))";
+				+ "TIME DOUBLE NOT NULL," + " NAME VARCHAR(200) NOT NULL,"
+				+ " TYPE VARCHAR(50) NOT NULL,"
+				+ " SOURCE VARCHAR(200) NOT NULL,"
+				+ " DESCRIPTION VARCHAR(2000)," + " STEPINDEX DOUBLE)";
 		StatementProcessor statement = pools
 				.createDbStatement(experiment, true);
 		boolean result = statement.execute(createTable);
@@ -120,5 +141,13 @@ public class EventsTableOps {
 		boolean result = statement.execute("DROP TABLE " + eventTableName);
 		statement.close();
 		return result;
+	}
+
+	/**
+	 * @return a new instance of {@link EventQueries}.
+	 */
+	public final EventQueries getQueries() {
+		return new EventQueries(pools.fetchConnection(experiment, false),
+				eventTableName);
 	}
 }
