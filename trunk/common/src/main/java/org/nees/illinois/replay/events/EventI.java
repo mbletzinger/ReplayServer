@@ -1,6 +1,5 @@
 package org.nees.illinois.replay.events;
 
-import org.nees.illinois.replay.common.types.TableIdentityI;
 
 /**
  * Interface for characterizing a generic event. The time of the event is based
@@ -13,11 +12,6 @@ public interface EventI extends Comparable<EventI>{
 	 * @return User friendly name of the event.
 	 */
 	String getName();
-
-	/**
-	 * @return Unique string identifying the event.
-	 */
-	String getid();
 
 	/**
 	 * @return Optional description.
@@ -38,6 +32,6 @@ public interface EventI extends Comparable<EventI>{
 	/**
 	 * @return Get the source which recorded the event.
 	 */
-	TableIdentityI getSource();
+	String getSource();
 
 }

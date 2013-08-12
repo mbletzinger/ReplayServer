@@ -1,6 +1,6 @@
 package org.nees.illinois.replay.events;
 
-import org.nees.illinois.replay.common.types.TableIdentityI;
+import org.nees.illinois.replay.common.types.EqualsWithNulls;
 
 /**
  * Class to manage step numbers. A step number is a triplet of the form step,
@@ -15,18 +15,14 @@ public class StepNumber implements IterationStepI {
 	private final int correctionStep;
 
 	/**
-	 * Database ID of the step number.
-	 */
-	private final String id;
-
-	/**
 	 * Step index used for comparing with other steps.
 	 */
 	private double index;
+
 	/**
 	 * Source which recorded the event.
 	 */
-	private final TableIdentityI source;
+	private final String source;
 	/**
 	 * Step number.
 	 */
@@ -39,7 +35,6 @@ public class StepNumber implements IterationStepI {
 	 * Time stamp of the step number.
 	 */
 	private final double time;
-
 	/**
 	 * Constructor for an integer triple.
 	 * @param step
@@ -50,20 +45,16 @@ public class StepNumber implements IterationStepI {
 	 *            Correction step number.
 	 * @param time
 	 *            Time stamp of the step number.
-	 * @param id
-	 *            Database ID of the step number.
 	 * @param source
 	 *            Step index used for comparing with other steps.
 	 */
 	public StepNumber(final int step, final int substep,
-			final int correctionStep, final double time,
-			final String id, final TableIdentityI source) {
+			final int correctionStep, final double time, final String source) {
 		super();
 		this.step = step;
 		this.substep = substep;
 		this.correctionStep = correctionStep;
 		this.time = time;
-		this.id = id;
 		this.source = source;
 	}
 	/**
@@ -72,20 +63,16 @@ public class StepNumber implements IterationStepI {
 	 *            Step number string.
 	 * @param time
 	 *            Time stamp of the step number.
-	 * @param id
-	 *            Database ID of the step number.
 	 * @param source
 	 *            Step index used for comparing with other steps.
 	 */
-	public StepNumber(final String steps, final double time,
-			final String id, final TableIdentityI source) {
+	public StepNumber(final String steps, final double time, final String source) {
 		super();
 		String[] ssteps = steps.split("_");
 		this.step = Integer.parseInt(ssteps[0]);
 		this.substep = Integer.parseInt(ssteps[1]);
 		this.correctionStep = Integer.parseInt(ssteps[2]);
 		this.time = time;
-		this.id = id;
 		this.source = source;
 	}
 
@@ -94,6 +81,36 @@ public class StepNumber implements IterationStepI {
 		Double me = new Double(this.time);
 		Double them = new Double(other.getTime());
 		return me.compareTo(them);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public final boolean equals(final Object obj) {
+		EqualsWithNulls<String> eq = new EqualsWithNulls<String>();
+		if (obj instanceof StepNumber == false) {
+			return false;
+		}
+
+		StepNumber it = (StepNumber) obj;
+		if (Double.compare(time, it.time) != 0) {
+			return false;
+		}
+		if (Double.compare(index, it.index) != 0) {
+			return false;
+		}
+		if (step != it.step) {
+			return false;
+		}
+		if (substep != it.substep) {
+			return false;
+		}
+		if (correctionStep != it.correctionStep) {
+			return false;
+		}
+		return eq.equate(source, it.source);
 	}
 
 	/**
@@ -106,11 +123,6 @@ public class StepNumber implements IterationStepI {
 	@Override
 	public final String getDescription() {
 		return toString();
-	}
-
-	@Override
-	public final String getid() {
-		return id;
 	}
 
 	/**
@@ -126,7 +138,7 @@ public class StepNumber implements IterationStepI {
 	}
 
 	@Override
-	public final TableIdentityI getSource() {
+	public final String getSource() {
 		return source;
 	}
 
@@ -159,8 +171,18 @@ public class StepNumber implements IterationStepI {
 		return EventType.StepNumber;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public final int hashCode() {
+		return super.hashCode();
+	}
+
 	/**
-	 * @param index the index to set
+	 * @param index
+	 *            the index to set
 	 */
 	public final void setIndex(final double index) {
 		this.index = index;

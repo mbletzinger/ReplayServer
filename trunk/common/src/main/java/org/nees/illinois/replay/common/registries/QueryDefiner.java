@@ -8,7 +8,6 @@ import org.nees.illinois.replay.common.types.CompositeQuery;
 import org.nees.illinois.replay.common.types.CompositeQueryI;
 import org.nees.illinois.replay.common.types.TableDef;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
-import org.nees.illinois.replay.common.types.TableIdentityI;
 
 /**
  * Create a query {@link CompositeQueryI definition} and adds it to the
@@ -97,8 +96,8 @@ public class QueryDefiner {
 	 *            Database friendly channel name.
 	 */
 	private void updateQueryTables(final String dbchannel) {
-		Map<TableIdentityI, TableDefinitionI> tmap = def.getTableQueries();
-		TableIdentityI ti = tr.findTable(dbchannel);
+		Map<String, TableDefinitionI> tmap = def.getTableQueries();
+		String ti = tr.findTable(dbchannel);
 		TableDefinitionI c = tmap.get(ti);
 		if (c == null) {
 			c = new TableDef(new ArrayList<String>(), ti);

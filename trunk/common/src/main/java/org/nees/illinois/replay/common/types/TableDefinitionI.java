@@ -27,7 +27,7 @@ public interface TableDefinitionI extends MatrixSpecI {
 	/**
 	 * @return The TableIdentityI instance which identifies the database table
 	 */
-	TableIdentityI getTableId();
+	String getTableId();
 
 	/**
 	 * Add a data column to the definition.

@@ -2,8 +2,6 @@ package org.nees.illinois.replay.events;
 
 import java.util.List;
 
-import org.nees.illinois.replay.common.types.TableIdentityI;
-
 /**
  * Interface to a list of events which are synchronized to the same time source.
  * @author Michael Bletzinger
@@ -13,11 +11,6 @@ public interface EventListI {
 	 * @return List of events ordered by time.
 	 */
 	List<EventI> getEvents();
-
-	/**
-	 * @return the time source.
-	 */
-	TableIdentityI getSource();
 
 	/**
 	 * @return list of times in seconds when the events occurred.
@@ -38,4 +31,20 @@ public interface EventListI {
 	 *            event to add.
 	 */
 	void addEvent(EventI e);
+
+	/**
+	 * Filter the list for events of the same type.
+	 * @param type
+	 *            Event type for filter.
+	 * @return list of events.
+	 */
+	List<EventI> filterByType(EventType type);
+
+	/**
+	 * Filter the list for the same source.
+	 * @param source
+	 *            Source of the events.
+	 * @return list of events.
+	 */
+	List<EventI> filterBySource(String source);
 }

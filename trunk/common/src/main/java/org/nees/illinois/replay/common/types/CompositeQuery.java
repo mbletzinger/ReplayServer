@@ -25,7 +25,7 @@ public class CompositeQuery implements CompositeQueryI {
 	 * {@link Map Map} of table queries used to generate a select statement for
 	 * each table.
 	 */
-	private final Map<TableIdentityI, TableDefinitionI> tableQueries = new HashMap<TableIdentityI, TableDefinitionI>();
+	private final Map<String, TableDefinitionI> tableQueries = new HashMap<String, TableDefinitionI>();
 
 	/**
 	 * @param name
@@ -61,7 +61,7 @@ public class CompositeQuery implements CompositeQueryI {
 	 * @see org.nees.illinois.replay.common.types.QueryI#getTableQueries()
 	 */
 	@Override
-	public final Map<TableIdentityI, TableDefinitionI> getTableQueries() {
+	public final Map<String, TableDefinitionI> getTableQueries() {
 		return tableQueries;
 	}
 

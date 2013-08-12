@@ -3,7 +3,6 @@ package org.nees.illinois.replay.subresource;
 import java.util.List;
 
 import org.nees.illinois.replay.common.registries.TableType;
-import org.nees.illinois.replay.common.types.TableIdentityI;
 
 /**
  * Interface to the data sub-resource which manages data updates for the restlet
@@ -22,7 +21,7 @@ public interface DataUpdateSubResourceI extends SubResourceI {
 	 *            List of channels for the table.
 	 * @return Table identity
 	 */
-	TableIdentityI createTable(String name, TableType table,
+	String createTable(String name, TableType table,
 			List<String> channels);
 
 	/**
@@ -31,7 +30,7 @@ public interface DataUpdateSubResourceI extends SubResourceI {
 	 *            Identity of the table.
 	 * @return True if successful.
 	 */
-	boolean removeTable(TableIdentityI table);
+	boolean removeTable(String table);
 
 	/**
 	 * Add data to a table.

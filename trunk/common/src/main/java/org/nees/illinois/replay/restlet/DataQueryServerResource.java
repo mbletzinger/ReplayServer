@@ -145,7 +145,7 @@ public class DataQueryServerResource extends ServerResource implements
 			StepNumber stp = (StepNumber) attrs.get(RequiredAttrType.Stop);
 			DoubleMatrixI data;
 			EventListI events;
-			events = qevents.getEvents(strt.getName(), stp.getName());
+			events = qevents.getEvents(strt.getName(), stp.getName(), null);
 			data = dquery.doQuery(query, events.getTimeline());
 			return data;
 		}
