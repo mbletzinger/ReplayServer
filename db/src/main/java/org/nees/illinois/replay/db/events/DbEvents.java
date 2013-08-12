@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.nees.illinois.replay.common.registries.ExperimentRegistries;
 import org.nees.illinois.replay.db.DbPools;
+import org.nees.illinois.replay.events.EventCreator;
 import org.nees.illinois.replay.events.EventI;
 import org.nees.illinois.replay.events.EventListI;
 import org.nees.illinois.replay.subresource.EventSubResourceI;
@@ -20,9 +21,9 @@ public class DbEvents implements EventSubResourceI {
 	 */
 	private ExperimentRegistries er;
 	/**
-	 * Database connection pools.
+	 * Database operations.
 	 */
-	private final DbPools pools;
+	private final EventsTableOps eto;
 
 	@Override
 	public final void setExperiment(final ExperimentRegistries experiment) {
@@ -37,29 +38,41 @@ public class DbEvents implements EventSubResourceI {
 	@Override
 	public final EventI createEvent(final String type, final double time,
 			final String name, final String description, final String source) {
-		// TODO Auto-generated method stub
-		return null;
+		EventCreator ec = new EventCreator();
+		EventI event = ec.createEvent(type, time, name, description, source,
+				null);
+		eto.add(event);
+		return event;
 	}
 
 	/**
 	 * @param pools
 	 *            Database connections.
+	 *     @param er
+	 *     Experiment registries.
 	 */
 	@Inject
-	public DbEvents(final DbPools pools) {
-		this.pools = pools;
+	public DbEvents(final DbPools pools, final ExperimentRegistries er) {
+		this.er = er;
+		this.eto = new EventsTableOps(pools, er.getExperiment());
 	}
 
 	@Override
-	public final EventListI getEvents(final List<String> names, final String source) {
-		// TODO Auto-generated method stub
-		return null;
+	public final EventListI getEvents(final List<String> names,
+			final String source) {
+		EventQueries queries = eto.getQueries();
+		EventListI result = queries.getEvents(names, source);
+		queries.close();
+		return result;
 	}
 
 	@Override
-	public final EventListI getEvents(final String start, final String stop, final String source) {
-		// TODO Auto-generated method stub
-		return null;
+	public final EventListI getEvents(final String start, final String stop,
+			final String source) {
+		EventQueries queries = eto.getQueries();
+		EventListI result =  queries.getEvents(start, stop, source);
+		queries.close();
+		return result;
 	}
 
 }
