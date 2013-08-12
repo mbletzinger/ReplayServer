@@ -5,14 +5,12 @@ import java.util.List;
 
 import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.common.registries.QueryRegistry;
-import org.nees.illinois.replay.common.registries.TableIdentityRegistry;
 import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.common.types.CompositeQuery;
 import org.nees.illinois.replay.common.types.CompositeQueryI;
 import org.nees.illinois.replay.common.types.TableDef;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
-import org.nees.illinois.replay.common.types.TableIdentityI;
 import org.nees.illinois.replay.test.utils.CompareLists;
 import org.nees.illinois.replay.test.utils.QueryChannelLists;
 import org.nees.illinois.replay.test.utils.TestDatasetType;
@@ -33,32 +31,6 @@ public class TestRegistries {
 	 */
 	private final Logger log = LoggerFactory.getLogger(TestRegistries.class);
 
-	/**
-	 * Test the Table ID registry.
-	 */
-	@Test
-	public final void addTableId() {
-		String experiment = "TableIDTest";
-		TableIdentityRegistry tir = new TableIdentityRegistry();
-		final int numberOfDuplicates = 4;
-		log.debug("Adding table id's");
-		for (int c = 0; c < numberOfDuplicates; c++) {
-			for (TableType tt : TableType.values()) {
-				String dname = tt.toString() + "Name" + c;
-				tir.addTable(experiment, dname, tt);
-			}
-		}
-		for (int c = 0; c < numberOfDuplicates; c++) {
-			List<String> tnames = tir.getNames();
-			for (TableType tt : TableType.values()) {
-				log.debug("Checking " + tt + " count " + c);
-				String dname = tt.toString() + "Name" + c;
-				Assert.assertTrue(tnames.contains(dname));
-				Assert.assertEquals(tir.getId(dname).getDbName(), experiment
-						+ "." + tt.toString().toLowerCase() + "_" + c);
-			}
-		}
-	}
 
 	/**
 	 * Test the Channel Name Registry.
@@ -69,16 +41,16 @@ public class TestRegistries {
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		int count = 1;
 		for (String c : cltm.getChannels(TestDatasetType.OM)) {
-			cnr.addChannel(TableType.Control.toString(), c);
-			String expected = TableType.Control.toString().toLowerCase()
-					+ "_channel" + count;
+			cnr.addChannel(TableType.Control, c);
+			String expected = TableType.Control.toString().toUpperCase()
+					+ "_CHANNEL" + count;
 			count++;
-			Assert.assertEquals(expected, cnr.getId(c));
+			Assert.assertEquals(cnr.getId(c),expected);
 		}
 		for (String c : cltm.getChannels(TestDatasetType.DAQ)) {
-			cnr.addChannel(TableType.DAQ.toString(), c);
-			String expected = TableType.DAQ.toString().toLowerCase()
-					+ "_channel" + count;
+			cnr.addChannel(TableType.DAQ, c);
+			String expected = TableType.DAQ.toString().toUpperCase()
+					+ "_CHANNEL" + count;
 			count++;
 			Assert.assertEquals(expected, cnr.getId(c));
 		}
@@ -92,13 +64,10 @@ public class TestRegistries {
 		String experiment = "TableTest";
 		CompareLists<String> compL = new CompareLists<String>();
 		TestDatasets cltm = new TestDatasets(false, experiment);
-		TableIdentityRegistry tir = new TableIdentityRegistry();
 		TableRegistry tr = new TableRegistry();
 		for (TestDatasetType t : cltm.getTableTypes()) {
-			TableIdentityI tableId = tir.addTable(experiment, cltm.getTableName(t),
-					cltm.getTt(t));
-			TableDefinitionI table = new TableDef(cltm.getChannels(t), tableId);
-			tr.setTable(tableId.getDatasetName(), table);
+			TableDefinitionI table = new TableDef(cltm.getChannels(t), cltm.getTableName(t));
+			tr.setTable(table.getTableId(), table);
 		}
 		for (TestDatasetType t : cltm.getTableTypes()) {
 			String name = cltm.getTableName(t);
@@ -141,8 +110,8 @@ public class TestRegistries {
 		List<String> expectedChannels = new ArrayList<String>();
 		List<String> expectedIds = new ArrayList<String>();
 		for (String c : cltm.getChannels(TestDatasetType.OM)) {
-			cnr.addChannel(TableType.Control.toString(), c);
-			String id = TableType.Control.toString().toLowerCase() + "_channel"
+			cnr.addChannel(TableType.Control, c);
+			String id = TableType.Control.toString().toUpperCase() + "_CHANNEL"
 					+ count;
 			expectedIds.add(id);
 			count++;
@@ -150,8 +119,8 @@ public class TestRegistries {
 		expectedChannels.addAll(cltm.getChannels(TestDatasetType.OM));
 		checkCnr(cnr, expectedChannels, expectedIds);
 		for (String c : cltm.getChannels(TestDatasetType.DAQ)) {
-			cnr.addChannel(TableType.DAQ.toString(), c);
-			String id = TableType.DAQ.toString().toLowerCase() + "_channel"
+			cnr.addChannel(TableType.DAQ, c);
+			String id = TableType.DAQ.toString().toUpperCase() + "_CHANNEL"
 					+ count;
 			expectedIds.add(id);
 			count++;

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
-import org.nees.illinois.replay.common.registries.TableIdentityRegistry;
 import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.data.DoubleMatrix;
@@ -19,7 +18,7 @@ import org.testng.Assert;
  * Class which sets up test data for unit and integration testing.
  * @author Michael Bletzinger
  */
-public class DatasetDirector {
+public class QuerySetsDirector {
 	/**
 	 * Choice of two test experiments.
 	 * @author Michael Bletzinger
@@ -118,18 +117,13 @@ public class DatasetDirector {
 	 */
 	private final TableRegistry expectedTblr = new TableRegistry();
 	/**
-	 * The {@link TableIdentityRegistry} that is supposed to exist after
-	 * testing.
-	 */
-	private final TableIdentityRegistry expectedTidr = new TableIdentityRegistry();
-	/**
 	 * The experiment associated with this dataset.
 	 */
 	private final ExperimentNames experiment;
 	/**
 	 * Logger.
 	 */
-	private final Logger log = LoggerFactory.getLogger(DatasetDirector.class);;
+	private final Logger log = LoggerFactory.getLogger(QuerySetsDirector.class);;
 	/**
 	 * Map of rate types to the various test queries.
 	 */
@@ -141,7 +135,7 @@ public class DatasetDirector {
 	/**
 	 * Map of start/stop time specifications for the various test queries.
 	 */
-	private final Map<QueryParaTypes, TimeSpec> queryTimes = new HashMap<DatasetDirector.QueryParaTypes, DatasetDirector.TimeSpec>();
+	private final Map<QueryParaTypes, TimeSpec> queryTimes = new HashMap<QuerySetsDirector.QueryParaTypes, QuerySetsDirector.TimeSpec>();
 	{
 		final double startTime = 222.0;
 		final double stopTime = 223.0;
@@ -173,15 +167,14 @@ public class DatasetDirector {
 	 * @param experiment
 	 *            The experiment associated with this dataset.
 	 */
-	public DatasetDirector(final ExperimentNames experiment) {
+	public QuerySetsDirector(final ExperimentNames experiment) {
 		super();
 		this.experiment = experiment;
 		this.set = new TestDatasets(
 				experiment.equals(ExperimentNames.HybridMasonry2),
 				experiment.name());
 		this.set.fillCnr(expectedCnr);
-		this.set.fillTblIdr(expectedTidr);
-		this.set.fillTblr(expectedTblr, expectedTidr);
+		this.set.fillTblr(expectedTblr);
 	}
 
 	/**
@@ -243,16 +236,6 @@ public class DatasetDirector {
 	}
 
 	/**
-	 * Check to see if the table identity registry has the expected entries.
-	 * @param actual
-	 *            The registry to be checked.
-	 */
-	public final void checkExpectedTableIdRegistry(
-			final TableIdentityRegistry actual) {
-		check.compare(actual.getNames(), expectedTidr.getNames());
-	}
-
-	/**
 	 * Check to see if the table registry has the expected entries.
 	 * @param actual
 	 *            The registry to be checked.
@@ -275,8 +258,8 @@ public class DatasetDirector {
 	 */
 	private void checkTableDefinitions(final TableDefinitionI actual,
 			final TableDefinitionI expected) {
-		Assert.assertEquals(actual.getTableId().getDatasetName(), expected
-				.getTableId().getDatasetName());
+		Assert.assertEquals(actual.getTableId(), expected
+				.getTableId());
 		Assert.assertEquals(actual.getNumberOfColumns(true),
 				expected.getNumberOfColumns(true));
 		check.compare(actual.getColumns(true), expected.getColumns(true));
@@ -296,8 +279,7 @@ public class DatasetDirector {
 			final QueryParaTypes qt, final TestDatasetType quy) {
 		int row = queryTableSizes.get(qt);
 		List<String> channels = set.getChannels(quy);
-		RateType rate = queryRates.get(qt);
-		return generate(quy.name(), row, channels.size(), rate);
+		return generate(quy.name(), row, channels.size());
 	}
 
 	/**
@@ -308,22 +290,17 @@ public class DatasetDirector {
 	 *            Number of rows.
 	 * @param cols
 	 *            Number of columns.
-	 * @param rate
-	 *            Sampling rate.
 	 * @return Matrix of doubles.
 	 */
 	private DoubleMatrixI generate(final String name, final int rows,
-			final int cols, final RateType rate) {
+			final int cols) {
 		final double startTime = 222.0;
 		final double interval = 0.02;
-		// log.debug("For " + rate + " query " + name + " creating " + rows +
-		// "x"
-		// + cols + " matrix");
 		DoubleArrayDataGenerator dg = new DoubleArrayDataGenerator(rows, cols,
 				interval, startTime);
 		double[][] data = dg.generate();
 		DoubleMatrixI result = new DoubleMatrix(data);
-		log.debug("For " + rate + " list type " + name + " creating " + result);
+		log.debug("For list type " + name + " creating " + result);
 		return result;
 	}
 

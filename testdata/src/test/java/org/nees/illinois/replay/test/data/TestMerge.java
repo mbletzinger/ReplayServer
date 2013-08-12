@@ -9,9 +9,9 @@ import org.nees.illinois.replay.test.utils.ChannelDataGenerator;
 import org.nees.illinois.replay.test.utils.ChannelDataGenerator.TestingParts;
 import org.nees.illinois.replay.test.utils.TestDatasets;
 import org.nees.illinois.replay.test.utils.TestDatasetType;
-import org.nees.illinois.replay.test.utils.DatasetDirector;
-import org.nees.illinois.replay.test.utils.DatasetDirector.ExperimentNames;
-import org.nees.illinois.replay.test.utils.DatasetDirector.QueryParaTypes;
+import org.nees.illinois.replay.test.utils.QuerySetsDirector;
+import org.nees.illinois.replay.test.utils.QuerySetsDirector.ExperimentNames;
+import org.nees.illinois.replay.test.utils.QuerySetsDirector.QueryParaTypes;
 import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
 import org.nees.illinois.replay.test.utils.MatrixMixType;
 import org.slf4j.Logger;
@@ -96,7 +96,7 @@ public class TestMerge {
 	 */
 	@Test(dependsOnMethods = { "testRawMerge" })
 	public final void testQueryMerges() {
-		DatasetDirector dd = new DatasetDirector(ExperimentNames.HybridMasonry1);
+		QuerySetsDirector dd = new QuerySetsDirector(ExperimentNames.HybridMasonry1);
 		TestDatasets cltm = dd.getSet();
 		for (TestDatasetType clt : cltm.getQueryTypes()) {
 			if (clt.equals(TestDatasetType.QueryDaq)

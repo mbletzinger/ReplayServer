@@ -2,9 +2,7 @@ package org.nees.illinois.replay.test.utils;
 
 import java.util.List;
 
-import org.nees.illinois.replay.common.registries.EventIdGenerator;
-import org.nees.illinois.replay.common.types.TableIdentityI;
-import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.events.EventI;
 import org.nees.illinois.replay.events.EventList;
 import org.nees.illinois.replay.events.EventListI;
@@ -23,10 +21,6 @@ public class EventsGenerator {
 	 */
 	private StepNumber currentStep;
 	/**
-	 * Generator for unique event ids.
-	 */
-	private final EventIdGenerator generator;
-	/**
 	 * Logger.
 	 **/
 	private final Logger log = LoggerFactory.getLogger(EventsGenerator.class);
@@ -34,16 +28,17 @@ public class EventsGenerator {
 	 * Type of event. Currently only step numbers are supported.
 	 */
 	private final EventType type;
+	/**
+	 * Initial step numbers.
+	 */
+	private final int[] initialStep = { 1, 4, 3 };
 
 	/**
 	 * @param type
 	 *            Type of event. Currently only step numbers are supported.
-	 * @param generator
-	 *            Generator for unique event ids.
 	 */
-	public EventsGenerator(final EventType type, final EventIdGenerator generator) {
+	public EventsGenerator(final EventType type) {
 		this.type = type;
-		this.generator = generator;
 	}
 
 	/**
@@ -54,7 +49,7 @@ public class EventsGenerator {
 	 *            Source that recorded the event.
 	 * @return The event.
 	 */
-	private EventI create(final double timestamp, final TableIdentityI source) {
+	private EventI create(final double timestamp, final String source) {
 		EventI result = null;
 		switch (type) {
 		case StepNumber:
@@ -74,8 +69,12 @@ public class EventsGenerator {
 	 *            Source that recorded the event.
 	 * @return The step number..
 	 */
-	private StepNumber createStep(final double timestamp,
-			final TableIdentityI source) {
+	private StepNumber createStep(final double timestamp, final String source) {
+		if (currentStep == null) {
+			currentStep = new StepNumber(initialStep[0], initialStep[1],
+					initialStep[2], timestamp, source);
+			return currentStep;
+		}
 		int step = currentStep.getStep() + 1;
 		final int maxSubstep = 20;
 		int subStep = (currentStep.getSubstep() + 1) % maxSubstep;
@@ -83,9 +82,8 @@ public class EventsGenerator {
 		final int correctionStepInterval = 10;
 		int correction = (currentStep.getCorrectionStep() + correctionStepInterval)
 				% maxCorrectionStep;
-		String id = generator.create(type);
 		StepNumber result = new StepNumber(step, subStep, correction,
-				timestamp, id, source);
+				timestamp, source);
 		currentStep = result;
 		return result;
 	}
@@ -94,19 +92,19 @@ public class EventsGenerator {
 	 * Create an event list using the times in the double matrix.
 	 * @param dm
 	 *            The continuous data used for timestamps.
-	 * @param interval
+	 * @param d
 	 *            Number of continuous records to skip.
 	 * @param source
 	 *            The source that recorded these events
 	 * @return The event list.
 	 */
-	public final EventListI generate(final DoubleMatrix dm, final int interval,
-			final TableIdentityI source) {
+	public final EventListI generate(final DoubleMatrixI dm, final int d,
+			final String source) {
 		int count = 0;
-		EventListI result = new EventList(source);
+		EventListI result = new EventList();
 		for (List<Double> row : dm.toList()) {
 			count++;
-			if (count % interval != 0) {
+			if (count % d != 0) {
 				continue;
 			}
 			EventI e = create(row.get(0), source);

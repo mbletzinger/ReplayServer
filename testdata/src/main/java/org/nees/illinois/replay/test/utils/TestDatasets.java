@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
-import org.nees.illinois.replay.common.registries.TableIdentityRegistry;
+import org.nees.illinois.replay.common.registries.TableDefiner;
 import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.common.types.TableDef;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
-import org.nees.illinois.replay.common.types.TableIdentityI;
 
 /**
  * This class provides mock channel lists used to fill in registries used by
@@ -73,19 +72,8 @@ public class TestDatasets {
 		TestDatasetType[] types = { TestDatasetType.OM, TestDatasetType.DAQ };
 		for (TestDatasetType type : types) {
 			for (String c : getChannels(type)) {
-				cnr.addChannel(getTableName(type), c);
+				cnr.addChannel(getTt(type), c);
 			}
-		}
-	}
-
-	/**
-	 * Fill in the {@link TableIdentityRegistry} with the mock table names.
-	 * @param tblIdr
-	 *            Reference to the registry.
-	 */
-	public final void fillTblIdr(final TableIdentityRegistry tblIdr) {
-		for (TestDatasetType type : tableTypes) {
-			tblIdr.addTable(experiment, getTableName(type), getTt(type));
 		}
 	}
 
@@ -93,15 +81,11 @@ public class TestDatasets {
 	 * Fill in the {@link TableRegistry} with the mock tables.
 	 * @param tblr
 	 *            Reference to the table registry.
-	 * @param tblIdr
-	 *            The table id registry that is already filled.
 	 */
-	public final void fillTblr(final TableRegistry tblr,
-			final TableIdentityRegistry tblIdr) {
+	public final void fillTblr(final TableRegistry tblr) {
 		for (TestDatasetType type : tableTypes) {
 			List<String> channels = cl2Channels.get(type);
-			TableIdentityI tableid = tblIdr.getId(getTableName(type));
-			TableDefinitionI tc = new TableDef(channels, tableid);
+			TableDefinitionI tc = new TableDef(channels, getTableName(type));
 			tblr.setTable(getTableName(type), tc);
 		}
 	}
@@ -314,6 +298,18 @@ public class TestDatasets {
 		tableTypes.add(TestDatasetType.DAQ2);
 		tableTypes.add(TestDatasetType.Krypton);
 
+	}
+
+	/**
+	 * @param type
+	 *            Test type.
+	 * @param cnr Channel Name Registry containing the table channels.
+	 * @param tr Table Registry where the table is located.
+	 * @return A table definition based on a test type.
+	 */
+	public final TableDefinitionI getTableDefinition(final TestDatasetType type, final ChannelNameRegistry cnr, final TableRegistry tr) {
+		TableDefiner tdr = new TableDefiner(cnr, tr);
+		return tdr.define(getTableName(type), getTt(type), getChannels(type));
 	}
 
 }
