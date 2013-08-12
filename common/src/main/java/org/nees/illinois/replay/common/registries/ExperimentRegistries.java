@@ -28,10 +28,6 @@ public class ExperimentRegistries {
 	private final ChannelNameRegistry cnr;
 
 	/**
-	 * Generate unique ids for events.
-	 */
-	private final EventIdGenerator eventIds;
-	/**
 	 * Name of the experiment.
 	 */
 	private final String experiment;
@@ -43,10 +39,6 @@ public class ExperimentRegistries {
 	 * Table {@link TableRegistry registry} for the experiment.
 	 */
 	private final TableRegistry tableDefs;
-	/**
-	 * Table identity {@link TableIdentityRegistry registry} for the experiment.
-	 */
-	private final TableIdentityRegistry tableIds;
 
 	/**
 	 * Creates an experiment registry.
@@ -58,8 +50,6 @@ public class ExperimentRegistries {
 		this.cnr = new ChannelNameRegistry();
 		this.queries = new QueryRegistry();
 		this.tableDefs = new TableRegistry();
-		this.tableIds = new TableIdentityRegistry();
-		this.eventIds = new EventIdGenerator();
 	}
 
 	/**
@@ -70,21 +60,12 @@ public class ExperimentRegistries {
 	 *            experiment.
 	 * @param tableDefs
 	 *            Table {@link TableRegistry registry} for the experiment.
-	 * @param tableIds
-	 *            Table identity {@link TableIdentityRegistry registry} for the
-	 *            experiment.
-	 * @param eventIds
-	 *            Generate unique ids for events.
 	 */
 	public ExperimentRegistries(final String experiment,
-			final ChannelNameRegistry cnr, final TableRegistry tableDefs,
-			final TableIdentityRegistry tableIds,
-			final EventIdGenerator eventIds) {
+			final ChannelNameRegistry cnr, final TableRegistry tableDefs) {
 		this.experiment = experiment;
 		this.cnr = cnr;
 		this.tableDefs = tableDefs;
-		this.tableIds = tableIds;
-		this.eventIds = eventIds;
 		this.queries = new QueryRegistry();
 	}
 
@@ -93,13 +74,6 @@ public class ExperimentRegistries {
 	 */
 	public final ChannelNameRegistry getCnr() {
 		return cnr;
-	}
-
-	/**
-	 * @return the eventIds
-	 */
-	public final EventIdGenerator getEventIds() {
-		return eventIds;
 	}
 
 	/**
@@ -124,16 +98,9 @@ public class ExperimentRegistries {
 	}
 
 	/**
-	 * @return the table identity registry
-	 */
-	public final TableIdentityRegistry getTableIds() {
-		return tableIds;
-	}
-	/**
-	 * 
-	 *@return A definer based on the registry references.
+	 * @return A definer based on the registry references.
 	 */
 	public final TableDefiner createTableDefiner() {
-		return new TableDefiner(experiment, cnr, tableIds, tableDefs);
+		return new TableDefiner(cnr, tableDefs);
 	}
 }

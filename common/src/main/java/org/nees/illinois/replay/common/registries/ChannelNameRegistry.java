@@ -35,10 +35,10 @@ public class ChannelNameRegistry implements Cloneable {
 	 *            Name to be added.
 	 * @return Database friendly version of the name.
 	 */
-	public final String addChannel(final String table, final String channel) {
+	public final String addChannel(final TableType table, final String channel) {
 		String result = getId(channel);
 		if (result == null) {
-			result = newChannel(table);
+			result = newChannel(table.name());
 			namesMap.put(channel, result);
 		}
 		return result;
@@ -155,7 +155,7 @@ public class ChannelNameRegistry implements Cloneable {
 	 * @return New database friendly id.
 	 */
 	private synchronized String newChannel(final String table) {
-		String result = table.toLowerCase() + "_channel";
+		String result = table.toUpperCase() + "_CHANNEL";
 		result += afterLastChannel;
 		afterLastChannel++;
 		return result;

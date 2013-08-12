@@ -19,7 +19,7 @@ public class TableDef implements TableDefinitionI {
 	/**
 	 * Table name info.
 	 */
-	private final TableIdentityI tableId;
+	private final String tableId;
 	/**
 	 * List of time column names.
 	 */
@@ -35,7 +35,7 @@ public class TableDef implements TableDefinitionI {
 	 *            Table name info.
 	 */
 	public TableDef(final List<String> dataColumns,
-			final TableIdentityI tableId) {
+			final String tableId) {
 		super();
 		this.dataColumns = dataColumns;
 		this.tableId = tableId;
@@ -75,7 +75,7 @@ public class TableDef implements TableDefinitionI {
 	 * @see org.nees.illinois.replay.common.types.TableColumnsI#getTableId()
 	 */
 	@Override
-	public final TableIdentityI getTableId() {
+	public final String getTableId() {
 		return tableId;
 	}
 

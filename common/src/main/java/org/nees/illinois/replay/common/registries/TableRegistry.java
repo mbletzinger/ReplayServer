@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nees.illinois.replay.common.types.TableDefinitionI;
-import org.nees.illinois.replay.common.types.TableIdentityI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,10 +31,10 @@ public class TableRegistry {
 	 * Find the table that *owns* a channel.
 	 * @param dbchannel
 	 *            Channel to find.
-	 * @return {@link TableIdentityI Identity} of the table that owns the
+	 * @return Identity of the table that owns the
 	 *         channel.
 	 */
-	public final TableIdentityI findTable(final String dbchannel) {
+	public final String findTable(final String dbchannel) {
 		for (TableDefinitionI t : definitions.values()) {
 			if (t.getColumns(false).contains(dbchannel)) {
 				return t.getTableId();
