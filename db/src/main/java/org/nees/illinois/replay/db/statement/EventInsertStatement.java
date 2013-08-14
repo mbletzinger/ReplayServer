@@ -42,12 +42,18 @@ public class EventInsertStatement extends InsertStatement {
 		PreparedStatement statement = getBuilder().getStatement();
 		log.debug("Adding " + event.getName());
 		try {
-			statement.setDouble(1, event.getTime());
-			statement.setString(2, event.getName());
-			statement.setString(3, event.getType().name());
-			statement.setString(4, event.getSource());
-			statement.setString(5, event.getDescription());
-			// need to add step index
+			final int timeCol = 1;
+			final int nameCol = 2;
+			final int typeCol = 3;
+			final int sourceCol = 4;
+			final int descCol = 5;
+			final int stepCol = 6;
+			statement.setDouble(timeCol, event.getTime());
+			statement.setString(nameCol, event.getName());
+			statement.setString(typeCol, event.getType().name());
+			statement.setString(sourceCol, event.getSource());
+			statement.setString(descCol, event.getDescription());
+			statement.setDouble(stepCol, event.getStepIndex());
 			statement.addBatch();
 		} catch (SQLException e) {
 			log.error("Cannot add data because ", e);
