@@ -25,6 +25,12 @@ public class Event implements EventI {
 	 * time of the event in seconds after 1900.
 	 */
 	private final double time;
+
+	/**
+	 * Index used to sequence different iterations.
+	 */
+	private final double stepIndex;
+
 	/**
 	 * @param name
 	 *            Name of the event.
@@ -34,14 +40,18 @@ public class Event implements EventI {
 	 *            Optional description of the event.
 	 * @param source
 	 *            Source that originated the event.
+	 * @param stepIndex
+	 *            Index used to sequence different iterations.
 	 */
 	public Event(final String name, final double time,
-			final String description, final String source) {
+			final String description, final String source, final double stepIndex) {
 		this.name = name;
 		this.time = time;
 		this.description = description;
 		this.source = source;
+		this.stepIndex = stepIndex;
 	}
+
 	@Override
 	public final int compareTo(final EventI arg0) {
 		return name.compareTo(arg0.getName());
@@ -103,6 +113,11 @@ public class Event implements EventI {
 	@Override
 	public final int hashCode() {
 		return super.hashCode();
+	}
+
+	@Override
+	public final double getStepIndex() {
+		return stepIndex;
 	}
 
 }
