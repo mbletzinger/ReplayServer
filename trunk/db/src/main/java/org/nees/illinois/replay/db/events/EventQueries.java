@@ -118,7 +118,8 @@ public class EventQueries {
 		borders.add(stop);
 		EventListI borderEL = getEvents(borders, source);
 		List<EventI> borderE = borderEL.getEvents();
-		return getEvents(borderE.get(0).getTime(), borderE.get(1).getTime(),
+		final double borderMargin = 1.0;
+		return getEvents(borderE.get(0).getTime() - borderMargin, borderE.get(1).getTime() + borderMargin,
 				source);
 	}
 
@@ -139,10 +140,10 @@ public class EventQueries {
 				List<String> strings = new ArrayList<String>();
 				for (int c = 0; c < headers.length; c++) {
 					if (isDouble[c]) {
-						Double n = rs.getDouble(c);
+						Double n = rs.getDouble(c + 1);
 						numbers.add(n);
 					} else {
-						String value = rs.getString(c);
+						String value = rs.getString(c + 1);
 						strings.add(value);
 					}
 				}

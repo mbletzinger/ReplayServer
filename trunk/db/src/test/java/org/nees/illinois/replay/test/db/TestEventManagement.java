@@ -1,12 +1,16 @@
 package org.nees.illinois.replay.test.db;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nees.illinois.replay.common.registries.ExperimentRegistries;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.events.DbEvents;
+import org.nees.illinois.replay.db.events.EventQueries;
 import org.nees.illinois.replay.db.events.EventsTableOps;
 import org.nees.illinois.replay.events.EventI;
 import org.nees.illinois.replay.events.EventListI;
@@ -14,6 +18,7 @@ import org.nees.illinois.replay.events.EventType;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
 import org.nees.illinois.replay.test.db.utils.UpdateDataSets;
+import org.nees.illinois.replay.test.utils.CompareLists;
 import org.nees.illinois.replay.test.utils.EventsGenerator;
 import org.nees.illinois.replay.test.utils.TestDatasetType;
 import org.nees.illinois.replay.test.utils.TestDatasets;
@@ -92,6 +97,53 @@ public class TestEventManagement {
 	}
 
 	/**
+	 * Test querying events.
+	 */
+	@Test
+	public final void testEventQueries() {
+		ExperimentRegistries er = new ExperimentRegistries(experimentName);
+		DbEvents dbEvents = new DbEvents(pools, er);
+		Map<TestDatasetType, EventListI> expected = new HashMap<TestDatasetType, EventListI>();
+		for (TestDatasetType t : set.getTableTypes()) {
+			DoubleMatrixI dm = generateData(t);
+			final int interval = 3;
+			EventListI list = teg.generate(dm, interval, set.getTableName(t));
+			for (EventI l : list.getEvents()) {
+				dbEvents.createEvent(l.getType().name(), l.getTime(),
+						l.getName(), l.getName(), l.getSource());
+			}
+			expected.put(t, list);
+		}
+		EventsTableOps eto = new EventsTableOps(pools, experimentName);
+		EventQueries evQueries = eto.getQueries();
+		for (TestDatasetType t : set.getTableTypes()) {
+			EventListI elist = expected.get(t);
+			List<EventI> elistL = elist.getEvents();
+			for (EventI e : elistL) {
+				List<String> name = new ArrayList<String>();
+				name.add(e.getName());
+				EventListI alist = evQueries.getEvents(name,
+						set.getTableName(t));
+				Assert.assertNotNull(alist);
+				Assert.assertEquals(alist.getEvents().size(), 1);
+				Assert.assertEquals(alist.getEvents().get(0), e);
+			}
+			CompareLists<EventI> cmp = new CompareLists<EventI>();
+			double start = elistL.get(0).getTime() - 1;
+			double finish = elistL.get(elistL.size() - 1).getTime() + 1;
+			EventListI alist = evQueries.getEvents(start, finish,
+					set.getTableName(t));
+			cmp.compare(alist.getEvents(), elistL);
+			String startS = elistL.get(0).getName();
+			String stopS = elistL.get(elistL.size() - 1).getName();
+			alist = evQueries.getEvents(startS, stopS, set.getTableName(t));
+			cmp.compare(alist.getEvents(), elistL);
+		}
+		evQueries.close();
+
+	}
+
+	/**
 	 * Set up the data for the tests.
 	 * @param db
 	 *            Label for database.
@@ -135,6 +187,7 @@ public class TestEventManagement {
 		EventsTableOps eto = new EventsTableOps(pools, experimentName);
 		Assert.assertTrue(eto.create());
 	}
+
 	/**
 	 * Remove the database and shut down the pools.
 	 */

@@ -14,7 +14,7 @@ public class DbQueries {
 	 * @return query fragment.
 	 */
 	private String addSource(final String source) {
-		return " AND (SOURCE = " + source + ")";
+		return " AND (SOURCE = '" + source + "')";
 	}
 
 	/**
@@ -27,10 +27,10 @@ public class DbQueries {
 	 */
 	public final String selectDiscreteNames(final String tableName,
 			final List<String> names) {
-		String result = "SELECT * FROM \"" + tableName + "\" WHERE SOURCE IN (";
+		String result = "SELECT * FROM \"" + tableName + "\" WHERE NAME IN (";
 		boolean first = true;
 		for (String s : names) {
-			result += (first ? "" : ", ") + s;
+			result += (first ? "" : ", ") + "'" + s + "'";
 			first = false;
 		}
 		result += ")";
@@ -62,7 +62,7 @@ public class DbQueries {
 	 */
 	public final String selectDiscreteTimes(final String tableName,
 			final List<Double> times) {
-		String result = "SELECT * FROM \"" + tableName + "\" WHERE SOURCE IN (";
+		String result = "SELECT * FROM \"" + tableName + "\" WHERE TIME IN (";
 		boolean first = true;
 		for (Double t : times) {
 			result += (first ? "" : ", ") + t;
@@ -89,7 +89,7 @@ public class DbQueries {
 			result += (first ? "" : ", ") + h;
 			first = false;
 		}
-		result += " FROM \"" + tableName + "\" WHERE SOURCE IN (";
+		result += " FROM \"" + tableName + "\" WHERE TIME IN (";
 		first = true;
 		for (Double t : times) {
 			result += (first ? "" : ", ") + t;
@@ -179,7 +179,7 @@ public class DbQueries {
 	 */
 	public final String selectTimeRange(final String tableName,
 			final double start, final double stop) {
-		return "SELECT * FROM \"" + tableName + "\" WHERE TIME ( BETWEEN "
+		return "SELECT * FROM \"" + tableName + "\" WHERE ( TIME BETWEEN "
 				+ start + " AND " + stop + ")";
 	}
 
@@ -202,7 +202,7 @@ public class DbQueries {
 			result += (first ? "" : ", ") + h;
 			first = false;
 		}
-		result += " FROM \"" + tableName + "\" WHERE TIME ( BETWEEN "
+		result += " FROM \"" + tableName + "\" WHERE ( TIME BETWEEN "
 				+ start + " AND " + stop + ")";
 		return result;
 	}
