@@ -8,7 +8,7 @@ import org.nees.illinois.replay.common.types.EqualsWithNulls;
  * and does comparisons.
  * @author Michael Bletzinger
  */
-public class StepNumber implements IterationStepI {
+public class StepNumber implements EventI {
 	/**
 	 * Correction step number.
 	 */
@@ -35,6 +35,7 @@ public class StepNumber implements IterationStepI {
 	 * Time stamp of the step number.
 	 */
 	private final double time;
+
 	/**
 	 * Constructor for an integer triple.
 	 * @param step
@@ -57,6 +58,7 @@ public class StepNumber implements IterationStepI {
 		this.time = time;
 		this.source = source;
 	}
+
 	/**
 	 * Constructor from a String. The "_" underline character is the delimiter.
 	 * @param steps

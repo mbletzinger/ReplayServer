@@ -42,11 +42,8 @@ public class EventCreator {
 		EventI result = null;
 		switch (type) {
 		case Defined:
-			result = new Event(name, time, source, description);
-			break;
 		case Iteration:
-			result = new IterationStep(name, time, source, description,
-					stepIndex);
+			result = new Event(name, time, source, description, stepIndex);
 			break;
 		case StepNumber:
 			StepNumber stepN = new StepNumber(name, time, source);
