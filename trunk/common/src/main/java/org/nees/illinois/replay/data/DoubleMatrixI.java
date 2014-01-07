@@ -59,6 +59,14 @@ public interface DoubleMatrixI {
 	double value(int row, int col);
 
 	/**
+	 * Returns a row.
+	 * @param row
+	 *            index of the row
+	 * @return list of doubles.
+	 */
+	List<Double> getRow(int row);
+
+	/**
 	 * @return {@link MatrixSpecI} which contains information about the matrix.
 	 */
 	MatrixSpecI getSpec();

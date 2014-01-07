@@ -15,11 +15,6 @@ public class StepNumber implements EventI {
 	private final int correctionStep;
 
 	/**
-	 * Step index used for comparing with other steps.
-	 */
-	private double index;
-
-	/**
 	 * Source which recorded the event.
 	 */
 	private final String source;
@@ -100,9 +95,6 @@ public class StepNumber implements EventI {
 		if (Double.compare(time, it.time) != 0) {
 			return false;
 		}
-		if (Double.compare(index, it.index) != 0) {
-			return false;
-		}
 		if (step != it.step) {
 			return false;
 		}
@@ -127,13 +119,6 @@ public class StepNumber implements EventI {
 		return toString();
 	}
 
-	/**
-	 * @return the index
-	 */
-	public final double getIndex() {
-		return index;
-	}
-
 	@Override
 	public final String getName() {
 		return toString();
@@ -149,11 +134,6 @@ public class StepNumber implements EventI {
 	 */
 	public final int getStep() {
 		return step;
-	}
-
-	@Override
-	public final double getStepIndex() {
-		return index;
 	}
 
 	/**
@@ -180,14 +160,6 @@ public class StepNumber implements EventI {
 	@Override
 	public final int hashCode() {
 		return super.hashCode();
-	}
-
-	/**
-	 * @param index
-	 *            the index to set
-	 */
-	public final void setIndex(final double index) {
-		this.index = index;
 	}
 
 	/*

@@ -8,11 +8,7 @@ public enum EventType {
 	/**
 	 * One time event added by a user or a post process algorithm.
 	 */
-	Defined,
-	/**
-	 * Iteration step for a simulation.
-	 */
-	Iteration,
+	Event,
 	/**
 	 * Step number identifying the time event for event-driven experiments.
 	 */

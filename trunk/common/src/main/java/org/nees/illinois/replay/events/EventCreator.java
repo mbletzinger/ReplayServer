@@ -25,13 +25,10 @@ public class EventCreator {
 	 *            Description of the event.
 	 * @param source
 	 *            Source where the event came from.
-	 * @param stepIndex
-	 *            Step index of the event. Use null if not available.
 	 * @return the event object.
 	 */
 	public final EventI createEvent(final String typeString, final double time,
-			final String name, final String description, final String source,
-			final Double stepIndex) {
+			final String name, final String description, final String source) {
 		EventType type = null;
 		try {
 			type = EventType.valueOf(typeString);
@@ -41,15 +38,11 @@ public class EventCreator {
 		}
 		EventI result = null;
 		switch (type) {
-		case Defined:
-		case Iteration:
-			result = new Event(name, time, source, description, stepIndex);
+		case Event:
+			result = new Event(name, time, source, description);
 			break;
 		case StepNumber:
 			StepNumber stepN = new StepNumber(name, time, source);
-			if (stepIndex != null) {
-				stepN.setIndex(stepIndex);
-			}
 			result = stepN;
 			break;
 		default:
