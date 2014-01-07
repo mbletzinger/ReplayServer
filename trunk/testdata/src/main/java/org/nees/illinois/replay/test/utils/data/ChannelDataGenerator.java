@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.test.utils;
+package org.nees.illinois.replay.test.utils.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
+import org.nees.illinois.replay.test.utils.types.MatrixMixType;
+import org.nees.illinois.replay.test.utils.types.TestingParts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,25 +18,6 @@ import org.slf4j.LoggerFactory;
  * @author Michael Bletzinger
  */
 public class ChannelDataGenerator {
-	/**
-	 * Defines which set of channel names to include.
-	 * @author Michael Bletzinger
-	 */
-	public enum TestingParts {
-		/**
-		 * Include all channels.
-		 */
-		All,
-		/**
-		 * Include the first set.
-		 */
-		First,
-		/**
-		 * include the second set.
-		 */
-		Second
-	}
-
 	/**
 	 * List of {@link QueryChannelLists} used to test queries.
 	 */

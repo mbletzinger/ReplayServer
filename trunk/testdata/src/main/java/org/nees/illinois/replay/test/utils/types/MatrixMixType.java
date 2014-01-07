@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.test.utils;
+package org.nees.illinois.replay.test.utils.types;
 
 /**
  * Enumerates the various ways matrix rows from the mock test data are mixed.

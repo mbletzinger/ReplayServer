@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.test.utils;
+package org.nees.illinois.replay.test.utils.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +37,46 @@ public class SortableDoubleMatrix implements DoubleMatrixI {
 		dm = new DoubleMatrix(idata);
 	}
 
+	@Override
+	public final void append(final List<Double> row) {
+		dm.append(row);
+	}
+
+	@Override
+	public final void clear() {
+		dm.clear();
+	}
+
+	@Override
+	public final double[][] getData() {
+		return dm.getData();
+	}
+
+	@Override
+	public final List<Double> getRow(final int row) {
+		return dm.getRow(row);
+	}
+
+	@Override
+	public final MatrixSpecI getSpec() {
+		return dm.getSpec();
+	}
+
+	@Override
+	public final boolean isNull(final int row, final int col) {
+		return dm.isNull(row, col);
+	}
+
+	@Override
+	public final void set(final int row, final int col, final Double value) {
+		dm.set(row, col, value);
+	}
+
+	@Override
+	public final int[] sizes() {
+		return dm.sizes();
+	}
+
 	/**
 	 * Sort the matrix row-wise.
 	 */
@@ -56,26 +96,6 @@ public class SortableDoubleMatrix implements DoubleMatrixI {
 	}
 
 	@Override
-	public final double[][] getData() {
-		return dm.getData();
-	}
-
-	@Override
-	public final boolean isNull(final int row, final int col) {
-		return dm.isNull(row, col);
-	}
-
-	@Override
-	public final void set(final int row, final int col, final Double value) {
-		dm.set(row, col, value);
-	}
-
-	@Override
-	public final int[] sizes() {
-		return dm.sizes();
-	}
-
-	@Override
 	public final List<List<Double>> toList() {
 		return dm.toList();
 	}
@@ -83,20 +103,5 @@ public class SortableDoubleMatrix implements DoubleMatrixI {
 	@Override
 	public final double value(final int row, final int col) {
 		return dm.value(row, col);
-	}
-
-	@Override
-	public final MatrixSpecI getSpec() {
-		return dm.getSpec();
-	}
-
-	@Override
-	public final void append(final List<Double> row) {
-		dm.append(row);
-	}
-
-	@Override
-	public final void clear() {
-		dm.clear();
 	}
 }

@@ -1,4 +1,5 @@
-package org.nees.illinois.replay.test.utils;
+package org.nees.illinois.replay.test.utils.data;
+
 
 /**
  * Class which generates a row of data to be used in unit testing.

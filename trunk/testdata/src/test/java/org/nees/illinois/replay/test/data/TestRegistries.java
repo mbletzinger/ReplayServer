@@ -12,9 +12,9 @@ import org.nees.illinois.replay.common.types.CompositeQueryI;
 import org.nees.illinois.replay.common.types.TableDef;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.test.utils.CompareLists;
-import org.nees.illinois.replay.test.utils.QueryChannelLists;
-import org.nees.illinois.replay.test.utils.TestDatasetType;
-import org.nees.illinois.replay.test.utils.TestDatasets;
+import org.nees.illinois.replay.test.utils.TestDatasetParameters;
+import org.nees.illinois.replay.test.utils.data.QueryChannelLists;
+import org.nees.illinois.replay.test.utils.types.TestDatasetType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -37,7 +37,7 @@ public class TestRegistries {
 	 */
 	@Test
 	public final void addCnrNames() {
-		TestDatasets cltm = new TestDatasets(false, "Test 1");
+		TestDatasetParameters cltm = new TestDatasetParameters(false, "Test 1");
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		int count = 1;
 		for (String c : cltm.getChannels(TestDatasetType.OM)) {
@@ -63,7 +63,7 @@ public class TestRegistries {
 	public final void addTables() {
 		String experiment = "TableTest";
 		CompareLists<String> compL = new CompareLists<String>();
-		TestDatasets cltm = new TestDatasets(false, experiment);
+		TestDatasetParameters cltm = new TestDatasetParameters(false, experiment);
 		TableRegistry tr = new TableRegistry();
 		for (TestDatasetType t : cltm.getTableTypes()) {
 			TableDefinitionI table = new TableDef(cltm.getChannels(t), cltm.getTableName(t));
@@ -84,7 +84,7 @@ public class TestRegistries {
 	public final void addQueries() {
 		String experiment = "QueriesTest";
 		CompareLists<String> compL = new CompareLists<String>();
-		TestDatasets cltm = new TestDatasets(false, experiment);
+		TestDatasetParameters cltm = new TestDatasetParameters(false, experiment);
 		QueryRegistry qr = new QueryRegistry();
 		for (TestDatasetType t : cltm.getQueryTypes()) {
 			QueryChannelLists tquery = cltm.getTestQuery(t);
@@ -104,7 +104,7 @@ public class TestRegistries {
 	 */
 	@Test
 	public final void addCnrNames2() {
-		TestDatasets cltm = new TestDatasets(false, "Test 1");
+		TestDatasetParameters cltm = new TestDatasetParameters(false, "Test 1");
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		int count = 1;
 		List<String> expectedChannels = new ArrayList<String>();

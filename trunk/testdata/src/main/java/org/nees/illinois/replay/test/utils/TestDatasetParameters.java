@@ -11,13 +11,16 @@ import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.common.types.TableDef;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
+import org.nees.illinois.replay.test.utils.data.QueryChannelLists;
+import org.nees.illinois.replay.test.utils.types.MatrixMixType;
+import org.nees.illinois.replay.test.utils.types.TestDatasetType;
 
 /**
  * This class provides mock channel lists used to fill in registries used by
  * unit tests.
  * @author Michael Bletzinger
  */
-public class TestDatasets {
+public class TestDatasetParameters {
 	/**
 	 * Map of channel lists for each channel list type.
 	 */
@@ -26,6 +29,10 @@ public class TestDatasets {
 	 * Map of mock merged channel lists for each channel list type.
 	 */
 	private final Map<TestDatasetType, QueryChannelLists> cl2q = new HashMap<TestDatasetType, QueryChannelLists>();
+	/**
+	 * Map of test table types to start times.
+	 */
+	private final Map<TestDatasetType, Double> cl2StartTime = new HashMap<TestDatasetType, Double>();
 	/**
 	 * Map of table types for each channel list type.
 	 */
@@ -55,7 +62,7 @@ public class TestDatasets {
 	 * @param experiment
 	 *            Name of mock experiment.
 	 */
-	public TestDatasets(final boolean second, final String experiment) {
+	public TestDatasetParameters(final boolean second, final String experiment) {
 		super();
 		this.second = second;
 		this.experiment = experiment;
@@ -91,16 +98,6 @@ public class TestDatasets {
 	}
 
 	/**
-	 * Get the test query for a given type.
-	 * @param typ
-	 *            Type identifying the test query.
-	 * @return The test query.
-	 */
-	public final QueryChannelLists getTestQuery(final TestDatasetType typ) {
-		return cl2q.get(typ);
-	};
-
-	/**
 	 * Get the consolidated channel list for a given type.
 	 * @param listType
 	 *            Type identifying the test list.
@@ -110,7 +107,7 @@ public class TestDatasets {
 		List<String> result = new ArrayList<String>();
 		result.addAll(cl2Channels.get(listType));
 		return result;
-	}
+	};
 
 	/**
 	 * @return the experiment
@@ -124,6 +121,32 @@ public class TestDatasets {
 	 */
 	public final List<TestDatasetType> getQueryTypes() {
 		return queryTypes;
+	}
+
+	/**
+	 * Get the start time for the dataset type.
+	 * @param typ
+	 *            dataset type.
+	 * @return the start time.
+	 */
+	public final double getStartTime(final TestDatasetType typ) {
+		return cl2StartTime.get(typ);
+	}
+
+	/**
+	 * @param type
+	 *            Test type.
+	 * @param cnr
+	 *            Channel Name Registry containing the table channels.
+	 * @param tr
+	 *            Table Registry where the table is located.
+	 * @return A table definition based on a test type.
+	 */
+	public final TableDefinitionI getTableDefinition(
+			final TestDatasetType type, final ChannelNameRegistry cnr,
+			final TableRegistry tr) {
+		TableDefiner tdr = new TableDefiner(cnr, tr);
+		return tdr.define(getTableName(type), getTt(type), getChannels(type));
 	}
 
 	/**
@@ -141,6 +164,16 @@ public class TestDatasets {
 	 */
 	public final List<TestDatasetType> getTableTypes() {
 		return tableTypes;
+	}
+
+	/**
+	 * Get the test query for a given type.
+	 * @param typ
+	 *            Type identifying the test query.
+	 * @return The test query.
+	 */
+	public final QueryChannelLists getTestQuery(final TestDatasetType typ) {
+		return cl2q.get(typ);
 	}
 
 	/**
@@ -208,8 +241,15 @@ public class TestDatasets {
 		cl2q.put(TestDatasetType.QueryMixed, query);
 		cl2Channels.put(TestDatasetType.QueryMixed, query.combine());
 
-		query = new QueryChannelLists(MatrixMixType.AddMiddle, query, daqChnls,
-				TestDatasetType.QueryTriple.toString());
+		List<String> daqChnls2 = new ArrayList<String>();
+		daqChnls2
+				.add("DAQ2/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
+		daqChnls2
+				.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL06K_W7_SG_K13_2");
+		daqChnls2
+				.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL07K_W7_SG_K14_7");
+		query = new QueryChannelLists(MatrixMixType.AddMiddle, query,
+				daqChnls2, TestDatasetType.QueryTriple.toString());
 		cl2q.put(TestDatasetType.QueryTriple, query);
 		cl2Channels.put(TestDatasetType.QueryTriple, query.combine());
 
@@ -297,19 +337,17 @@ public class TestDatasets {
 		tableTypes.add(TestDatasetType.DAQ);
 		tableTypes.add(TestDatasetType.DAQ2);
 		tableTypes.add(TestDatasetType.Krypton);
-
+		final double startTime = 221.23;
+		final double timeDiff = 1.44;
+		double stime = startTime;
+		cl2StartTime.put(TestDatasetType.OM, new Double(stime));
+		stime += timeDiff;
+		cl2StartTime.put(TestDatasetType.OM2, new Double(stime));
+		stime += timeDiff;
+		cl2StartTime.put(TestDatasetType.DAQ, new Double(stime));
+		stime += timeDiff;
+		cl2StartTime.put(TestDatasetType.DAQ2, new Double(stime));
+		stime += timeDiff;
+		cl2StartTime.put(TestDatasetType.Krypton, new Double(stime));
 	}
-
-	/**
-	 * @param type
-	 *            Test type.
-	 * @param cnr Channel Name Registry containing the table channels.
-	 * @param tr Table Registry where the table is located.
-	 * @return A table definition based on a test type.
-	 */
-	public final TableDefinitionI getTableDefinition(final TestDatasetType type, final ChannelNameRegistry cnr, final TableRegistry tr) {
-		TableDefiner tdr = new TableDefiner(cnr, tr);
-		return tdr.define(getTableName(type), getTt(type), getChannels(type));
-	}
-
 }

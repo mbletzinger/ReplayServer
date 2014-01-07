@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
-import org.nees.illinois.replay.test.utils.ChannelDataGenerator;
-import org.nees.illinois.replay.test.utils.ChannelDataGenerator.TestingParts;
-import org.nees.illinois.replay.test.utils.QueryChannelLists;
-import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
-import org.nees.illinois.replay.test.utils.MatrixMixType;
+import org.nees.illinois.replay.test.utils.data.ChannelDataGenerator;
+import org.nees.illinois.replay.test.utils.data.DoubleArrayDataGenerator;
+import org.nees.illinois.replay.test.utils.data.QueryChannelLists;
+import org.nees.illinois.replay.test.utils.types.MatrixMixType;
+import org.nees.illinois.replay.test.utils.types.TestingParts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -32,30 +32,67 @@ public class TestChannelTestData {
 	private final int numberOfChannels = 4;
 
 	/**
-	 * Test matrix generation.
+	 * Column mixer.
+	 * @param mix
+	 *            Mix type.
+	 * @param data
+	 *            Input data.
+	 * @param ctl
+	 *            Channel lists for data.
+	 * @return Mixed columns.
 	 */
-	@Test
-	public final void testIndividualMatrices() {
-		List<String> newChannels = new ArrayList<String>();
-		for (int i = 1; i < numberOfChannels; i++) {
-			newChannels.add("Test" + i);
+	private double[][] columnMix(final MatrixMixType mix,
+			final double[][] data, final QueryChannelLists ctl) {
+		int fcsz = ctl.getExistingList().size();
+		int scsz = ctl.getNewChannels().size();
+		List<List<Double>> accum = (new DoubleMatrix(data)).toList();
+		if (mix.equals(MatrixMixType.AddAfter)) {
+			return data;
 		}
-		QueryChannelLists ctl = new QueryChannelLists(MatrixMixType.AddAfter,
-				null, newChannels, "Simple");
-		ChannelDataGenerator cdg = new ChannelDataGenerator(ctl,
-				MatrixMixType.AddAfter, 2);
-		cdg.generateParts();
-		cdg.generateWhole();
-		final double[][] expected = { { 222.0, 0.0, -0.0030, 0.0060 },
-				{ 222.02, 0.01, -0.016, 0.022 } };
-		log.debug("First " + cdg.getData(TestingParts.First));
-		Assert.assertNull(cdg.getData(TestingParts.First));
-		log.debug("Second " + cdg.getData(TestingParts.Second));
-		DoubleArrayDataGenerator.compareData(cdg.getData(TestingParts.Second)
-				.getData(), expected);
-		log.debug("All " + cdg.getData(TestingParts.All));
-		DoubleArrayDataGenerator.compareData(cdg.getData(TestingParts.All)
-				.getData(), expected);
+		if (mix.equals(MatrixMixType.AddMerged)) {
+			log.error(mix + " is not a valid colum mix type");
+			Assert.fail();
+			return null;
+		}
+		final int timeColumns = 1;
+		for (List<Double> row : accum) {
+			List<Double> tmp = new ArrayList<Double>();
+			tmp.addAll(row);
+			row.clear();
+			row.addAll(tmp.subList(0, timeColumns));
+			if (mix.equals(MatrixMixType.AddBefore)) {
+				row.addAll(tmp.subList(fcsz + timeColumns, tmp.size()));
+				row.addAll(tmp.subList(timeColumns, fcsz + timeColumns));
+			}
+			if (mix.equals(MatrixMixType.AddMiddle)) {
+				int hscsz = scsz / 2;
+				row.addAll(tmp.subList(fcsz + timeColumns, fcsz + timeColumns
+						+ hscsz));
+				row.addAll(tmp.subList(timeColumns, fcsz + timeColumns));
+				row.addAll(tmp.subList(fcsz + timeColumns + hscsz, tmp.size()));
+			}
+			if (mix.equals(MatrixMixType.AddInterleaved)) {
+				int smaller = fcsz;
+				boolean firstIsBigger = false;
+				if (fcsz > scsz) {
+					smaller = scsz;
+					firstIsBigger = true;
+				}
+				for (int c = 0; c < smaller; c++) {
+					row.add(tmp.get(timeColumns + fcsz + c));
+					row.add(tmp.get(timeColumns + c));
+				}
+				if (firstIsBigger) {
+					row.addAll(tmp.subList(timeColumns + smaller, fcsz));
+				} else {
+					row.addAll(tmp.subList(timeColumns + fcsz + smaller,
+							tmp.size()));
+				}
+			}
+		}
+		DoubleMatrixI result = new DoubleMatrix(accum);
+		log.debug("Expected mix " + result);
+		return result.getData();
 	}
 
 	/**
@@ -70,13 +107,13 @@ public class TestChannelTestData {
 				{ 222.02, 0.01, -0.016, 0.022 } };
 		final double[][] expectAll = {
 				{ 222.0, Double.NaN, Double.NaN, Double.NaN, 0.0, -0.0030,
-						0.0060 },
-				{ 222.02, Double.NaN, Double.NaN, Double.NaN, 0.01, -0.016,
+					0.0060 },
+					{ 222.02, Double.NaN, Double.NaN, Double.NaN, 0.01, -0.016,
 						0.022 },
-				{ 222.04, 0.02, -0.023, 0.026000000000000002, Double.NaN,
-						Double.NaN, Double.NaN },
-				{ 222.06, 0.03, -0.036, 0.041999999999999996, Double.NaN,
-						Double.NaN, Double.NaN } };
+						{ 222.04, 0.02, -0.023, 0.026000000000000002, Double.NaN,
+							Double.NaN, Double.NaN },
+							{ 222.06, 0.03, -0.036, 0.041999999999999996, Double.NaN,
+								Double.NaN, Double.NaN } };
 
 		List<String> firstChannels = new ArrayList<String>();
 		for (int i = 1; i < numberOfChannels; i++) {
@@ -150,13 +187,13 @@ public class TestChannelTestData {
 		log.debug("All " + cdg.getData(TestingParts.All));
 		final double[][] expected2 = {
 				{ 222.0, 0.0, -0.0030, 0.0060, Double.NaN, Double.NaN,
+					Double.NaN },
+					{ 222.02, 0.01, -0.016, 0.022, Double.NaN, Double.NaN,
 						Double.NaN },
-				{ 222.02, 0.01, -0.016, 0.022, Double.NaN, Double.NaN,
-						Double.NaN },
-				{ 222.04, Double.NaN, Double.NaN, Double.NaN, 0.02, -0.023,
-						0.026000000000000002 },
-				{ 222.06, Double.NaN, Double.NaN, Double.NaN, 0.03, -0.036,
-						0.041999999999999996 } };
+						{ 222.04, Double.NaN, Double.NaN, Double.NaN, 0.02, -0.023,
+							0.026000000000000002 },
+							{ 222.06, Double.NaN, Double.NaN, Double.NaN, 0.03, -0.036,
+								0.041999999999999996 } };
 		DoubleArrayDataGenerator.compareData(cdg.getData(TestingParts.All)
 				.getData(), expected2);
 	}
@@ -198,13 +235,13 @@ public class TestChannelTestData {
 		log.debug("All " + cdg.getData(TestingParts.All));
 		final double[][] expected2 = {
 				{ 222.0, 0.0, -0.0030, 0.0060, Double.NaN, Double.NaN,
-						Double.NaN },
-				{ 222.02, Double.NaN, Double.NaN, Double.NaN, 0.01,
+					Double.NaN },
+					{ 222.02, Double.NaN, Double.NaN, Double.NaN, 0.01,
 						-0.013000000000000001, 0.016 },
-				{ 222.04, Double.NaN, Double.NaN, Double.NaN, 0.02,
-						-0.026000000000000002, 0.032 },
-				{ 222.06, 0.03, -0.033, 0.036, Double.NaN, Double.NaN,
-						Double.NaN } };
+						{ 222.04, Double.NaN, Double.NaN, Double.NaN, 0.02,
+							-0.026000000000000002, 0.032 },
+							{ 222.06, 0.03, -0.033, 0.036, Double.NaN, Double.NaN,
+								Double.NaN } };
 		DoubleArrayDataGenerator.compareData(cdg.getData(TestingParts.All)
 				.getData(), expected2);
 	}
@@ -245,13 +282,13 @@ public class TestChannelTestData {
 		log.debug("All " + cdg.getData(TestingParts.All));
 		final double[][] expected2 = {
 				{ 222.0, 0.0, -0.0030, 0.0060, Double.NaN, Double.NaN,
-						Double.NaN },
-				{ 222.01, Double.NaN, Double.NaN, Double.NaN, 0.0, -0.0030,
+					Double.NaN },
+					{ 222.01, Double.NaN, Double.NaN, Double.NaN, 0.0, -0.0030,
 						0.0060 },
-				{ 222.02, 0.01, -0.016, 0.022, Double.NaN, Double.NaN,
-						Double.NaN },
-				{ 222.03, Double.NaN, Double.NaN, Double.NaN, 0.01, -0.016,
-						0.022 } };
+						{ 222.02, 0.01, -0.016, 0.022, Double.NaN, Double.NaN,
+							Double.NaN },
+							{ 222.03, Double.NaN, Double.NaN, Double.NaN, 0.01, -0.016,
+								0.022 } };
 		DoubleArrayDataGenerator.compareData(cdg.getData(TestingParts.All)
 				.getData(), expected2);
 	}
@@ -298,66 +335,29 @@ public class TestChannelTestData {
 	}
 
 	/**
-	 * Column mixer.
-	 * @param mix
-	 *            Mix type.
-	 * @param data
-	 *            Input data.
-	 * @param ctl
-	 *            Channel lists for data.
-	 * @return Mixed columns.
+	 * Test matrix generation.
 	 */
-	private double[][] columnMix(final MatrixMixType mix,
-			final double[][] data, final QueryChannelLists ctl) {
-		int fcsz = ctl.getExistingList().size();
-		int scsz = ctl.getNewChannels().size();
-		List<List<Double>> accum = (new DoubleMatrix(data)).toList();
-		if (mix.equals(MatrixMixType.AddAfter)) {
-			return data;
+	@Test
+	public final void testIndividualMatrices() {
+		List<String> newChannels = new ArrayList<String>();
+		for (int i = 1; i < numberOfChannels; i++) {
+			newChannels.add("Test" + i);
 		}
-		if (mix.equals(MatrixMixType.AddMerged)) {
-			log.error(mix + " is not a valid colum mix type");
-			Assert.fail();
-			return null;
-		}
-		final int timeColumns = 1;
-		for (List<Double> row : accum) {
-			List<Double> tmp = new ArrayList<Double>();
-			tmp.addAll(row);
-			row.clear();
-			row.addAll(tmp.subList(0, timeColumns));
-			if (mix.equals(MatrixMixType.AddBefore)) {
-				row.addAll(tmp.subList(fcsz + timeColumns, tmp.size()));
-				row.addAll(tmp.subList(timeColumns, fcsz + timeColumns));
-			}
-			if (mix.equals(MatrixMixType.AddMiddle)) {
-				int hscsz = scsz / 2;
-				row.addAll(tmp.subList(fcsz + timeColumns, fcsz + timeColumns
-						+ hscsz));
-				row.addAll(tmp.subList(timeColumns, fcsz + timeColumns));
-				row.addAll(tmp.subList(fcsz + timeColumns + hscsz, tmp.size()));
-			}
-			if (mix.equals(MatrixMixType.AddInterleaved)) {
-				int smaller = fcsz;
-				boolean firstIsBigger = false;
-				if (fcsz > scsz) {
-					smaller = scsz;
-					firstIsBigger = true;
-				}
-				for (int c = 0; c < smaller; c++) {
-					row.add(tmp.get(timeColumns + fcsz + c));
-					row.add(tmp.get(timeColumns + c));
-				}
-				if (firstIsBigger) {
-					row.addAll(tmp.subList(timeColumns + smaller, fcsz));
-				} else {
-					row.addAll(tmp.subList(timeColumns + fcsz + smaller,
-							tmp.size()));
-				}
-			}
-		}
-		DoubleMatrixI result = new DoubleMatrix(accum);
-		log.debug("Expected mix " + result);
-		return result.getData();
+		QueryChannelLists ctl = new QueryChannelLists(MatrixMixType.AddAfter,
+				null, newChannels, "Simple");
+		ChannelDataGenerator cdg = new ChannelDataGenerator(ctl,
+				MatrixMixType.AddAfter, 2);
+		cdg.generateParts();
+		cdg.generateWhole();
+		final double[][] expected = { { 222.0, 0.0, -0.0030, 0.0060 },
+				{ 222.02, 0.01, -0.016, 0.022 } };
+		log.debug("First " + cdg.getData(TestingParts.First));
+		Assert.assertNull(cdg.getData(TestingParts.First));
+		log.debug("Second " + cdg.getData(TestingParts.Second));
+		DoubleArrayDataGenerator.compareData(cdg.getData(TestingParts.Second)
+				.getData(), expected);
+		log.debug("All " + cdg.getData(TestingParts.All));
+		DoubleArrayDataGenerator.compareData(cdg.getData(TestingParts.All)
+				.getData(), expected);
 	}
 }

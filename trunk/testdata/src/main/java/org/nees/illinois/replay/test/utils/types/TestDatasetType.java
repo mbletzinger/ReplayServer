@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.test.utils;
+package org.nees.illinois.replay.test.utils.types;
 
 /**
  * Enumerates the various channel list used for the mock test data.
