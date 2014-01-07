@@ -75,6 +75,16 @@ public class DoubleMatrix implements DoubleMatrixI {
 		padData();
 	}
 
+	@Override
+	public final void append(final List<Double> row) {
+		data.add(row);
+	}
+
+	@Override
+	public final void clear() {
+		data.clear();
+	}
+
 	/**
 	 * Put the data into a double list format.
 	 * @param idata
@@ -152,6 +162,11 @@ public class DoubleMatrix implements DoubleMatrixI {
 	 */
 	protected final List<List<Double>> getInternalReference() {
 		return data;
+	}
+
+	@Override
+	public final List<Double> getRow(final int row) {
+		return data.get(row);
 	}
 
 	/**
@@ -284,15 +299,5 @@ public class DoubleMatrix implements DoubleMatrixI {
 			return rowL.get(col);
 		}
 		return Double.NaN;
-	}
-
-	@Override
-	public final void append(final List<Double> row) {
-		data.add(row);
-	}
-
-	@Override
-	public final void clear() {
-		data.clear();
 	}
 }

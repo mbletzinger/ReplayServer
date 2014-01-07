@@ -27,11 +27,6 @@ public class Event implements EventI {
 	private final double time;
 
 	/**
-	 * Index used to sequence different iterations.
-	 */
-	private final double stepIndex;
-
-	/**
 	 * @param name
 	 *            Name of the event.
 	 * @param time
@@ -40,16 +35,13 @@ public class Event implements EventI {
 	 *            Optional description of the event.
 	 * @param source
 	 *            Source that originated the event.
-	 * @param stepIndex
-	 *            Index used to sequence different iterations.
 	 */
 	public Event(final String name, final double time,
-			final String description, final String source, final double stepIndex) {
+			final String description, final String source) {
 		this.name = name;
 		this.time = time;
 		this.description = description;
 		this.source = source;
-		this.stepIndex = stepIndex;
 	}
 
 	@Override
@@ -103,7 +95,7 @@ public class Event implements EventI {
 
 	@Override
 	public final EventType getType() {
-		return EventType.Defined;
+		return EventType.Event;
 	}
 
 	/*
@@ -114,10 +106,4 @@ public class Event implements EventI {
 	public final int hashCode() {
 		return super.hashCode();
 	}
-
-	@Override
-	public final double getStepIndex() {
-		return stepIndex;
-	}
-
 }

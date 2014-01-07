@@ -34,11 +34,4 @@ public interface EventI extends Comparable<EventI>{
 	 */
 	String getSource();
 
-	/**
-	 * Step indexes are floating point to allow the time meshing between data
-	 * streams from different sources.
-	 * @return double value representing an iteration step.
-	 */
-	double getStepIndex();
-
 }
