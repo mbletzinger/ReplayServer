@@ -5,15 +5,15 @@ import java.util.List;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.data.MergeSet;
-import org.nees.illinois.replay.test.utils.ChannelDataGenerator;
-import org.nees.illinois.replay.test.utils.ChannelDataGenerator.TestingParts;
-import org.nees.illinois.replay.test.utils.TestDatasets;
-import org.nees.illinois.replay.test.utils.TestDatasetType;
+import org.nees.illinois.replay.test.utils.TestDatasetParameters;
 import org.nees.illinois.replay.test.utils.QuerySetsDirector;
-import org.nees.illinois.replay.test.utils.QuerySetsDirector.ExperimentNames;
-import org.nees.illinois.replay.test.utils.QuerySetsDirector.QueryParaTypes;
-import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
-import org.nees.illinois.replay.test.utils.MatrixMixType;
+import org.nees.illinois.replay.test.utils.data.ChannelDataGenerator;
+import org.nees.illinois.replay.test.utils.data.DoubleArrayDataGenerator;
+import org.nees.illinois.replay.test.utils.types.ExperimentNames;
+import org.nees.illinois.replay.test.utils.types.MatrixMixType;
+import org.nees.illinois.replay.test.utils.types.QueryParaTypes;
+import org.nees.illinois.replay.test.utils.types.TestDatasetType;
+import org.nees.illinois.replay.test.utils.types.TestingParts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
@@ -97,7 +97,7 @@ public class TestMerge {
 	@Test(dependsOnMethods = { "testRawMerge" })
 	public final void testQueryMerges() {
 		QuerySetsDirector dd = new QuerySetsDirector(ExperimentNames.HybridMasonry1);
-		TestDatasets cltm = dd.getSet();
+		TestDatasetParameters cltm = dd.getSet();
 		for (TestDatasetType clt : cltm.getQueryTypes()) {
 			if (clt.equals(TestDatasetType.QueryDaq)
 					|| clt.equals(TestDatasetType.QueryOm)) {

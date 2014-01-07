@@ -1,8 +1,9 @@
-package org.nees.illinois.replay.test.utils;
+package org.nees.illinois.replay.test.utils.data;
 
 import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrixI;
+import org.nees.illinois.replay.events.Event;
 import org.nees.illinois.replay.events.EventI;
 import org.nees.illinois.replay.events.EventList;
 import org.nees.illinois.replay.events.EventListI;
@@ -16,6 +17,10 @@ import org.slf4j.LoggerFactory;
  * @author Michael Bletzinger
  */
 public class EventsGenerator {
+	/**
+	 * Current event number.
+	 */
+	private final int eventNumber = 0;
 	/**
 	 * Current step number generated.
 	 */
@@ -55,10 +60,26 @@ public class EventsGenerator {
 		case StepNumber:
 			result = createStep(timestamp, source);
 			return result;
+		case Event:
+			result = createEvent(timestamp, source);
+			return result;
 		default:
 			log.error("Generation of " + type + " not implemented yet");
 		}
 		return result;
+	}
+
+	/**
+	 * Create a test event.
+	 * @param timestamp
+	 *            Time of the event.
+	 * @param source
+	 *            Source that recorded the event.
+	 * @return a new event.
+	 */
+	private EventI createEvent(final double timestamp, final String source) {
+		return new Event("Event Name " + eventNumber, timestamp,
+				"This an event that happened " + 1, source);
 	}
 
 	/**

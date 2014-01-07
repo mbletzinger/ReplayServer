@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.test.utils;
+package org.nees.illinois.replay.test.utils.data;
 
 /**
  * Class to generate timestamps and step numbers based on the start time and

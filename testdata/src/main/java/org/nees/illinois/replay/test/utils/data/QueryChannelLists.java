@@ -1,7 +1,10 @@
-package org.nees.illinois.replay.test.utils;
+package org.nees.illinois.replay.test.utils.data;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.nees.illinois.replay.test.utils.types.MatrixMixType;
+
 
 /**
  * Class which holds test lists of channels as well as their data sets for

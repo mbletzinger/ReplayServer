@@ -10,10 +10,10 @@ import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
-import org.nees.illinois.replay.test.utils.QuerySetsDirector.ExperimentNames;
-import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
-import org.nees.illinois.replay.test.utils.TestDatasetType;
-import org.nees.illinois.replay.test.utils.TestDatasets;
+import org.nees.illinois.replay.test.utils.TestDatasetParameters;
+import org.nees.illinois.replay.test.utils.data.DoubleArrayDataGenerator;
+import org.nees.illinois.replay.test.utils.types.ExperimentNames;
+import org.nees.illinois.replay.test.utils.types.TestDatasetType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
@@ -36,7 +36,7 @@ public class TestStreamConversion {
 	 */
 	@Test
 	public final void testChannelListConversion() {
-		TestDatasets lists = new TestDatasets(false,
+		TestDatasetParameters lists = new TestDatasetParameters(false,
 				ExperimentNames.HybridMasonry1.toString());
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();

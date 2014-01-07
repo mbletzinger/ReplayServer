@@ -10,6 +10,18 @@ import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.data.RateType;
+import org.nees.illinois.replay.events.EventListI;
+import org.nees.illinois.replay.events.EventType;
+import org.nees.illinois.replay.test.utils.data.ChannelDataGenerator;
+import org.nees.illinois.replay.test.utils.data.DoubleArrayDataGenerator;
+import org.nees.illinois.replay.test.utils.data.EventsGenerator;
+import org.nees.illinois.replay.test.utils.data.QueryChannelLists;
+import org.nees.illinois.replay.test.utils.data.TestDataset;
+import org.nees.illinois.replay.test.utils.types.ExperimentNames;
+import org.nees.illinois.replay.test.utils.types.MatrixMixType;
+import org.nees.illinois.replay.test.utils.types.QueryParaTypes;
+import org.nees.illinois.replay.test.utils.types.TestDatasetType;
+import org.nees.illinois.replay.test.utils.types.TimeSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -19,85 +31,6 @@ import org.testng.Assert;
  * @author Michael Bletzinger
  */
 public class QuerySetsDirector {
-	/**
-	 * Choice of two test experiments.
-	 * @author Michael Bletzinger
-	 */
-	public enum ExperimentNames {
-		/**
-		 * First test experiment.
-		 */
-		HybridMasonry1,
-		/**
-		 * Second experiment if needed.
-		 */
-		HybridMasonry2
-	}
-
-	/**
-	 * Query test types.
-	 * @author Michael Bletzinger
-	 */
-	public enum QueryParaTypes {
-		/**
-		 * Include a slice of continuous data from start to stop.
-		 */
-		ContWithStartStop,
-		/**
-		 * Include a single dataset based on a time stamp.
-		 */
-		ContWithTime,
-		/**
-		 * Include a single data set based on the event.
-		 */
-		Event,
-		/**
-		 * Include all event data between two events.
-		 */
-		EventsWithStartStop
-	}
-
-	/**
-	 * Wrapper for start and stop times or events.
-	 * @author Michael Bletzinger
-	 */
-	public class TimeSpec {
-		/**
-		 * Generic start time or event.
-		 */
-		private final Object start;
-		/**
-		 * Generic stop time or event.
-		 */
-		private final Object stop;
-
-		/**
-		 * @param start
-		 *            Generic start time or event.
-		 * @param stop
-		 *            Generic stop time or event.
-		 */
-		public TimeSpec(final Object start, final Object stop) {
-			super();
-			this.start = start;
-			this.stop = stop;
-		}
-
-		/**
-		 * @return the start
-		 */
-		public final Object getStart() {
-			return start;
-		}
-
-		/**
-		 * @return the stop
-		 */
-		public final Object getStop() {
-			return stop;
-		}
-
-	}
 
 	/**
 	 * List checker.
@@ -105,9 +38,13 @@ public class QuerySetsDirector {
 	private final CompareLists<String> check = new CompareLists<String>();
 
 	/**
-	 * {@link TestDatasets} used for query testing.
+	 * {@link TestDatasetParameters} used for query testing.
 	 */
-	private final TestDatasets set;
+	private final TestDatasetParameters set;
+	/**
+	 * {@link QueryDataTestSets} used to generate expected query results.
+	 */
+	private final QueryDataTestSets qsets;
 	/**
 	 * The {@link ChannelNameRegistry} that is supposed to exist after testing.
 	 */
@@ -123,46 +60,9 @@ public class QuerySetsDirector {
 	/**
 	 * Logger.
 	 */
-	private final Logger log = LoggerFactory.getLogger(QuerySetsDirector.class);;
-	/**
-	 * Map of rate types to the various test queries.
-	 */
-	private final Map<QueryParaTypes, RateType> queryRates = new HashMap<QueryParaTypes, RateType>();;
-	/**
-	 * Map of table sizes for the various test queries.
-	 */
-	private final Map<QueryParaTypes, Integer> queryTableSizes = new HashMap<QueryParaTypes, Integer>();
-	/**
-	 * Map of start/stop time specifications for the various test queries.
-	 */
-	private final Map<QueryParaTypes, TimeSpec> queryTimes = new HashMap<QuerySetsDirector.QueryParaTypes, QuerySetsDirector.TimeSpec>();
-	{
-		final double startTime = 222.0;
-		final double stopTime = 223.0;
-		final int twentyRecords = 20;
-		final int tenRecords = 10;
-		final int fortyRecords = 40;
-		final int fiveRecords = 5;
-		queryTableSizes.put(QueryParaTypes.ContWithTime, twentyRecords);
-		queryTableSizes.put(QueryParaTypes.ContWithStartStop, tenRecords);
-		queryTableSizes.put(QueryParaTypes.Event, fortyRecords);
-		queryTableSizes.put(QueryParaTypes.EventsWithStartStop, fiveRecords);
-
-		queryRates.put(QueryParaTypes.ContWithTime, RateType.TIME);
-		queryRates.put(QueryParaTypes.ContWithStartStop, RateType.TIME);
-		queryRates.put(QueryParaTypes.Event, RateType.EVENT);
-		queryRates.put(QueryParaTypes.EventsWithStartStop, RateType.EVENT);
-
-		queryTimes.put(QueryParaTypes.ContWithTime, new TimeSpec(new Double(
-				startTime), null));
-		queryTimes.put(QueryParaTypes.ContWithStartStop, new TimeSpec(
-				new Double(startTime), new Double(stopTime)));
-		queryTimes.put(QueryParaTypes.Event, new TimeSpec(null, null));
-		// queryTimes.put(QueryParaTypes.EventsWithStartStop, new TimeSpec(
-		// new StepNumber(1.0, 0.0, 1.0, null, null, null), new StepNumber(3.0,
-		// 22.0, 1.0, null, null, null)));
-	}
-
+	private final Logger log = LoggerFactory.getLogger(QuerySetsDirector.class);
+	private final Map<TestDatasetType, QueryDataTestSets> querySets = new HashMap<TestDatasetType, QueryDataTestSets>();
+	
 	/**
 	 * @param experiment
 	 *            The experiment associated with this dataset.
@@ -170,11 +70,12 @@ public class QuerySetsDirector {
 	public QuerySetsDirector(final ExperimentNames experiment) {
 		super();
 		this.experiment = experiment;
-		this.set = new TestDatasets(
+		this.set = new TestDatasetParameters(
 				experiment.equals(ExperimentNames.HybridMasonry2),
 				experiment.name());
 		this.set.fillCnr(expectedCnr);
 		this.set.fillTblr(expectedTblr);
+		
 	}
 
 	/**
@@ -258,8 +159,7 @@ public class QuerySetsDirector {
 	 */
 	private void checkTableDefinitions(final TableDefinitionI actual,
 			final TableDefinitionI expected) {
-		Assert.assertEquals(actual.getTableId(), expected
-				.getTableId());
+		Assert.assertEquals(actual.getTableId(), expected.getTableId());
 		Assert.assertEquals(actual.getNumberOfColumns(true),
 				expected.getNumberOfColumns(true));
 		check.compare(actual.getColumns(true), expected.getColumns(true));
@@ -275,11 +175,20 @@ public class QuerySetsDirector {
 	 *            Test query.
 	 * @return matrix of data.
 	 */
-	public final DoubleMatrixI generate(final ExperimentNames experiment,
+	public final TestDataset generate(final ExperimentNames experiment,
 			final QueryParaTypes qt, final TestDatasetType quy) {
 		int row = queryTableSizes.get(qt);
 		List<String> channels = set.getChannels(quy);
-		return generate(quy.name(), row, channels.size());
+		DoubleMatrixI result = generate(quy.name(), row, channels.size(), null);
+		switch(qt) {
+		case ContWithStartStop:
+		case ContWithTime:
+			return result;
+		case Event:
+		case EventsWithStartStop:
+			EventListI ev = generate(quy.name(), result, set.getTableName(quy));
+			
+		}
 	}
 
 	/**
@@ -290,18 +199,33 @@ public class QuerySetsDirector {
 	 *            Number of rows.
 	 * @param cols
 	 *            Number of columns.
+	 * @param startTime TODO
 	 * @return Matrix of doubles.
 	 */
 	private DoubleMatrixI generate(final String name, final int rows,
-			final int cols) {
-		final double startTime = 222.0;
-		final double interval = 0.02;
+			final int cols, double startTime) {
 		DoubleArrayDataGenerator dg = new DoubleArrayDataGenerator(rows, cols,
-				interval, startTime);
+				timeInterval, startTime);
 		double[][] data = dg.generate();
 		DoubleMatrixI result = new DoubleMatrix(data);
 		log.debug("For list type " + name + " creating " + result);
 		return result;
+	}
+
+	/**
+	 * Generate events based on the data set.
+	 * @param name
+	 *            Name of query.
+	 * @param data
+	 *            Dataset from which event records are extracted.
+	 * @param source
+	 *            Source of the event list.
+	 * @return Event list.
+	 */
+	private EventListI generate(final String name, final DoubleMatrixI data,
+			final String source) {
+		EventsGenerator gen = new EventsGenerator(EventType.StepNumber);
+		return gen.generate(data, eventInterval, source);
 	}
 
 	/**
@@ -326,7 +250,7 @@ public class QuerySetsDirector {
 	/**
 	 * @return the cltm
 	 */
-	public final TestDatasets getSet() {
+	public final TestDatasetParameters getSet() {
 		return set;
 	}
 
