@@ -96,6 +96,11 @@ public class SortableDoubleMatrix implements DoubleMatrixI {
 	}
 
 	@Override
+	public final int timeIndex(final double timestamp) {
+		return dm.timeIndex(timestamp);
+	}
+
+	@Override
 	public final List<List<Double>> toList() {
 		return dm.toList();
 	}
