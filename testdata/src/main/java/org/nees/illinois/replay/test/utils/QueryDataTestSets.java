@@ -3,14 +3,18 @@ package org.nees.illinois.replay.test.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nees.illinois.replay.common.types.TimeBoundsI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
+import org.nees.illinois.replay.events.EventI;
+import org.nees.illinois.replay.events.EventListI;
+import org.nees.illinois.replay.test.utils.data.Events2DataRows;
 import org.nees.illinois.replay.test.utils.data.SubsetCarver;
 import org.nees.illinois.replay.test.utils.data.SubsetSlicer;
 import org.nees.illinois.replay.test.utils.data.TestDataset;
 import org.nees.illinois.replay.test.utils.types.QueryParaTypes;
 import org.nees.illinois.replay.test.utils.types.TestDatasetType;
-import org.nees.illinois.replay.test.utils.types.TimeSpec;
+import org.nees.illinois.replay.test.utils.types.TestTimeBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +59,9 @@ public class QueryDataTestSets {
 	 * @param queryType
 	 *            Query type for this instance.
 	 */
-	public QueryDataTestSets(final TestDataset data, final TestDatasetType dataSetType,
-			final TestDatasetParameters tdp, final TestDatasetType queryType) {
+	public QueryDataTestSets(final TestDataset data,
+			final TestDatasetType dataSetType,final TestDatasetParameters tdp,
+			final TestDatasetType queryType) {
 		this.data = data;
 		this.dataSetType = dataSetType;
 		this.tdp = tdp;
@@ -67,13 +72,19 @@ public class QueryDataTestSets {
 	 * Calculate query set based on the size of the data set.
 	 * @param size
 	 *            data set size.
+	 * @param useEvents
+	 *            True if the boundaries are for the event list.
 	 * @return boundaries of the query set.
 	 */
-	private TimeSpec<Integer> getBoundaries(final int size) {
+	private TestTimeBounds getBoundaries(final int size, final boolean useEvents) {
 		int qsize = (int) Math.round(size * qratio);
 		int buffer = Math.round((size - qsize) / 2);
-		TimeSpec<Integer> result = new TimeSpec<Integer>(new Integer(buffer),
-				new Integer(buffer + qsize));
+		TestTimeBounds result;
+		if (useEvents) {
+			result = new TestTimeBounds(buffer, qsize, data.getEvents());
+		} else {
+			result = new TestTimeBounds(buffer, qsize, data.getData());
+		}
 		return result;
 	}
 
@@ -97,11 +108,14 @@ public class QueryDataTestSets {
 	 * @return a double matrix subset.
 	 */
 	private DoubleMatrixI getContinuousRecordChunk() {
-		int[] sizes = data.getData().sizes();
-		TimeSpec<Integer> boundaries = getBoundaries(sizes[0]);
-		SubsetCarver carve = new SubsetCarver(data.getData());
-		carve.setStartRow(boundaries.getStart());
-		carve.setStopRow(boundaries.getStop());
+		DoubleMatrixI dm = data.getData();
+		int[] sizes = dm.sizes();
+		TimeBoundsI boundaries = getBoundaries(sizes[0], false);
+		SubsetCarver carve = new SubsetCarver(dm);
+		int startIdx = dm.timeIndex(boundaries.getStart());
+		int stopIdx = dm.timeIndex(boundaries.getStop());
+		carve.setStartRow(startIdx);
+		carve.setStopRow(stopIdx);
 		return carve.subset();
 	}
 
@@ -110,9 +124,20 @@ public class QueryDataTestSets {
 	 * @return a double matrix subset.
 	 */
 	private DoubleMatrixI getEventRecordChunk() {
-		TimeSpec<Integer> boundaries = getBoundaries(data.getEvents()
-				.getTimeline().size());
-		return data.getEventData(boundaries);
+		EventListI events = data.getEvents();
+		DoubleMatrixI dm = data.getData();
+		TestTimeBounds boundaries = getBoundaries(events.getTimeline()
+				.size(), true);
+		List<EventI> list = events.slice(boundaries);
+		SubsetCarver carve = new SubsetCarver(data.getData());
+		EventI e = list.get(0);
+		int startIdx = dm.timeIndex(e.getTime());
+		e = list.get(list.size() - 1);
+		int stopIdx = dm.timeIndex(e.getTime());
+		carve.setStartRow(startIdx);
+		carve.setStopRow(stopIdx);
+		return carve.subset();
+
 	}
 
 	/**
@@ -121,9 +146,13 @@ public class QueryDataTestSets {
 	 * @return matrix of data.
 	 */
 	private DoubleMatrixI getEventRecords() {
-		List<Double> timeline = data.getEvents().getTimeline();
-		TimeSpec<Integer> boundaries = getBoundaries(timeline.size());
-		return data.getEventData(boundaries);
+		EventListI events = data.getEvents();
+		DoubleMatrixI dm = data.getData();
+		TestTimeBounds boundaries = getBoundaries(events.getTimeline()
+				.size(), true);
+		List<EventI> list = events.slice(boundaries);
+		Events2DataRows e2dr = new Events2DataRows(dm);
+		return e2dr.getData(list);
 	}
 
 	/**
@@ -160,8 +189,8 @@ public class QueryDataTestSets {
 	 */
 	private DoubleMatrixI getSingleContinuousRecord() {
 		int[] sizes = data.getData().sizes();
-		TimeSpec<Integer> boundaries = getBoundaries(sizes[0]);
-		List<Double> row = data.getData().toList().get(boundaries.getStart());
+		TestTimeBounds boundaries = getBoundaries(sizes[0], false);
+		List<Double> row = data.getData().toList().get(boundaries.getStartIdx());
 		List<List<Double>> result = new ArrayList<List<Double>>();
 		result.add(row);
 		return new DoubleMatrix(result);
@@ -172,9 +201,9 @@ public class QueryDataTestSets {
 	 * @return double matrix containing one row.
 	 */
 	private DoubleMatrixI getSingleEventRecord() {
-		TimeSpec<Integer> boundaries = getBoundaries(data.getEvents()
-				.getTimeline().size());
-		List<Double> row = data.getEventData(boundaries.getStart());
+		TestTimeBounds boundaries = getBoundaries(data.getEvents().getTimeline()
+				.size(), true);
+		List<Double> row = data.getEventData(boundaries.getStartIdx());
 		List<List<Double>> result = new ArrayList<List<Double>>();
 		result.add(row);
 		return new DoubleMatrix(result);

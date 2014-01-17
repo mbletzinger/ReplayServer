@@ -3,10 +3,10 @@ package org.nees.illinois.replay.test.utils.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.common.types.TimeBoundsI;
 import org.nees.illinois.replay.data.DoubleMatrixI;
+import org.nees.illinois.replay.events.EventI;
 import org.nees.illinois.replay.events.EventListI;
-import org.nees.illinois.replay.test.utils.types.TimeSpec;
 
 /**
  * Class containing test data for continuous and event queries.
@@ -53,44 +53,18 @@ public class TestDataset {
 	}
 
 	/**
-	 * @return the events
-	 */
-	public final EventListI getEvents() {
-		return events;
-	}
-
-	/**
-	 * @return the source
-	 */
-	public final String getSource() {
-		return source;
-	}
-
-	/**
-	 * Get the times for all of the events between the times defined by the
-	 * bounds.
-	 * @param bounds
-	 *            start and stop indexes in the event list.
-	 * @return the timeline.
-	 */
-	public final List<Double> getTimeline(final TimeSpec<Integer> bounds) {
-		List<Double> timeline = events.getTimeline();
-		int start = bounds.getStart();
-		int stop = bounds.getStop();
-		return timeline.subList(start, stop);
-	}
-
-	/**
-	 * Transform event index bounds to timestamp bounds for the continuous data.
+	 * Transform event index bounds into events.
 	 * @param bounds
 	 *            the event index start and stop bounds.
-	 * @return The equivalent timestamp bounds.
+	 * @return The events corresponding to the bounds.
 	 */
-	public final TimeSpec<Double> getTimestampBounds(final TimeSpec<Integer> bounds) {
-		List<Double> timeline = events.getTimeline();
-		int start = bounds.getStart();
-		int stop = bounds.getStop();
-		return new TimeSpec<Double>(timeline.get(start), timeline.get(stop));
+	public final List<EventI> getEventBounds(final TimeBoundsI bounds) {
+		List<EventI> result = new ArrayList<EventI>();
+		EventI e = events.find(bounds.getStartName());
+		result.add(e);
+		e = events.find(bounds.getStopName());
+		result.add(e);
+		return result;
 	}
 
 	/**
@@ -109,22 +83,27 @@ public class TestDataset {
 	}
 
 	/**
-	 * Get continuous data between the bounds defined by the event index bounds.
-	 * @param bounds
-	 *            the start and stop index bounds.
-	 * @return a double matrix of data.
+	 * @return the events
 	 */
-	public final DoubleMatrixI getEventData(final TimeSpec<Integer> bounds) {
-		List<Double> timeline = getTimeline(bounds);
-		List<List<Double>> result = new ArrayList<List<Double>>();
-		for (List<Double> row : data.toList()) {
-			for (double t : timeline) {
-				if (Math.abs(row.get(0) - t) < timeTolerance) {
-					result.add(row);
-					break;
-				}
-			}
-		}
-		return new DoubleMatrix(result);
+	public final EventListI getEvents() {
+		return events;
+	}
+
+	/**
+	 * Get all of the events between the times defined by the
+	 * bounds.
+	 * @param bounds
+	 *            start and stop indexes in the event list.
+	 * @return the event list.
+	 */
+	public final List<EventI> getEventsSubset(final TimeBoundsI bounds) {
+		return events.slice(bounds);
+	}
+
+	/**
+	 * @return the source
+	 */
+	public final String getSource() {
+		return source;
 	}
 }

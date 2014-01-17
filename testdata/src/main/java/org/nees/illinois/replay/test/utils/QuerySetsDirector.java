@@ -7,6 +7,8 @@ import java.util.Map;
 import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
+import org.nees.illinois.replay.common.types.TimeBounds;
+import org.nees.illinois.replay.common.types.TimeBoundsI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.data.RateType;
@@ -21,7 +23,6 @@ import org.nees.illinois.replay.test.utils.types.ExperimentNames;
 import org.nees.illinois.replay.test.utils.types.MatrixMixType;
 import org.nees.illinois.replay.test.utils.types.QueryParaTypes;
 import org.nees.illinois.replay.test.utils.types.TestDatasetType;
-import org.nees.illinois.replay.test.utils.types.TimeSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -285,7 +286,7 @@ public class QuerySetsDirector {
 	/**
 	 * @return the queryTimes
 	 */
-	public final Map<QueryParaTypes, TimeSpec> getQueryTimes() {
+	public final Map<QueryParaTypes, TimeBounds> getQueryTimes() {
 		return queryTimes;
 	}
 
@@ -300,12 +301,12 @@ public class QuerySetsDirector {
 	}
 
 	/**
-	 * Return a {@link TimeSpec} based on the query type.
+	 * Return a {@link TimeBounds} based on the query type.
 	 * @param qt
 	 *            query type.
 	 * @return Times for the query.
 	 */
-	public final TimeSpec getTimes(final QueryParaTypes qt) {
+	public final TimeBoundsI getTimes(final QueryParaTypes qt) {
 		return queryTimes.get(qt);
 	}
 }
