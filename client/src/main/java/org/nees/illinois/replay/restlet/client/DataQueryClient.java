@@ -4,8 +4,9 @@ import java.util.List;
 
 import org.nees.illinois.replay.conversions.ChannelList2Representation;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
-import org.nees.illinois.replay.data.DoubleMatrix;
-import org.nees.illinois.replay.data.StepNumber;
+import org.nees.illinois.replay.data.DoubleMatrixI;
+import org.nees.illinois.replay.events.EventI;
+import org.nees.illinois.replay.events.StepNumber;
 import org.nees.illinois.replay.restlet.DataQueryResource;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
@@ -20,20 +21,20 @@ public class DataQueryClient {
 	private final String hostname;
 	private final Logger log = LoggerFactory.getLogger(DataQueryClient.class);
 
-	public DataQueryClient(String hostname, String experiment) {
+	public DataQueryClient(final String hostname, final String experiment) {
 		super();
 		this.experiment = experiment;
 		this.hostname = hostname;
 	}
 
 	// /experiment/{experiment}/query/{query}/rate/{rate}/start/{start}/stop/{stop}
-	protected String buildUri(String name) {
+	protected String buildUri(final String name) {
 		String result = hostname + "/experiment/" + experiment + "/query/"
 				+ name;
 		return result;
 	}
 
-	protected String buildUri(String name, Double start, Double stop) {
+	protected String buildUri(final String name, final Double start, final Double stop) {
 		String result = buildUri(name, "CONT");
 		if (start == null) {
 			return result;
@@ -46,7 +47,7 @@ public class DataQueryClient {
 		return result;
 	}
 
-	protected String buildUri(String name, StepNumber start, StepNumber stop) {
+	protected String buildUri(final String name, final EventI start, final EventI stop) {
 		String result = buildUri(name, "STEP");
 		if (start == null) {
 			return result;
@@ -59,18 +60,18 @@ public class DataQueryClient {
 		return result;
 	}
 
-	protected String buildUri(String name, String rate) {
+	protected String buildUri(final String name, final String rate) {
 		String result = buildUri(name);
 		result += "/rate/" + rate;
 		return result;
 	}
 
-	public DoubleMatrix getData(String name, Double start)
+	public DoubleMatrixI getData(final String name, final Double start)
 			throws ResourceException {
 		return getData(name, start, null);
 	}
 
-	public DoubleMatrix getData(String name, Double start, Double stop)
+	public DoubleMatrixI getData(final String name, final Double start, final Double stop)
 			throws ResourceException {
 		String uri = buildUri(name, start, stop);
 		log.debug("URI = getBin " + uri);
@@ -86,12 +87,12 @@ public class DataQueryClient {
 		return rep2dm.getIn2dm().getMatrix();
 	}
 
-	public DoubleMatrix getData(String name, StepNumber start)
+	public DoubleMatrixI getData(final String name, final StepNumber start)
 			throws ResourceException {
 		return getData(name, start, null);
 	}
 
-	public DoubleMatrix getData(String name, StepNumber start, StepNumber stop)
+	public DoubleMatrixI getData(final String name, final StepNumber start, final StepNumber stop)
 			throws ResourceException {
 		String uri = buildUri(name, start, stop);
 		log.debug("URI = getBin " + uri);
@@ -121,7 +122,7 @@ public class DataQueryClient {
 		return hostname;
 	}
 
-	public void setQuery(String name, List<String> channels)
+	public void setQuery(final String name, final List<String> channels)
 			throws ResourceException {
 		ChannelList2Representation cl2rep = new ChannelList2Representation(
 				channels);
