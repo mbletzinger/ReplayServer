@@ -93,11 +93,6 @@ public class Event implements EventI {
 		return time;
 	}
 
-	@Override
-	public final EventType getType() {
-		return EventType.Event;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

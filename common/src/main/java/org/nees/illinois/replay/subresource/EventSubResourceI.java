@@ -12,8 +12,6 @@ import org.nees.illinois.replay.events.EventListI;
 public interface EventSubResourceI extends SubResourceI {
 	/**
 	 * Create a new event.
-	 * @param type
-	 *            event type
 	 * @param time
 	 *            Timestamp for the event in seconds
 	 * @param name
@@ -24,8 +22,8 @@ public interface EventSubResourceI extends SubResourceI {
 	 *            Source that generated the event.
 	 * @return The newly created event.
 	 */
-	EventI createEvent(String type, double time, String name,
-			String description, String source);
+	EventI createEvent(double time, String name, String description,
+			String source);
 
 	/**
 	 * Return a list of event objects based on the common names.

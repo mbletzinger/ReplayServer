@@ -25,14 +25,6 @@ public interface EventListI {
 	List<EventI> filterBySource(String source);
 
 	/**
-	 * Filter the list for events of the same type.
-	 * @param type
-	 *            Event type for filter.
-	 * @return list of events.
-	 */
-	List<EventI> filterByType(EventType type);
-
-	/**
 	 * Find an event based on a name.
 	 * @param name
 	 *            of the event to find.

@@ -9,29 +9,24 @@ package org.nees.illinois.replay.events;
  */
 public interface EventI extends Comparable<EventI>{
 	/**
+	 * @return Optional description.
+	 */
+	String getDescription();
+
+	/**
 	 * @return User friendly name of the event.
 	 */
 	String getName();
 
 	/**
-	 * @return Optional description.
+	 * @return Get the source which recorded the event.
 	 */
-	String getDescription();
+	String getSource();
 
 	/**
 	 * The time stamp is local unsynchronized computer time.
 	 * @return The timestamp of the event in seconds.
 	 */
 	double getTime();
-
-	/**
-	 * @return Return the event type.
-	 */
-	EventType getType();
-
-	/**
-	 * @return Get the source which recorded the event.
-	 */
-	String getSource();
 
 }
