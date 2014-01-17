@@ -9,10 +9,35 @@ import java.util.List;
 public interface DoubleMatrixI {
 
 	/**
+	 * Append a row to the matrix.
+	 * @param row
+	 *            to append.
+	 */
+	void append(List<Double> row);
+
+	/**
+	 * Empty the matrix.
+	 */
+	void clear();
+
+	/**
 	 * @return the data as a double[][] array. Null elements are replaced by
 	 *         Double.NaNs.
 	 */
 	double[][] getData();
+
+	/**
+	 * Returns a row.
+	 * @param row
+	 *            index of the row
+	 * @return list of doubles.
+	 */
+	List<Double> getRow(int row);
+
+	/**
+	 * @return {@link MatrixSpecI} which contains information about the matrix.
+	 */
+	MatrixSpecI getSpec();
 
 	/**
 	 * Tells whether the element is null or not.
@@ -42,6 +67,14 @@ public interface DoubleMatrixI {
 	int[] sizes();
 
 	/**
+	 * Returns the index of the timestamp.
+	 * @param timestamp
+	 *            that needs the index.
+	 * @return the index.
+	 */
+	int timeIndex(double timestamp);
+
+	/**
 	 * Returns the matrix as a double list.
 	 * @return The double list.
 	 */
@@ -57,29 +90,4 @@ public interface DoubleMatrixI {
 	 * @return The element value.
 	 */
 	double value(int row, int col);
-
-	/**
-	 * Returns a row.
-	 * @param row
-	 *            index of the row
-	 * @return list of doubles.
-	 */
-	List<Double> getRow(int row);
-
-	/**
-	 * @return {@link MatrixSpecI} which contains information about the matrix.
-	 */
-	MatrixSpecI getSpec();
-
-	/**
-	 * Append a row to the matrix.
-	 * @param row
-	 *            to append.
-	 */
-	void append(List<Double> row);
-
-	/**
-	 * Empty the matrix.
-	 */
-	void clear();
 }

@@ -2,11 +2,44 @@ package org.nees.illinois.replay.events;
 
 import java.util.List;
 
+import org.nees.illinois.replay.common.types.TimeBoundsI;
+
 /**
  * Interface to a list of events which are synchronized to the same time source.
  * @author Michael Bletzinger
  */
 public interface EventListI {
+	/**
+	 * Add an event to the list.
+	 * @param e
+	 *            event to add.
+	 */
+	void addEvent(EventI e);
+
+	/**
+	 * Filter the list for the same source.
+	 * @param source
+	 *            Source of the events.
+	 * @return list of events.
+	 */
+	List<EventI> filterBySource(String source);
+
+	/**
+	 * Filter the list for events of the same type.
+	 * @param type
+	 *            Event type for filter.
+	 * @return list of events.
+	 */
+	List<EventI> filterByType(EventType type);
+
+	/**
+	 * Find an event based on a name.
+	 * @param name
+	 *            of the event to find.
+	 * @return an event based on the name.
+	 */
+	EventI find(String name);
+
 	/**
 	 * @return List of events ordered by time.
 	 */
@@ -18,33 +51,10 @@ public interface EventListI {
 	List<Double> getTimeline();
 
 	/**
-	 * Find an event based on a name.
-	 * @param name
-	 *            of the event to find.
-	 * @return an event based on the name.
+	 * Find the sequence of events based on the boundaries.
+	 * @param bounds
+	 *            boundaries of the event sequence.
+	 * @return The event sequence slice.
 	 */
-	EventI find(String name);
-
-	/**
-	 * Add an event to the list.
-	 * @param e
-	 *            event to add.
-	 */
-	void addEvent(EventI e);
-
-	/**
-	 * Filter the list for events of the same type.
-	 * @param type
-	 *            Event type for filter.
-	 * @return list of events.
-	 */
-	List<EventI> filterByType(EventType type);
-
-	/**
-	 * Filter the list for the same source.
-	 * @param source
-	 *            Source of the events.
-	 * @return list of events.
-	 */
-	List<EventI> filterBySource(String source);
+	List<EventI> slice(TimeBoundsI bounds);
 }
