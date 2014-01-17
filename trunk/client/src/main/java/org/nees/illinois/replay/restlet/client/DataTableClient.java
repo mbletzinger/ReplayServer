@@ -2,11 +2,11 @@ package org.nees.illinois.replay.restlet.client;
 
 import java.util.List;
 
+import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.conversions.ChannelList2Representation;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
-import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.data.TableType;
 import org.nees.illinois.replay.restlet.DataTableResource;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -25,7 +25,7 @@ public class DataTableClient {
 		this.experiment = experiment;
 	}
 
-	public void addData(TableType table, RateType rate, DoubleMatrix data)
+	public void addData(TableType table, RateType rate, DoubleMatrixI data)
 			throws ResourceException {
 		DoubleMatrix2Representation dm2rep = new DoubleMatrix2Representation(
 				data.getData());
