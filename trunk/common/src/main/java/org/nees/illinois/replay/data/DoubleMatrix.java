@@ -46,7 +46,7 @@ public class DoubleMatrix implements DoubleMatrixI {
 	 * @param spec
 	 *            Specification for this matrix.
 	 */
-	public DoubleMatrix(final double[][] idata, final MatrixSpecI spec) {
+	public DoubleMatrix(final double[][] idata,final MatrixSpecI spec) {
 		data = convertData(idata);
 		this.spec = spec;
 	}
@@ -69,7 +69,7 @@ public class DoubleMatrix implements DoubleMatrixI {
 	 * @param spec
 	 *            Specification for this matrix.
 	 */
-	public DoubleMatrix(final List<List<Double>> idata, final MatrixSpecI spec) {
+	public DoubleMatrix(final List<List<Double>> idata,final MatrixSpecI spec) {
 		data = idata;
 		this.spec = spec;
 		padData();
@@ -95,9 +95,9 @@ public class DoubleMatrix implements DoubleMatrixI {
 		List<List<Double>> result = new ArrayList<List<Double>>();
 		int row = idata.length;
 		int col = idata[0].length;
-		for (int r = 0; r < row; r++) {
+		for (int r = 0;r < row;r++) {
 			List<Double> rowL = new ArrayList<Double>();
-			for (int c = 0; c < col; c++) {
+			for (int c = 0;c < col;c++) {
 				rowL.add(new Double(idata[r][c]));
 			}
 			result.add(rowL);
@@ -139,10 +139,10 @@ public class DoubleMatrix implements DoubleMatrixI {
 	@Override
 	public final double[][] getData() {
 		double[][] result = new double[data.size()][spec
-				.getNumberOfColumns(true)];
+		                                            .getNumberOfColumns(true)];
 		int rc = 0;
 		for (List<Double> r : data) {
-			for (int c = 0; c < spec.getNumberOfColumns(true); c++) {
+			for (int c = 0;c < spec.getNumberOfColumns(true);c++) {
 				Double d = r.get(c);
 				if (d == null) {
 					result[rc][c] = Double.NaN;
@@ -201,7 +201,7 @@ public class DoubleMatrix implements DoubleMatrixI {
 			if (r.size() == numberOfColumns) {
 				continue;
 			}
-			for (int n = r.size(); n < numberOfColumns; n++) {
+			for (int n = r.size();n < numberOfColumns;n++) {
 				r.add(null);
 			}
 		}
@@ -215,7 +215,7 @@ public class DoubleMatrix implements DoubleMatrixI {
 	@Override
 	public final void set(final int row, final int col, final Double value) {
 		List<Double> rowL = data.get(row);
-		for (int c = rowL.size(); c < col + 1; c++) {
+		for (int c = rowL.size();c < col + 1;c++) {
 			rowL.add(null);
 		}
 		rowL.set(col, new Double(value));
@@ -239,6 +239,18 @@ public class DoubleMatrix implements DoubleMatrixI {
 		result[0] = data.size();
 		result[1] = spec.getNumberOfColumns(true);
 		return result;
+	}
+
+	@Override
+	public final int timeIndex(final double timestamp) {
+		int result = 0;
+		for (List<Double> row : data) {
+			if (row.get(0).equals(timestamp)) {
+				return result;
+			}
+		}
+		log.error("Timestamp " + timestamp + " not found");
+		return -1;
 	}
 
 	/*
@@ -266,7 +278,7 @@ public class DoubleMatrix implements DoubleMatrixI {
 		for (List<Double> r : data) {
 			boolean first = true;
 			result += "\n\t[";
-			for (int c = 0; c < r.size(); c++) {
+			for (int c = 0;c < r.size();c++) {
 				Double d = r.get(c);
 				if (d == null) {
 					result += (first ? "" : ", ") + "null";
