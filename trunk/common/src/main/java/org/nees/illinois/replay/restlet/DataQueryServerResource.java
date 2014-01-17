@@ -10,8 +10,8 @@ import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.data.RateType;
+import org.nees.illinois.replay.events.EventI;
 import org.nees.illinois.replay.events.EventListI;
-import org.nees.illinois.replay.events.StepNumber;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
 import org.nees.illinois.replay.subresource.DataQuerySubResourceI;
 import org.nees.illinois.replay.subresource.EventSubResourceI;
@@ -33,7 +33,7 @@ import com.google.inject.Provider;
  * @author Michael Bletzinger
  */
 public class DataQueryServerResource extends ServerResource implements
-		DataQueryResource {
+DataQueryResource {
 	/**
 	 * Subresource that actually does all of the work. This is passed in as part
 	 * of the restlet context so that it can be configured with Google GUICE.
@@ -91,7 +91,7 @@ public class DataQueryServerResource extends ServerResource implements
 	protected final void doInit() {
 		@SuppressWarnings("unchecked")
 		Provider<DataQuerySubResourceI> provider = (Provider<DataQuerySubResourceI>) getContext()
-				.getAttributes().get("queryI");
+		.getAttributes().get("queryI");
 		dquery = provider.get();
 		extract = new AttributeExtraction(getRequest().getAttributes());
 		ExperimentSessionManager esm = new ExperimentSessionManager(
@@ -141,8 +141,8 @@ public class DataQueryServerResource extends ServerResource implements
 		}
 
 		if (rate.equals(RateType.EVENT)) {
-			StepNumber strt = (StepNumber) attrs.get(RequiredAttrType.Start);
-			StepNumber stp = (StepNumber) attrs.get(RequiredAttrType.Stop);
+			EventI strt = (EventI) attrs.get(RequiredAttrType.Start);
+			EventI stp = (EventI) attrs.get(RequiredAttrType.Stop);
 			DoubleMatrixI data;
 			EventListI events;
 			events = qevents.getEvents(strt.getName(), stp.getName(), null);

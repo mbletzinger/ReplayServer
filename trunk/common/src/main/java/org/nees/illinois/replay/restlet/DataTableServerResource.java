@@ -10,7 +10,6 @@ import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
-import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
 import org.nees.illinois.replay.subresource.DataUpdateSubResourceI;
 import org.restlet.data.Method;
@@ -26,7 +25,7 @@ import com.google.inject.Provider;
  * @author Michael Bletzinger
  */
 public class DataTableServerResource extends ServerResource implements
-		DataTableResource {
+DataTableResource {
 	// private final Logger log = LoggerFactory
 	// .getLogger(DataTableServerResource.class);
 
@@ -67,7 +66,7 @@ public class DataTableServerResource extends ServerResource implements
 		this.extract = new AttributeExtraction(getRequest().getAttributes());
 		@SuppressWarnings("unchecked")
 		Provider<DataUpdateSubResourceI> provider = (Provider<DataUpdateSubResourceI>) getContext()
-				.getAttributes().get("updatesI");
+		.getAttributes().get("updatesI");
 		this.updates = provider.get();
 
 		ExperimentSessionManager esm = new ExperimentSessionManager(
@@ -116,7 +115,6 @@ public class DataTableServerResource extends ServerResource implements
 		extract.extract(reqAttrsWithRate);
 		Map<RequiredAttrType, Object> attrs = extract.getAttrs();
 		String tbl = (String) attrs.get(RequiredAttrType.Table);
-		RateType rate = (RateType) attrs.get(RequiredAttrType.Rate);
 		updates.update(tbl, dm.getData());
 	}
 

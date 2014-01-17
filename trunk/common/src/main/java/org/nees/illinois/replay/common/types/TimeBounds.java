@@ -45,16 +45,33 @@ public class TimeBounds implements TimeBoundsI {
 	}
 
 	/**
+	 * @param start
+	 *            start time.
+	 * @param stop
+	 *            stop time.
+	 * @param startName
+	 *            Name of starting event.
+	 * @param stopName
+	 *            Name of the stopping event.
+	 */
+	public TimeBounds(final double start,final double stop,final String startName,final String stopName) {
+		this.start = start;
+		this.stop = stop;
+		this.startName = startName;
+		this.stopName = stopName;
+	}
+
+	/**
 	 * @param startName
 	 *            Name of starting event.
 	 * @param stopName
 	 *            Name of the stopping event.
 	 */
 	public TimeBounds(final String startName,final String stopName) {
-		if(startName == null) {
+		if (startName == null) {
 			log.error("Start event name cannot be null");
 		}
-		if(stopName == null) {
+		if (stopName == null) {
 			log.error("Stop event name cannot be null");
 		}
 		this.startName = startName;
@@ -63,7 +80,8 @@ public class TimeBounds implements TimeBoundsI {
 		this.stop = Double.NaN;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.nees.illinois.replay.common.types.TimeBoundsI#getStart()
 	 */
 	@Override
@@ -71,7 +89,8 @@ public class TimeBounds implements TimeBoundsI {
 		return start;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.nees.illinois.replay.common.types.TimeBoundsI#getStartName()
 	 */
 	@Override
@@ -79,7 +98,8 @@ public class TimeBounds implements TimeBoundsI {
 		return startName;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.nees.illinois.replay.common.types.TimeBoundsI#getStop()
 	 */
 	@Override
@@ -87,7 +107,8 @@ public class TimeBounds implements TimeBoundsI {
 		return stop;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.nees.illinois.replay.common.types.TimeBoundsI#getStopName()
 	 */
 	@Override

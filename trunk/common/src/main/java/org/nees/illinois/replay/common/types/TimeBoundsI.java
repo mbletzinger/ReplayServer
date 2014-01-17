@@ -1,25 +1,30 @@
 package org.nees.illinois.replay.common.types;
-
+/**
+ * * Wrapper for start and stop boundary values such as time, events, and row
+ * numbers.
+ * @author Michael Bletzinger
+ *
+ */
 public interface TimeBoundsI {
 
 	/**
 	 * @return the start
 	 */
-	abstract double getStart();
+	double getStart();
 
 	/**
 	 * @return the startName
 	 */
-	abstract String getStartName();
+	String getStartName();
 
 	/**
 	 * @return the stop
 	 */
-	abstract double getStop();
+	double getStop();
 
 	/**
 	 * @return the stopName
 	 */
-	abstract String getStopName();
+	String getStopName();
 
 }

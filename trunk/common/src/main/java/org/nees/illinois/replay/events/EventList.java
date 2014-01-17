@@ -46,17 +46,6 @@ public class EventList implements EventListI {
 	}
 
 	@Override
-	public final List<EventI> filterByType(final EventType type) {
-		List<EventI> result = new ArrayList<EventI>();
-		for (EventI e : events) {
-			if (type.equals(e.getType())) {
-				result.add(e);
-			}
-		}
-		return result;
-	}
-
-	@Override
 	public final EventI find(final String name) {
 		for (EventI e : events) {
 			if (e.getName().equals(name)) {
