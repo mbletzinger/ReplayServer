@@ -6,7 +6,6 @@ import org.nees.illinois.replay.conversions.ChannelList2Representation;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.events.EventI;
-import org.nees.illinois.replay.events.StepNumber;
 import org.nees.illinois.replay.restlet.DataQueryResource;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
