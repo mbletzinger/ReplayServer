@@ -13,7 +13,7 @@ import org.nees.illinois.replay.common.types.TableDef;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.test.utils.CompareLists;
 import org.nees.illinois.replay.test.utils.TestDatasetParameters;
-import org.nees.illinois.replay.test.utils.data.QueryChannelListsForMerging;
+import org.nees.illinois.replay.test.utils.gen.QueryChannelListsForMerging;
 import org.nees.illinois.replay.test.utils.types.TestDatasetType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

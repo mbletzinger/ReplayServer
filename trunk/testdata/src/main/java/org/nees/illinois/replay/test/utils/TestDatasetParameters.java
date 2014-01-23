@@ -11,7 +11,7 @@ import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.common.types.TableDef;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
-import org.nees.illinois.replay.test.utils.data.QueryChannelListsForMerging;
+import org.nees.illinois.replay.test.utils.gen.QueryChannelListsForMerging;
 import org.nees.illinois.replay.test.utils.types.MatrixMixType;
 import org.nees.illinois.replay.test.utils.types.TestDatasetType;
 

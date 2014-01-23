@@ -5,4 +5,4 @@
  * @author Michael Bletzinger
  *
  */
-package org.nees.illinois.replay.test.utils.data;
+package org.nees.illinois.replay.test.utils.gen;

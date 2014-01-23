@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
-import org.nees.illinois.replay.test.utils.data.DoubleArrayDataGenerator;
-import org.nees.illinois.replay.test.utils.data.QueryChannelListsForMerging;
+import org.nees.illinois.replay.test.utils.gen.DoubleArrayDataGenerator;
+import org.nees.illinois.replay.test.utils.gen.QueryChannelListsForMerging;
 import org.nees.illinois.replay.test.utils.types.MatrixMixType;
 import org.nees.illinois.replay.test.utils.types.TestingParts;
 import org.slf4j.Logger;
