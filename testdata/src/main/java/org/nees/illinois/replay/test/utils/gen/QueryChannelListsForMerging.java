@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.test.utils.data;
+package org.nees.illinois.replay.test.utils.gen;
 
 import java.util.ArrayList;
 import java.util.List;

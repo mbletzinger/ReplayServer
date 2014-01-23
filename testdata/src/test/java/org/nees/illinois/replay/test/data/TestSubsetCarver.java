@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
-import org.nees.illinois.replay.test.utils.data.DoubleArrayDataGenerator;
-import org.nees.illinois.replay.test.utils.data.tricks.SubsetCarver;
-import org.nees.illinois.replay.test.utils.data.tricks.SubsetSlicer;
+import org.nees.illinois.replay.test.utils.gen.DoubleArrayDataGenerator;
+import org.nees.illinois.replay.test.utils.gen.tricks.SubsetCarver;
+import org.nees.illinois.replay.test.utils.gen.tricks.SubsetSlicer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;

@@ -11,7 +11,7 @@ import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.test.utils.TestDatasetParameters;
-import org.nees.illinois.replay.test.utils.data.DoubleArrayDataGenerator;
+import org.nees.illinois.replay.test.utils.gen.DoubleArrayDataGenerator;
 import org.nees.illinois.replay.test.utils.types.ExperimentNames;
 import org.nees.illinois.replay.test.utils.types.TestDatasetType;
 import org.slf4j.Logger;
