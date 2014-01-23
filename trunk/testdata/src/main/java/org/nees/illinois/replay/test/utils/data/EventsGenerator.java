@@ -7,8 +7,6 @@ import org.nees.illinois.replay.events.Event;
 import org.nees.illinois.replay.events.EventI;
 import org.nees.illinois.replay.events.EventList;
 import org.nees.illinois.replay.events.EventListI;
-import org.nees.illinois.replay.events.EventType;
-import org.nees.illinois.replay.events.StepNumber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,50 +22,11 @@ public class EventsGenerator {
 	/**
 	 * Current step number generated.
 	 */
-	private StepNumber currentStep;
+	private final int[] currentStep = { 1, 4, 3 };
 	/**
 	 * Logger.
 	 **/
 	private final Logger log = LoggerFactory.getLogger(EventsGenerator.class);
-	/**
-	 * Type of event. Currently only step numbers are supported.
-	 */
-	private final EventType type;
-	/**
-	 * Initial step numbers.
-	 */
-	private final int[] initialStep = { 1, 4, 3 };
-
-	/**
-	 * @param type
-	 *            Type of event. Currently only step numbers are supported.
-	 */
-	public EventsGenerator(final EventType type) {
-		this.type = type;
-	}
-
-	/**
-	 * Create an event. Only {@link StepNumber} for now.
-	 * @param timestamp
-	 *            Time of the event.
-	 * @param source
-	 *            Source that recorded the event.
-	 * @return The event.
-	 */
-	private EventI create(final double timestamp, final String source) {
-		EventI result = null;
-		switch (type) {
-		case StepNumber:
-			result = createStep(timestamp, source);
-			return result;
-		case Event:
-			result = createEvent(timestamp, source);
-			return result;
-		default:
-			log.error("Generation of " + type + " not implemented yet");
-		}
-		return result;
-	}
 
 	/**
 	 * Create a test event.
@@ -79,33 +38,28 @@ public class EventsGenerator {
 	 */
 	private EventI createEvent(final double timestamp, final String source) {
 		return new Event("Event Name " + eventNumber, timestamp,
-				"This an event that happened " + 1, source);
+				"An event that happened " + 1, source);
 	}
 
 	/**
-	 * Create a step number.
+	 * Create a step number event.
 	 * @param timestamp
 	 *            Time of the event.
 	 * @param source
 	 *            Source that recorded the event.
-	 * @return The step number..
+	 * @return The event
 	 */
-	private StepNumber createStep(final double timestamp, final String source) {
-		if (currentStep == null) {
-			currentStep = new StepNumber(initialStep[0], initialStep[1],
-					initialStep[2], timestamp, source);
-			return currentStep;
-		}
-		int step = currentStep.getStep() + 1;
+	private EventI createStep(final double timestamp, final String source) {
+		currentStep[0]++;
 		final int maxSubstep = 20;
-		int subStep = (currentStep.getSubstep() + 1) % maxSubstep;
+		currentStep[1] = (currentStep[1] + 1) % maxSubstep;
 		final int maxCorrectionStep = 140;
 		final int correctionStepInterval = 10;
-		int correction = (currentStep.getCorrectionStep() + correctionStepInterval)
+		currentStep[2] = (currentStep[2] + correctionStepInterval)
 				% maxCorrectionStep;
-		StepNumber result = new StepNumber(step, subStep, correction,
-				timestamp, source);
-		currentStep = result;
+		String step = currentStep[0] + "_" + currentStep[1] + "_"
+				+ currentStep[0];
+		EventI result = new Event(step, timestamp, " Step " + step, source);
 		return result;
 	}
 
@@ -117,10 +71,12 @@ public class EventsGenerator {
 	 *            Number of continuous records to skip.
 	 * @param source
 	 *            The source that recorded these events
+	 * @param newStepEvent
+	 *            True if the event name should contain MUST-SIM step numbers.
 	 * @return The event list.
 	 */
 	public final EventListI generate(final DoubleMatrixI dm, final int d,
-			final String source) {
+			final String source, final boolean newStepEvent) {
 		int count = 0;
 		EventListI result = new EventList();
 		for (List<Double> row : dm.toList()) {
@@ -128,9 +84,15 @@ public class EventsGenerator {
 			if (count % d != 0) {
 				continue;
 			}
-			EventI e = create(row.get(0), source);
+			EventI e = null;
+			if (newStepEvent) {
+				e = createStep(row.get(0), source);
+			} else {
+				e = createEvent(row.get(0), source);
+			}
 			result.addEvent(e);
 		}
+		log.debug("Created list " + result);
 		return result;
 	}
 }

@@ -11,7 +11,7 @@ import org.nees.illinois.replay.test.utils.data.ChannelDataGenerator;
 import org.nees.illinois.replay.test.utils.data.DoubleArrayDataGenerator;
 import org.nees.illinois.replay.test.utils.types.ExperimentNames;
 import org.nees.illinois.replay.test.utils.types.MatrixMixType;
-import org.nees.illinois.replay.test.utils.types.QueryParaTypes;
+import org.nees.illinois.replay.test.utils.types.QueryRowDataTypes;
 import org.nees.illinois.replay.test.utils.types.TestDatasetType;
 import org.nees.illinois.replay.test.utils.types.TestingParts;
 import org.slf4j.Logger;
@@ -103,7 +103,7 @@ public class TestMerge {
 					|| clt.equals(TestDatasetType.QueryOm)) {
 				continue;
 			}
-			for (QueryParaTypes qpt : QueryParaTypes.values()) {
+			for (QueryRowDataTypes qpt : QueryRowDataTypes.values()) {
 				for (MatrixMixType m : MatrixMixType.values()) {
 					log.info("Testing " + clt + " " + qpt + " " + m);
 					ChannelDataGenerator cdg = dd

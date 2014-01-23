@@ -13,7 +13,7 @@ import org.nees.illinois.replay.common.types.TableDef;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.test.utils.CompareLists;
 import org.nees.illinois.replay.test.utils.TestDatasetParameters;
-import org.nees.illinois.replay.test.utils.data.QueryChannelLists;
+import org.nees.illinois.replay.test.utils.data.QueryChannelListsForMerging;
 import org.nees.illinois.replay.test.utils.types.TestDatasetType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +87,7 @@ public class TestRegistries {
 		TestDatasetParameters cltm = new TestDatasetParameters(false, experiment);
 		QueryRegistry qr = new QueryRegistry();
 		for (TestDatasetType t : cltm.getQueryTypes()) {
-			QueryChannelLists tquery = cltm.getTestQuery(t);
+			QueryChannelListsForMerging tquery = cltm.getTestQuery(t);
 			CompositeQueryI query = new CompositeQuery(t.name(), tquery.combine());
 			qr.setQuery(t.name(), query);
 		}

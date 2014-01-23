@@ -17,11 +17,10 @@ import org.nees.illinois.replay.events.EventType;
 import org.nees.illinois.replay.test.utils.data.ChannelDataGenerator;
 import org.nees.illinois.replay.test.utils.data.DoubleArrayDataGenerator;
 import org.nees.illinois.replay.test.utils.data.EventsGenerator;
-import org.nees.illinois.replay.test.utils.data.QueryChannelLists;
-import org.nees.illinois.replay.test.utils.data.TestDataset;
+import org.nees.illinois.replay.test.utils.data.QueryChannelListsForMerging;
 import org.nees.illinois.replay.test.utils.types.ExperimentNames;
 import org.nees.illinois.replay.test.utils.types.MatrixMixType;
-import org.nees.illinois.replay.test.utils.types.QueryParaTypes;
+import org.nees.illinois.replay.test.utils.types.QueryRowDataTypes;
 import org.nees.illinois.replay.test.utils.types.TestDatasetType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +42,9 @@ public class QuerySetsDirector {
 	 */
 	private final TestDatasetParameters set;
 	/**
-	 * {@link QueryDataTestSets} used to generate expected query results.
+	 * {@link QueryDataRowsExtractor} used to generate expected query results.
 	 */
-	private final QueryDataTestSets qsets;
+	private final QueryDataRowsExtractor qsets;
 	/**
 	 * The {@link ChannelNameRegistry} that is supposed to exist after testing.
 	 */
@@ -62,7 +61,7 @@ public class QuerySetsDirector {
 	 * Logger.
 	 */
 	private final Logger log = LoggerFactory.getLogger(QuerySetsDirector.class);
-	private final Map<TestDatasetType, QueryDataTestSets> querySets = new HashMap<TestDatasetType, QueryDataTestSets>();
+	private final Map<TestDatasetType, QueryDataRowsExtractor> querySets = new HashMap<TestDatasetType, QueryDataRowsExtractor>();
 	
 	/**
 	 * @param experiment
@@ -119,7 +118,7 @@ public class QuerySetsDirector {
 	 *            Data being checked.
 	 */
 	public final void checkData(final ExperimentNames experiment,
-			final QueryParaTypes qt, final TestDatasetType quy,
+			final QueryRowDataTypes qt, final TestDatasetType quy,
 			final DoubleMatrixI data) {
 		DoubleMatrixI expected = generate(experiment, qt, quy);
 		log.debug("For " + qt + " and " + quy);
@@ -177,7 +176,7 @@ public class QuerySetsDirector {
 	 * @return matrix of data.
 	 */
 	public final TestDataset generate(final ExperimentNames experiment,
-			final QueryParaTypes qt, final TestDatasetType quy) {
+			final QueryRowDataTypes qt, final TestDatasetType quy) {
 		int row = queryTableSizes.get(qt);
 		List<String> channels = set.getChannels(quy);
 		DoubleMatrixI result = generate(quy.name(), row, channels.size(), null);
@@ -226,7 +225,7 @@ public class QuerySetsDirector {
 	private EventListI generate(final String name, final DoubleMatrixI data,
 			final String source) {
 		EventsGenerator gen = new EventsGenerator(EventType.StepNumber);
-		return gen.generate(data, eventInterval, source);
+		return gen.generate(data, eventInterval, source, false);
 	}
 
 	/**
@@ -241,9 +240,9 @@ public class QuerySetsDirector {
 	 * @return Instance of ChannelDataGenerator.
 	 */
 	public final ChannelDataGenerator generateQueryData(
-			final TestDatasetType quy, final QueryParaTypes qt,
+			final TestDatasetType quy, final QueryRowDataTypes qt,
 			final MatrixMixType rowMix) {
-		QueryChannelLists qctl = set.getTestQuery(quy);
+		QueryChannelListsForMerging qctl = set.getTestQuery(quy);
 		int row = queryTableSizes.get(qt);
 		return new ChannelDataGenerator(qctl, rowMix, row);
 	}
@@ -272,21 +271,21 @@ public class QuerySetsDirector {
 	/**
 	 * @return the queryRates
 	 */
-	public final Map<QueryParaTypes, RateType> getQueryRates() {
+	public final Map<QueryRowDataTypes, RateType> getQueryRates() {
 		return queryRates;
 	}
 
 	/**
 	 * @return the queryTableSize
 	 */
-	public final Map<QueryParaTypes, Integer> getQueryTableSizes() {
+	public final Map<QueryRowDataTypes, Integer> getQueryTableSizes() {
 		return queryTableSizes;
 	}
 
 	/**
 	 * @return the queryTimes
 	 */
-	public final Map<QueryParaTypes, TimeBounds> getQueryTimes() {
+	public final Map<QueryRowDataTypes, TimeBounds> getQueryTimes() {
 		return queryTimes;
 	}
 
@@ -296,7 +295,7 @@ public class QuerySetsDirector {
 	 *            Query type.
 	 * @return rate.
 	 */
-	public final RateType getRate(final QueryParaTypes qt) {
+	public final RateType getRate(final QueryRowDataTypes qt) {
 		return queryRates.get(qt);
 	}
 
@@ -306,7 +305,7 @@ public class QuerySetsDirector {
 	 *            query type.
 	 * @return Times for the query.
 	 */
-	public final TimeBoundsI getTimes(final QueryParaTypes qt) {
+	public final TimeBoundsI getTimes(final QueryRowDataTypes qt) {
 		return queryTimes.get(qt);
 	}
 }
