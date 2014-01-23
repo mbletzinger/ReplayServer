@@ -13,22 +13,28 @@ import org.testng.Assert;
  */
 public class DoubleArrayDataGenerator {
 	/**
-	 * Number of rows in the matrix.
+	 * Append two matrices column-wise.
+	 * @param before
+	 *            Matrix appearing first.
+	 * @param after
+	 *            Matrix to be appended.
+	 * @return Appended matrix of doubles.
 	 */
-	private final int numberOfRows;
-	/**
-	 * Number of columns in the matrix.
-	 */
-	private final int numberOfColumns;
-	/**
-	 * Row generator.
-	 */
-	private final DataRowGenerator rows;
-	/**
-	 * Time generator.
-	 */
-	private final TimeGenerator time;
-
+	public static double[][] append(final double[][] before,
+			final double[][] after) {
+		double[][] result = new double[before.length][before[0].length
+		                                              + after[0].length];
+		for (int r = 0; r < before.length; r++) {
+			for (int b = 0; b < before[r].length; b++) {
+				result[r][b] = before[r][b];
+			}
+			int b = before[r].length;
+			for (int a = 0; a < after[r].length; a++) {
+				result[r][b + a] = after[r][a];
+			}
+		}
+		return result;
+	}
 	/**
 	 * Compare a matrix with the supposedly identical generated version.
 	 * @param actual
@@ -39,7 +45,7 @@ public class DoubleArrayDataGenerator {
 	public static void compareData(final double[][] actual, final double[][] expected) {
 		LoggerFactory.getLogger(DoubleArrayDataGenerator.class).debug(
 				"Comparing expected " + Mtx2Str.matrix2String(expected)
-						+ "\nwith actual\n" + Mtx2Str.matrix2String(actual));
+				+ "\nwith actual\n" + Mtx2Str.matrix2String(actual));
 		/**
 		 * Tolerance in comparing two doubles to account for rounding errors
 		 * produced by the numerical representation.
@@ -58,6 +64,60 @@ public class DoubleArrayDataGenerator {
 			}
 		}
 	}
+	/**
+	 * extract a submatrix from a given matrix and list of column indexes.
+	 * @param data
+	 *            Input matrix.
+	 * @param columns
+	 *            . column indexes.
+	 * @return Extracted matrix of doubles.
+	 */
+	public static double[][] extract(final double[][] data, final int[] columns) {
+		double[][] result = new double[data.length][columns.length];
+		for (int r = 0; r < data.length; r++) {
+			for (int c = 0; c < columns.length; c++) {
+				result[r][c] = data[r][columns[c]];
+			}
+		}
+		return result;
+	}
+	/**
+	 * Convert a double matrix into a list of double lists.
+	 * @param data
+	 *            Matrix of doubles.
+	 * @return List of lists.
+	 */
+	public static List<List<Double>> toList(final double[][] data) {
+		List<List<Double>> result = new ArrayList<List<Double>>();
+		for (int r = 0; r < data.length; r++) {
+			List<Double> row = new ArrayList<Double>();
+			result.add(row);
+			for (int c = 0; c < data[r].length; c++) {
+				row.add(data[r][c]);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Number of rows in the matrix.
+	 */
+	private final int numberOfRows;
+
+	/**
+	 * Number of columns in the matrix.
+	 */
+	private final int numberOfColumns;
+
+	/**
+	 * Row generator.
+	 */
+	private final DataRowGenerator rows;
+
+	/**
+	 * Time generator.
+	 */
+	private final TimeGenerator time;
 
 	/**
 	 * Generate a matrix with the first row having a given start time.
@@ -89,68 +149,7 @@ public class DoubleArrayDataGenerator {
 		for (int r = 0; r < numberOfRows; r++) {
 			data[r] = rows.genRecord(time);
 			time.increment();
-			time.incrementStep();
 		}
 		return data;
-	}
-
-	/**
-	 * extract a submatrix from a given matrix and list of column indexes.
-	 * @param data
-	 *            Input matrix.
-	 * @param columns
-	 *            . column indexes.
-	 * @return Extracted matrix of doubles.
-	 */
-	public static double[][] extract(final double[][] data, final int[] columns) {
-		double[][] result = new double[data.length][columns.length];
-		for (int r = 0; r < data.length; r++) {
-			for (int c = 0; c < columns.length; c++) {
-				result[r][c] = data[r][columns[c]];
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Append two matrices column-wise.
-	 * @param before
-	 *            Matrix appearing first.
-	 * @param after
-	 *            Matrix to be appended.
-	 * @return Appended matrix of doubles.
-	 */
-	public static double[][] append(final double[][] before,
-			final double[][] after) {
-		double[][] result = new double[before.length][before[0].length
-				+ after[0].length];
-		for (int r = 0; r < before.length; r++) {
-			for (int b = 0; b < before[r].length; b++) {
-				result[r][b] = before[r][b];
-			}
-			int b = before[r].length;
-			for (int a = 0; a < after[r].length; a++) {
-				result[r][b + a] = after[r][a];
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Convert a double matrix into a list of double lists.
-	 * @param data
-	 *            Matrix of doubles.
-	 * @return List of lists.
-	 */
-	public static List<List<Double>> toList(final double[][] data) {
-		List<List<Double>> result = new ArrayList<List<Double>>();
-		for (int r = 0; r < data.length; r++) {
-			List<Double> row = new ArrayList<Double>();
-			result.add(row);
-			for (int c = 0; c < data[r].length; c++) {
-				row.add(data[r][c]);
-			}
-		}
-		return result;
 	}
 }

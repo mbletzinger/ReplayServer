@@ -11,7 +11,7 @@ import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.common.types.TableDef;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
-import org.nees.illinois.replay.test.utils.data.QueryChannelLists;
+import org.nees.illinois.replay.test.utils.data.QueryChannelListsForMerging;
 import org.nees.illinois.replay.test.utils.types.MatrixMixType;
 import org.nees.illinois.replay.test.utils.types.TestDatasetType;
 
@@ -28,7 +28,7 @@ public class TestDatasetParameters {
 	/**
 	 * Map of mock merged channel lists for each channel list type.
 	 */
-	private final Map<TestDatasetType, QueryChannelLists> cl2q = new HashMap<TestDatasetType, QueryChannelLists>();
+	private final Map<TestDatasetType, QueryChannelListsForMerging> cl2q = new HashMap<TestDatasetType, QueryChannelListsForMerging>();
 	/**
 	 * Map of test table types to start times.
 	 */
@@ -172,7 +172,7 @@ public class TestDatasetParameters {
 	 *            Type identifying the test query.
 	 * @return The test query.
 	 */
-	public final QueryChannelLists getTestQuery(final TestDatasetType typ) {
+	public final QueryChannelListsForMerging getTestQuery(final TestDatasetType typ) {
 		return cl2q.get(typ);
 	}
 
@@ -210,33 +210,33 @@ public class TestDatasetParameters {
 			daqChnls.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL08K_W7_SG_K18_9");
 		}
 
-		QueryChannelLists qOmCtl = new QueryChannelLists(
+		QueryChannelListsForMerging qOmCtl = new QueryChannelListsForMerging(
 				MatrixMixType.AddAfter, null, omChnls, "OM");
 		cl2q.put(TestDatasetType.QueryOm, qOmCtl);
 		cl2Channels.put(TestDatasetType.QueryOm, omChnls);
 
-		QueryChannelLists qDaqCtl = new QueryChannelLists(
+		QueryChannelListsForMerging qDaqCtl = new QueryChannelListsForMerging(
 				MatrixMixType.AddAfter, null, daqChnls, "DAQ");
 		cl2q.put(TestDatasetType.QueryDaq, qDaqCtl);
 		cl2Channels.put(TestDatasetType.QueryDaq, daqChnls);
 
-		QueryChannelLists query = new QueryChannelLists(
+		QueryChannelListsForMerging query = new QueryChannelListsForMerging(
 				MatrixMixType.AddBefore, qOmCtl, daqChnls,
 				TestDatasetType.QueryBefore.toString());
 		cl2q.put(TestDatasetType.QueryBefore, query);
 		cl2Channels.put(TestDatasetType.QueryBefore, query.combine());
 
-		query = new QueryChannelLists(MatrixMixType.AddAfter, qOmCtl, daqChnls,
+		query = new QueryChannelListsForMerging(MatrixMixType.AddAfter, qOmCtl, daqChnls,
 				TestDatasetType.QueryAfter.toString());
 		cl2q.put(TestDatasetType.QueryAfter, query);
 		cl2Channels.put(TestDatasetType.QueryAfter, query.combine());
 
-		query = new QueryChannelLists(MatrixMixType.AddMiddle, qOmCtl,
+		query = new QueryChannelListsForMerging(MatrixMixType.AddMiddle, qOmCtl,
 				daqChnls, TestDatasetType.QueryMiddle.toString());
 		cl2q.put(TestDatasetType.QueryMiddle, query);
 		cl2Channels.put(TestDatasetType.QueryMiddle, query.combine());
 
-		query = new QueryChannelLists(MatrixMixType.AddInterleaved, qOmCtl,
+		query = new QueryChannelListsForMerging(MatrixMixType.AddInterleaved, qOmCtl,
 				daqChnls, TestDatasetType.QueryMixed.toString());
 		cl2q.put(TestDatasetType.QueryMixed, query);
 		cl2Channels.put(TestDatasetType.QueryMixed, query.combine());
@@ -248,7 +248,7 @@ public class TestDatasetParameters {
 				.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL06K_W7_SG_K13_2");
 		daqChnls2
 				.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL07K_W7_SG_K14_7");
-		query = new QueryChannelLists(MatrixMixType.AddMiddle, query,
+		query = new QueryChannelListsForMerging(MatrixMixType.AddMiddle, query,
 				daqChnls2, TestDatasetType.QueryTriple.toString());
 		cl2q.put(TestDatasetType.QueryTriple, query);
 		cl2Channels.put(TestDatasetType.QueryTriple, query.combine());

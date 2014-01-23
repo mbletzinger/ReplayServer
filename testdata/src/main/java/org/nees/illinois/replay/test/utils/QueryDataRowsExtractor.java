@@ -8,12 +8,9 @@ import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.events.EventI;
 import org.nees.illinois.replay.events.EventListI;
-import org.nees.illinois.replay.test.utils.data.Events2DataRows;
-import org.nees.illinois.replay.test.utils.data.SubsetCarver;
-import org.nees.illinois.replay.test.utils.data.SubsetSlicer;
-import org.nees.illinois.replay.test.utils.data.TestDataset;
-import org.nees.illinois.replay.test.utils.types.QueryParaTypes;
-import org.nees.illinois.replay.test.utils.types.TestDatasetType;
+import org.nees.illinois.replay.test.utils.data.tricks.Events2DataRows;
+import org.nees.illinois.replay.test.utils.data.tricks.SubsetCarver;
+import org.nees.illinois.replay.test.utils.types.QueryRowDataTypes;
 import org.nees.illinois.replay.test.utils.types.TestTimeBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,50 +19,26 @@ import org.slf4j.LoggerFactory;
  * Class which generated expected data from various test queries.
  * @author Michael Bletzinger
  */
-public class QueryDataTestSets {
+public class QueryDataRowsExtractor {
 	/**
 	 * Data from which the query data is extracted.
 	 */
 	private final TestDataset data;
 	/**
-	 * Data set type for this instance.
-	 */
-	private final TestDatasetType dataSetType;
-	/**
 	 * Logger.
 	 **/
-	private final Logger log = LoggerFactory.getLogger(QueryDataTestSets.class);
+	private final Logger log = LoggerFactory.getLogger(QueryDataRowsExtractor.class);
 	/**
 	 * Query set size ratio compared to the originating dataset.
 	 */
 	private final double qratio = 0.3;
 
 	/**
-	 * Query type for this instance.
-	 */
-	private final TestDatasetType queryType;
-	/**
-	 * Channel Mappings.
-	 */
-	private final TestDatasetParameters tdp;
-
-	/**
 	 * @param data
 	 *            Data from which the query data is extracted.
-	 * @param dataSetType
-	 *            Data set type for this instance.
-	 * @param tdp
-	 *            Channel Mappings.
-	 * @param queryType
-	 *            Query type for this instance.
 	 */
-	public QueryDataTestSets(final TestDataset data,
-			final TestDatasetType dataSetType,final TestDatasetParameters tdp,
-			final TestDatasetType queryType) {
+	public QueryDataRowsExtractor(final TestDataset data) {
 		this.data = data;
-		this.dataSetType = dataSetType;
-		this.tdp = tdp;
-		this.queryType = queryType;
 	}
 
 	/**
@@ -84,21 +57,6 @@ public class QueryDataTestSets {
 			result = new TestTimeBounds(buffer, qsize, data.getEvents());
 		} else {
 			result = new TestTimeBounds(buffer, qsize, data.getData());
-		}
-		return result;
-	}
-
-	/**
-	 * Map the indexes of the query channel names from the data channel list.
-	 * @return list of indexes.
-	 */
-	private List<Integer> getChannelIndexes() {
-		List<Integer> result = new ArrayList<Integer>();
-		List<String> queryChannels = tdp.getChannels(queryType);
-		List<String> dataChannels = tdp.getChannels(dataSetType);
-		for (String c : queryChannels) {
-			int index = dataChannels.indexOf(c);
-			result.add(new Integer(index));
 		}
 		return result;
 	}
@@ -156,12 +114,12 @@ public class QueryDataTestSets {
 	}
 
 	/**
-	 * Get expected query records based on the {@link QueryParaTypes}.
+	 * Get expected query records based on the {@link QueryRowDataTypes}.
 	 * @param qpt
 	 *            query parameter type.
 	 * @return a double matrix that is expected from this query parameter type.
 	 */
-	public final DoubleMatrixI getExpected(final QueryParaTypes qpt) {
+	public final DoubleMatrixI getExpected(final QueryRowDataTypes qpt) {
 		DoubleMatrixI result = null;
 		switch (qpt) {
 		case ContWithStartStop:
@@ -180,7 +138,7 @@ public class QueryDataTestSets {
 		if (result == null) {
 			return null;
 		}
-		return sliceChannelColumns(result);
+		return result;
 	}
 
 	/**
@@ -207,19 +165,5 @@ public class QueryDataTestSets {
 		List<List<Double>> result = new ArrayList<List<Double>>();
 		result.add(row);
 		return new DoubleMatrix(result);
-	}
-
-	/**
-	 * Trim the data set columns down to the columns in the query set.
-	 * @param original
-	 *            data set.
-	 * @return trimmed data set.
-	 */
-	private DoubleMatrixI sliceChannelColumns(final DoubleMatrixI original) {
-		List<Integer> cols = getChannelIndexes();
-		SubsetSlicer slicer = new SubsetSlicer(original);
-		slicer.setSliceColumn(true);
-		slicer.addSlices(cols);
-		return slicer.slice();
 	}
 }

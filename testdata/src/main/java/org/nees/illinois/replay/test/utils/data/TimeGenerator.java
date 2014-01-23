@@ -11,21 +11,9 @@ public class TimeGenerator {
 	 */
 	private int recordNumber = 0;
 	/**
-	 * Starting step number.
-	 */
-	private final int[] startStepNumber = { 1, 0, 1 };
-	/**
 	 * Start time.
 	 */
 	private final double startTime;
-	/**
-	 * Number of step types.
-	 */
-	private final int stepTuples = 3;
-	/**
-	 * Current step number.
-	 */
-	private int[] stepNumber = new int[stepTuples];
 	/**
 	 * Time interval.
 	 */
@@ -38,7 +26,6 @@ public class TimeGenerator {
 	 *            Start time.
 	 */
 	public TimeGenerator(final double timeMultiplier, final double startTime) {
-		stepNumber = startStepNumber;
 		this.timeMultiplier = timeMultiplier;
 		this.startTime = startTime;
 	}
@@ -51,24 +38,10 @@ public class TimeGenerator {
 	}
 
 	/**
-	 * @return the startStepNumber
-	 */
-	public final int[] getStartStepNumber() {
-		return startStepNumber;
-	}
-
-	/**
 	 * @return the startTime
 	 */
 	public final double getStartTime() {
 		return startTime;
-	}
-
-	/**
-	 * @return the stepNumber
-	 */
-	public final int[] getStepNumber() {
-		return stepNumber;
 	}
 
 	/**
@@ -91,25 +64,6 @@ public class TimeGenerator {
 	 */
 	public final void increment() {
 		recordNumber++;
-	}
-
-	/**
-	 * Next step number.
-	 */
-	public final void incrementStep() {
-		final int stepBase = 4;
-		final int substepBase = 3;
-		final int correctionScaleFactor = 10;
-		if (recordNumber % stepBase == 0) {
-			stepNumber[0]++;
-			stepNumber[1] = 0;
-			stepNumber[2] = 0;
-		}
-		if (recordNumber % substepBase == 0) {
-			stepNumber[1]++;
-			stepNumber[2] = 0;
-		}
-		stepNumber[2] += timeMultiplier * correctionScaleFactor;
 	}
 
 	/**

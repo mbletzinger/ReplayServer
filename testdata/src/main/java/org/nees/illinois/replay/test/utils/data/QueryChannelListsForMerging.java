@@ -11,11 +11,11 @@ import org.nees.illinois.replay.test.utils.types.MatrixMixType;
  * merging.
  * @author Michael Bletzinger
  */
-public class QueryChannelLists {
+public class QueryChannelListsForMerging {
 	/**
 	 * First list of channels.
 	 */
-	private final QueryChannelLists existing;
+	private final QueryChannelListsForMerging existing;
 	/**
 	 * How the two sets are mixed.
 	 */
@@ -39,8 +39,8 @@ public class QueryChannelLists {
 	 * @param name
 	 *            Name of the test query.
 	 */
-	public QueryChannelLists(final MatrixMixType mix,
-			final QueryChannelLists existing, final List<String> newChannels,
+	public QueryChannelListsForMerging(final MatrixMixType mix,
+			final QueryChannelListsForMerging existing, final List<String> newChannels,
 			final String name) {
 		super();
 		this.name = name;
@@ -120,7 +120,7 @@ public class QueryChannelLists {
 	/**
 	 * @return the existing channels
 	 */
-	public final QueryChannelLists getExisting() {
+	public final QueryChannelListsForMerging getExisting() {
 		return existing;
 	}
 
