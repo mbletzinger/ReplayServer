@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.test.utils.gen.tricks;
+package org.nees.illinois.replay.test.utils.tricks;
 
 import java.util.List;
 

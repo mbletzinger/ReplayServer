@@ -16,13 +16,13 @@ import org.slf4j.LoggerFactory;
  */
 public class EventsGenerator {
 	/**
-	 * Current event number.
-	 */
-	private final int eventNumber = 0;
-	/**
 	 * Current step number generated.
 	 */
 	private final int[] currentStep = { 1, 4, 3 };
+	/**
+	 * Current event number.
+	 */
+	private int eventNumber = 0;
 	/**
 	 * Logger.
 	 **/
@@ -37,8 +37,10 @@ public class EventsGenerator {
 	 * @return a new event.
 	 */
 	private EventI createEvent(final double timestamp, final String source) {
-		return new Event("Event Name " + eventNumber, timestamp,
-				"An event that happened " + 1, source);
+		EventI result = new Event("Event Name " + eventNumber, timestamp,
+				"An event that happened " + eventNumber, source);
+		eventNumber++;
+		return result;
 	}
 
 	/**
@@ -60,6 +62,7 @@ public class EventsGenerator {
 		String step = currentStep[0] + "_" + currentStep[1] + "_"
 				+ currentStep[0];
 		EventI result = new Event(step, timestamp, " Step " + step, source);
+		eventNumber++;
 		return result;
 	}
 

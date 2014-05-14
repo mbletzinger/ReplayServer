@@ -11,9 +11,9 @@ import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.test.utils.TestDatasetParameters;
-import org.nees.illinois.replay.test.utils.gen.DoubleArrayDataGenerator;
+import org.nees.illinois.replay.test.utils.gen.DoubleMatrixGenerator;
 import org.nees.illinois.replay.test.utils.types.ExperimentNames;
-import org.nees.illinois.replay.test.utils.types.TestDatasetType;
+import org.nees.illinois.replay.test.utils.types.TestDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
@@ -23,7 +23,7 @@ import org.testng.annotations.Test;
  * Class to test the representation conversion functions.
  * @author Michael Bletzinger
  */
-@Test(groups = { "test_data" })
+@Test(groups = { "convert" })
 public class TestStreamConversion {
 	/**
 	 * Logger.
@@ -40,8 +40,8 @@ public class TestStreamConversion {
 				ExperimentNames.HybridMasonry1.toString());
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		ChannelNameRegistry expectedCnr = new ChannelNameRegistry();
-		TableType tname = lists.getTt(TestDatasetType.OM);
-		for (String c : lists.getChannels(TestDatasetType.OM)) {
+		TableType tname = lists.getTt(TestDataSource.OM);
+		for (String c : lists.getChannels(TestDataSource.OM)) {
 			cnr.addChannel(tname, c);
 			expectedCnr.addChannel(tname, c);
 		}
@@ -67,20 +67,20 @@ public class TestStreamConversion {
 	 */
 	@Test
 	public final void testDoubleMatrixConversion() {
-		final DoubleArrayDataGenerator dg = new DoubleArrayDataGenerator(20, 6,
+		final DoubleMatrixGenerator dg = new DoubleMatrixGenerator(20, 6,
 				0.5, 222.0);
 		double[][] data = dg.generate();
 		DoubleMatrix2Representation rep2os = new DoubleMatrix2Representation(
 				data);
 		DoubleMatrixI orig = new DoubleMatrix(
-				DoubleArrayDataGenerator.toList(data));
+				DoubleMatrixGenerator.toList(data));
 		Representation2DoubleMatrix rep2dbl = new Representation2DoubleMatrix(
 				rep2os.getRep());
 		List<List<Double>> newL = rep2dbl.getIn2dm().getNumbers();
 		DoubleMatrixI newD = new DoubleMatrix(newL);
 		log.debug("Original Data " + orig);
 		log.debug("New  Data " + newD);
-		DoubleArrayDataGenerator.compareData(newD.getData(), orig.getData());
+		DoubleMatrixGenerator.compareData(newD.getData(), orig.getData());
 	}
 
 }

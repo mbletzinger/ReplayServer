@@ -13,7 +13,8 @@ import org.nees.illinois.replay.common.types.TableDef;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.test.utils.gen.QueryChannelListsForMerging;
 import org.nees.illinois.replay.test.utils.types.MatrixMixType;
-import org.nees.illinois.replay.test.utils.types.TestDatasetType;
+import org.nees.illinois.replay.test.utils.types.QueryTestCases;
+import org.nees.illinois.replay.test.utils.types.TestDataSource;
 
 /**
  * This class provides mock channel lists used to fill in registries used by
@@ -24,36 +25,23 @@ public class TestDatasetParameters {
 	/**
 	 * Map of channel lists for each channel list type.
 	 */
-	private final Map<TestDatasetType, List<String>> cl2Channels = new HashMap<TestDatasetType, List<String>>();
+	private final Map<TestDataSource, List<String>> cl2Channels = new HashMap<TestDataSource, List<String>>();
 	/**
 	 * Map of mock merged channel lists for each channel list type.
 	 */
-	private final Map<TestDatasetType, QueryChannelListsForMerging> cl2q = new HashMap<TestDatasetType, QueryChannelListsForMerging>();
-	/**
-	 * Map of test table types to start times.
-	 */
-	private final Map<TestDatasetType, Double> cl2StartTime = new HashMap<TestDatasetType, Double>();
+	private final Map<QueryTestCases, QueryChannelListsForMerging> cl2q = new HashMap<QueryTestCases, QueryChannelListsForMerging>();
 	/**
 	 * Map of table types for each channel list type.
 	 */
-	private final Map<TestDatasetType, TableType> cl2tt = new HashMap<TestDatasetType, TableType>();
+	private final Map<TestDataSource, TableType> cl2tt = new HashMap<TestDataSource, TableType>();
 	/**
 	 * Name of mock experiment.
 	 */
 	private final String experiment;
 	/**
-	 * List of channel list types which are used for mock queries.
-	 */
-	private final List<TestDatasetType> queryTypes = new ArrayList<TestDatasetType>();
-	/**
 	 * Flag to indicate that the alternate mock channel list set should be used.
 	 */
 	private final boolean second;
-	/**
-	 * Map of table types for each channel list type.
-	 */
-	private final List<TestDatasetType> tableTypes = new ArrayList<TestDatasetType>();
-
 	/**
 	 * Constructor.
 	 * @param second
@@ -76,8 +64,8 @@ public class TestDatasetParameters {
 	 *            Reference to the registry.
 	 */
 	public final void fillCnr(final ChannelNameRegistry cnr) {
-		TestDatasetType[] types = { TestDatasetType.OM, TestDatasetType.DAQ };
-		for (TestDatasetType type : types) {
+		TestDataSource[] types = { TestDataSource.OM, TestDataSource.DAQ };
+		for (TestDataSource type : types) {
 			for (String c : getChannels(type)) {
 				cnr.addChannel(getTt(type), c);
 			}
@@ -90,7 +78,7 @@ public class TestDatasetParameters {
 	 *            Reference to the table registry.
 	 */
 	public final void fillTblr(final TableRegistry tblr) {
-		for (TestDatasetType type : tableTypes) {
+		for (TestDataSource type : TestDataSource.values()) {
 			List<String> channels = cl2Channels.get(type);
 			TableDefinitionI tc = new TableDef(channels, getTableName(type));
 			tblr.setTable(getTableName(type), tc);
@@ -103,7 +91,7 @@ public class TestDatasetParameters {
 	 *            Type identifying the test list.
 	 * @return The list.
 	 */
-	public final List<String> getChannels(final TestDatasetType listType) {
+	public final List<String> getChannels(final TestDataSource listType) {
 		List<String> result = new ArrayList<String>();
 		result.addAll(cl2Channels.get(listType));
 		return result;
@@ -117,23 +105,6 @@ public class TestDatasetParameters {
 	}
 
 	/**
-	 * @return the queryTypes
-	 */
-	public final List<TestDatasetType> getQueryTypes() {
-		return queryTypes;
-	}
-
-	/**
-	 * Get the start time for the dataset type.
-	 * @param typ
-	 *            dataset type.
-	 * @return the start time.
-	 */
-	public final double getStartTime(final TestDatasetType typ) {
-		return cl2StartTime.get(typ);
-	}
-
-	/**
 	 * @param type
 	 *            Test type.
 	 * @param cnr
@@ -143,7 +114,7 @@ public class TestDatasetParameters {
 	 * @return A table definition based on a test type.
 	 */
 	public final TableDefinitionI getTableDefinition(
-			final TestDatasetType type, final ChannelNameRegistry cnr,
+			final TestDataSource type, final ChannelNameRegistry cnr,
 			final TableRegistry tr) {
 		TableDefiner tdr = new TableDefiner(cnr, tr);
 		return tdr.define(getTableName(type), getTt(type), getChannels(type));
@@ -155,15 +126,8 @@ public class TestDatasetParameters {
 	 *            Test list type.
 	 * @return Table name.
 	 */
-	public final String getTableName(final TestDatasetType type) {
+	public final String getTableName(final TestDataSource type) {
 		return type.toString() + "dbTable";
-	}
-
-	/**
-	 * @return the tableTypes
-	 */
-	public final List<TestDatasetType> getTableTypes() {
-		return tableTypes;
 	}
 
 	/**
@@ -172,7 +136,7 @@ public class TestDatasetParameters {
 	 *            Type identifying the test query.
 	 * @return The test query.
 	 */
-	public final QueryChannelListsForMerging getTestQuery(final TestDatasetType typ) {
+	public final QueryChannelListsForMerging getTestQuery(final QueryTestCases typ) {
 		return cl2q.get(typ);
 	}
 
@@ -182,7 +146,7 @@ public class TestDatasetParameters {
 	 *            Test list type.
 	 * @return The table type.
 	 */
-	public final TableType getTt(final TestDatasetType type) {
+	public final TableType getTt(final TestDataSource type) {
 		return cl2tt.get(type);
 	}
 
@@ -211,54 +175,40 @@ public class TestDatasetParameters {
 		}
 
 		QueryChannelListsForMerging qOmCtl = new QueryChannelListsForMerging(
-				MatrixMixType.AddAfter, null, omChnls, "OM");
-		cl2q.put(TestDatasetType.QueryOm, qOmCtl);
-		cl2Channels.put(TestDatasetType.QueryOm, omChnls);
+				MatrixMixType.AddAfter, null, omChnls, "OM", null);
+		cl2q.put(QueryTestCases.QueryOm, qOmCtl);
 
 		QueryChannelListsForMerging qDaqCtl = new QueryChannelListsForMerging(
-				MatrixMixType.AddAfter, null, daqChnls, "DAQ");
-		cl2q.put(TestDatasetType.QueryDaq, qDaqCtl);
-		cl2Channels.put(TestDatasetType.QueryDaq, daqChnls);
+				MatrixMixType.AddAfter, null, daqChnls, "DAQ", null);
+		cl2q.put(QueryTestCases.QueryDaq, qDaqCtl);
 
 		QueryChannelListsForMerging query = new QueryChannelListsForMerging(
 				MatrixMixType.AddBefore, qOmCtl, daqChnls,
-				TestDatasetType.QueryBefore.toString());
-		cl2q.put(TestDatasetType.QueryBefore, query);
-		cl2Channels.put(TestDatasetType.QueryBefore, query.combine());
+				QueryTestCases.QueryBefore.toString(), null);
+		cl2q.put(QueryTestCases.QueryBefore, query);
 
 		query = new QueryChannelListsForMerging(MatrixMixType.AddAfter, qOmCtl, daqChnls,
-				TestDatasetType.QueryAfter.toString());
-		cl2q.put(TestDatasetType.QueryAfter, query);
-		cl2Channels.put(TestDatasetType.QueryAfter, query.combine());
+				QueryTestCases.QueryAfter.toString(), null);
+		cl2q.put(QueryTestCases.QueryAfter, query);
 
 		query = new QueryChannelListsForMerging(MatrixMixType.AddMiddle, qOmCtl,
-				daqChnls, TestDatasetType.QueryMiddle.toString());
-		cl2q.put(TestDatasetType.QueryMiddle, query);
-		cl2Channels.put(TestDatasetType.QueryMiddle, query.combine());
+				daqChnls, QueryTestCases.QueryMiddle.toString(), null);
+		cl2q.put(QueryTestCases.QueryMiddle, query);
 
 		query = new QueryChannelListsForMerging(MatrixMixType.AddInterleaved, qOmCtl,
-				daqChnls, TestDatasetType.QueryMixed.toString());
-		cl2q.put(TestDatasetType.QueryMixed, query);
-		cl2Channels.put(TestDatasetType.QueryMixed, query.combine());
+				daqChnls, QueryTestCases.QueryMixed.toString(), null);
+		cl2q.put(QueryTestCases.QueryMixed, query);
 
 		List<String> daqChnls2 = new ArrayList<String>();
 		daqChnls2
-				.add("DAQ2/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
+		.add("DAQ2/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
 		daqChnls2
-				.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL06K_W7_SG_K13_2");
+		.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL06K_W7_SG_K13_2");
 		daqChnls2
-				.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL07K_W7_SG_K14_7");
+		.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL07K_W7_SG_K14_7");
 		query = new QueryChannelListsForMerging(MatrixMixType.AddMiddle, query,
-				daqChnls2, TestDatasetType.QueryTriple.toString());
-		cl2q.put(TestDatasetType.QueryTriple, query);
-		cl2Channels.put(TestDatasetType.QueryTriple, query.combine());
-
-		queryTypes.add(TestDatasetType.QueryDaq);
-		queryTypes.add(TestDatasetType.QueryOm);
-		queryTypes.add(TestDatasetType.QueryAfter);
-		queryTypes.add(TestDatasetType.QueryBefore);
-		queryTypes.add(TestDatasetType.QueryMiddle);
-		queryTypes.add(TestDatasetType.QueryMixed);
+				daqChnls2, QueryTestCases.QueryTriple.toString(), null);
+		cl2q.put(QueryTestCases.QueryTriple, query);
 	}
 
 	/**
@@ -277,8 +227,8 @@ public class TestDatasetParameters {
 			chnls.add("OM/CntrlSensor/D_East_X_1");
 			chnls.add("OM/CntrlSensor/D_North_Y_2");
 		}
-		cl2Channels.put(TestDatasetType.OM, chnls);
-		cl2tt.put(TestDatasetType.OM, TableType.Control);
+		cl2Channels.put(TestDataSource.OM, chnls);
+		cl2tt.put(TestDataSource.OM, TableType.Control);
 
 		chnls = new ArrayList<String>();
 		chnls.add("OM/Cmd/LBCB2/Actuator/C_LBCB2_X1_0");
@@ -287,8 +237,8 @@ public class TestDatasetParameters {
 		chnls.add("OM/CntrlSensor/D_West_X_3");
 		chnls.add("OM/Cmd/LBCB2/Actuator/C_LBCB2_Z1_4");
 		chnls.add("OM/Disp/LBCB2/Cartesian/D_LBCB2_RZ_5");
-		cl2Channels.put(TestDatasetType.OM2, chnls);
-		cl2tt.put(TestDatasetType.OM2, TableType.Control);
+		cl2Channels.put(TestDataSource.OM2, chnls);
+		cl2tt.put(TestDataSource.OM2, TableType.Control);
 
 		chnls = new ArrayList<String>();
 		chnls.add("DAQ/DisplacementSensor/WestFlange/FirstFloor/DTV02F1A_W7_LinPot05_0");
@@ -301,8 +251,8 @@ public class TestDatasetParameters {
 			chnls.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL08K_W7_SG_K18_9");
 			chnls.add("DAQ/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B23_5");
 		}
-		cl2Channels.put(TestDatasetType.DAQ, chnls);
-		cl2tt.put(TestDatasetType.DAQ, TableType.DAQ);
+		cl2Channels.put(TestDataSource.DAQ, chnls);
+		cl2tt.put(TestDataSource.DAQ, TableType.DAQ);
 
 		chnls = new ArrayList<String>();
 		chnls.add("DAQ2/DisplacementSensor/WestFlange/FirstFloor/DTV02F1A_W7_LinPot05_0");
@@ -310,8 +260,8 @@ public class TestDatasetParameters {
 		chnls.add("DAQ2/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
 		chnls.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL06K_W7_SG_K13_2");
 		chnls.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL07K_W7_SG_K14_7");
-		cl2Channels.put(TestDatasetType.DAQ2, chnls);
-		cl2tt.put(TestDatasetType.DAQ2, TableType.DAQ);
+		cl2Channels.put(TestDataSource.DAQ2, chnls);
+		cl2tt.put(TestDataSource.DAQ2, TableType.DAQ);
 
 		chnls = new ArrayList<String>();
 		chnls.add("4/X/4_1");
@@ -329,25 +279,27 @@ public class TestDatasetParameters {
 		chnls.add("4/Z/4_3");
 		chnls.add("4/Z/4_4");
 		chnls.add("4/Z/4_5");
-		cl2Channels.put(TestDatasetType.Krypton, chnls);
-		cl2tt.put(TestDatasetType.Krypton, TableType.Krypton);
+		cl2Channels.put(TestDataSource.Krypton1, chnls);
+		cl2tt.put(TestDataSource.Krypton1, TableType.Krypton);
 
-		tableTypes.add(TestDatasetType.OM);
-		tableTypes.add(TestDatasetType.OM2);
-		tableTypes.add(TestDatasetType.DAQ);
-		tableTypes.add(TestDatasetType.DAQ2);
-		tableTypes.add(TestDatasetType.Krypton);
-		final double startTime = 221.23;
-		final double timeDiff = 1.44;
-		double stime = startTime;
-		cl2StartTime.put(TestDatasetType.OM, new Double(stime));
-		stime += timeDiff;
-		cl2StartTime.put(TestDatasetType.OM2, new Double(stime));
-		stime += timeDiff;
-		cl2StartTime.put(TestDatasetType.DAQ, new Double(stime));
-		stime += timeDiff;
-		cl2StartTime.put(TestDatasetType.DAQ2, new Double(stime));
-		stime += timeDiff;
-		cl2StartTime.put(TestDatasetType.Krypton, new Double(stime));
+		chnls = new ArrayList<String>();
+		chnls.add("3/X/3_1");
+		chnls.add("3/X/3_2");
+		chnls.add("4/X/4_3");
+		chnls.add("4/X/4_4");
+		chnls.add("4/X/4_5");
+		chnls.add("3/Y/3_1");
+		chnls.add("3/Y/3_2");
+		chnls.add("4/Y/4_3");
+		chnls.add("4/Y/4_4");
+		chnls.add("4/Y/4_5");
+		chnls.add("3/Z/3_1");
+		chnls.add("3/Z/3_2");
+		chnls.add("4/Z/4_3");
+		chnls.add("4/Z/4_4");
+		chnls.add("4/Z/4_5");
+		cl2Channels.put(TestDataSource.Krypton2, chnls);
+		cl2tt.put(TestDataSource.Krypton2, TableType.Krypton);
+
 	}
 }

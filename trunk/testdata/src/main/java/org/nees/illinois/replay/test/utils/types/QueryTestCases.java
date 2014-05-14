@@ -1,30 +1,10 @@
 package org.nees.illinois.replay.test.utils.types;
-
 /**
- * Enumerates the various channel list used for the mock test data.
+ * List of Query test cases.
  * @author Michael Bletzinger
+ *
  */
-public enum TestDatasetType {
-	/**
-	 * Channels from the DAQ system.
-	 */
-	DAQ,
-	/**
-	 * Channels from the 2nd DAQ system.
-	 */
-	DAQ2,
-	/**
-	 * Channels from the LBCB Operations Manager.
-	 */
-	OM,
-	/**
-	 * Channels from the 2nd LBCB.
-	 */
-	OM2,
-	/**
-	 * Channels from the Krypton System.
-	 */
-	Krypton,
+public enum QueryTestCases {
 	/**
 	 * Query with a columns-after merge.
 	 */
@@ -53,4 +33,5 @@ public enum TestDatasetType {
 	 * Query from three sources.
 	 */
 	QueryTriple
+
 }

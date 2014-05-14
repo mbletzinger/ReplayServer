@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nees.illinois.replay.test.utils.types.MatrixMixType;
-
+import org.nees.illinois.replay.test.utils.types.TestDataSource;
 
 /**
  * Class which holds test lists of channels as well as their data sets for
@@ -28,6 +28,10 @@ public class QueryChannelListsForMerging {
 	 * Channels to be merged.
 	 */
 	private final List<String> newChannels = new ArrayList<String>();
+	/**
+	 * Dataset that the new channels come from.
+	 */
+	private final TestDataSource newTable;
 
 	/**
 	 * @param mix
@@ -38,15 +42,19 @@ public class QueryChannelListsForMerging {
 	 *            Channels to be merged.
 	 * @param name
 	 *            Name of the test query.
+	 * @param newTable
+	 *            Table that the new channels come from.
 	 */
 	public QueryChannelListsForMerging(final MatrixMixType mix,
-			final QueryChannelListsForMerging existing, final List<String> newChannels,
-			final String name) {
+			final QueryChannelListsForMerging existing,
+			final List<String> newChannels,final String name,
+			final TestDataSource newTable) {
 		super();
 		this.name = name;
 		this.mix = mix;
 		this.newChannels.addAll(newChannels);
 		this.existing = existing;
+		this.newTable = newTable;
 	};
 
 	/**
@@ -105,7 +113,7 @@ public class QueryChannelListsForMerging {
 		int dsz = all.size();
 		int osz = newChannels.size();
 		int min = dsz > osz ? osz : dsz;
-		for (int i = 0; i < min; i++) {
+		for (int i = 0;i < min;i++) {
 			result.add(newChannels.get(i));
 			result.add(all.get(i));
 		}
@@ -157,6 +165,13 @@ public class QueryChannelListsForMerging {
 	 */
 	public final List<String> getNewChannels() {
 		return newChannels;
+	}
+
+	/**
+	 * @return the newTable
+	 */
+	public final TestDataSource getNewTable() {
+		return newTable;
 	}
 
 	/*

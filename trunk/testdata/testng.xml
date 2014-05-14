@@ -5,16 +5,23 @@
  		<groups>
 			<dependencies>
 				<group
-					name="test_data"
+					name="register"
+					depends-on="test_test_data.*" />
+				<group
+					name="extract"
+					depends-on="test_test_data.*" />
+				<group
+					name="convert"
 					depends-on="test_test_data.*" />
 				<group
 					name="test_test_data"
-					depends-on="cnr.*" />
+					depends-on="carve.*" />
 			</dependencies>
 		</groups>
     <classes>
-      <class name="org.nees.illinois.replay.test.data.TestMerge"/>
-      <class name="org.nees.illinois.replay.test.data.TestChannelTestData"/>
+      <class name="org.nees.illinois.replay.test.data.TestDatasetGeneration"/>
+      <class name="org.nees.illinois.replay.test.data.TestSubsetCarver"/>
+      <class name="org.nees.illinois.replay.test.data.TestDataRowExtraction"/>
       <class name="org.nees.illinois.replay.test.data.TestStreamConversion"/>
       <class name="org.nees.illinois.replay.test.data.TestRegistries"/>
     </classes>
