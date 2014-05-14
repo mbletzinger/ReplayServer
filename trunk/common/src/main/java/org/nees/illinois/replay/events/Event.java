@@ -101,4 +101,13 @@ public class Event implements EventI {
 	public final int hashCode() {
 		return super.hashCode();
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public final String toString() {
+		return "Event [time=" + time + ", name=" + name
+				+ ", description=\"" + description + "\", source=" + source  + "]";
+	}
 }

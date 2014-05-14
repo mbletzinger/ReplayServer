@@ -115,4 +115,18 @@ public class TimeBounds implements TimeBoundsI {
 	public final String getStopName() {
 		return stopName;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public final String toString() {
+		String result = "TimeBounds [";
+		result += (Double.isNaN(start) ? "" : "start=" + start + ", ");
+		result += (Double.isNaN(stop) ? "" : "stop=" + stop + ", ");
+		result += (startName == null ? "" : "startName=" + startName + ", ");
+		result += (stopName == null ? "" : "stopName=" + stopName);
+		result += "]";
+		return result;
+	}
 }

@@ -75,11 +75,16 @@ public interface DoubleMatrixI {
 	int timeIndex(double timestamp);
 
 	/**
+	 * Returns the size of the time window.
+	 *@return size in seconds.
+	 */
+	double timeWindow();
+
+	/**
 	 * Returns the matrix as a double list.
 	 * @return The double list.
 	 */
 	List<List<Double>> toList();
-
 	/**
 	 * Returns the value of an element. If the element is null returns
 	 * Double.NaN.

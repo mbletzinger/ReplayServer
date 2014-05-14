@@ -25,12 +25,28 @@ public interface EventListI {
 	List<EventI> filterBySource(String source);
 
 	/**
+	 * Find an event based on a timestamp.
+	 * @param time
+	 *            the timestamp.
+	 * @return the event.
+	 */
+	EventI find(double time);
+
+	/**
 	 * Find an event based on a name.
 	 * @param name
 	 *            of the event to find.
 	 * @return an event based on the name.
 	 */
 	EventI find(String name);
+
+	/**
+	 * Get an event at the list index.
+	 * @param idx
+	 *            the index.
+	 * @return the event.
+	 */
+	EventI getEvent(int idx);
 
 	/**
 	 * @return List of events ordered by time.
