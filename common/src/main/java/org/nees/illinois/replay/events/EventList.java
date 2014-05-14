@@ -46,6 +46,16 @@ public class EventList implements EventListI {
 	}
 
 	@Override
+	public final EventI find(final double time) {
+		for(EventI e : events) {
+			if(e.getTime() == time) {
+				return e;
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public final EventI find(final String name) {
 		for (EventI e : events) {
 			if (e.getName().equals(name)) {
@@ -53,6 +63,11 @@ public class EventList implements EventListI {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public final EventI getEvent(final int idx) {
+		return events.get(idx);
 	}
 
 	@Override
@@ -85,5 +100,18 @@ public class EventList implements EventListI {
 			}
 		}
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public final String toString() {
+		String result =  "[\n";
+		for (EventI e : events) {
+			result += "\t" + e + "\n";
+		}
+		result += "]";
+		return result;
 	}
 }

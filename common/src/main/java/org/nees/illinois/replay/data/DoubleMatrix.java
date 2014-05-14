@@ -248,9 +248,17 @@ public class DoubleMatrix implements DoubleMatrixI {
 			if (row.get(0).equals(timestamp)) {
 				return result;
 			}
+			result++;
 		}
 		log.error("Timestamp " + timestamp + " not found");
 		return -1;
+	}
+
+	@Override
+	public final double timeWindow() {
+		List<Double> first = data.get(0);
+		List<Double> last = data.get(data.size() - 1);
+		return first.get(0) - last.get(0);
 	}
 
 	/*
