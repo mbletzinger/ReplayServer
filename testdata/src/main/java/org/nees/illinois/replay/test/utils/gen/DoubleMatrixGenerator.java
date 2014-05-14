@@ -11,7 +11,7 @@ import org.testng.Assert;
  * Class which generates a unique matrix of data for unit testing.
  * @author Michael Bletzinger
  */
-public class DoubleArrayDataGenerator {
+public class DoubleMatrixGenerator {
 	/**
 	 * Append two matrices column-wise.
 	 * @param before
@@ -24,17 +24,18 @@ public class DoubleArrayDataGenerator {
 			final double[][] after) {
 		double[][] result = new double[before.length][before[0].length
 		                                              + after[0].length];
-		for (int r = 0; r < before.length; r++) {
-			for (int b = 0; b < before[r].length; b++) {
+		for (int r = 0;r < before.length;r++) {
+			for (int b = 0;b < before[r].length;b++) {
 				result[r][b] = before[r][b];
 			}
 			int b = before[r].length;
-			for (int a = 0; a < after[r].length; a++) {
+			for (int a = 0;a < after[r].length;a++) {
 				result[r][b + a] = after[r][a];
 			}
 		}
 		return result;
 	}
+
 	/**
 	 * Compare a matrix with the supposedly identical generated version.
 	 * @param actual
@@ -42,8 +43,9 @@ public class DoubleArrayDataGenerator {
 	 * @param expected
 	 *            Expected matrix which was generated earlier.
 	 */
-	public static void compareData(final double[][] actual, final double[][] expected) {
-		LoggerFactory.getLogger(DoubleArrayDataGenerator.class).debug(
+	public static void compareData(final double[][] actual,
+			final double[][] expected) {
+		LoggerFactory.getLogger(DoubleMatrixGenerator.class).debug(
 				"Comparing expected " + Mtx2Str.matrix2String(expected)
 				+ "\nwith actual\n" + Mtx2Str.matrix2String(actual));
 		/**
@@ -53,8 +55,8 @@ public class DoubleArrayDataGenerator {
 		final double tolerance = 0.001;
 		Assert.assertEquals(actual.length, expected.length);
 		Assert.assertEquals(actual[0].length, expected[0].length);
-		for (int i = 0; i < expected.length; i++) {
-			for (int j = 0; j < expected[0].length; j++) {
+		for (int i = 0;i < expected.length;i++) {
+			for (int j = 0;j < expected[0].length;j++) {
 
 				if (Double.isNaN(expected[i][j])) {
 					Assert.assertTrue(Double.isNaN(actual[i][j]));
@@ -64,6 +66,7 @@ public class DoubleArrayDataGenerator {
 			}
 		}
 	}
+
 	/**
 	 * extract a submatrix from a given matrix and list of column indexes.
 	 * @param data
@@ -74,13 +77,14 @@ public class DoubleArrayDataGenerator {
 	 */
 	public static double[][] extract(final double[][] data, final int[] columns) {
 		double[][] result = new double[data.length][columns.length];
-		for (int r = 0; r < data.length; r++) {
-			for (int c = 0; c < columns.length; c++) {
+		for (int r = 0;r < data.length;r++) {
+			for (int c = 0;c < columns.length;c++) {
 				result[r][c] = data[r][columns[c]];
 			}
 		}
 		return result;
 	}
+
 	/**
 	 * Convert a double matrix into a list of double lists.
 	 * @param data
@@ -89,10 +93,10 @@ public class DoubleArrayDataGenerator {
 	 */
 	public static List<List<Double>> toList(final double[][] data) {
 		List<List<Double>> result = new ArrayList<List<Double>>();
-		for (int r = 0; r < data.length; r++) {
+		for (int r = 0;r < data.length;r++) {
 			List<Double> row = new ArrayList<Double>();
 			result.add(row);
-			for (int c = 0; c < data[r].length; c++) {
+			for (int c = 0;c < data[r].length;c++) {
 				row.add(data[r][c]);
 			}
 		}
@@ -130,8 +134,8 @@ public class DoubleArrayDataGenerator {
 	 * @param startTime
 	 *            Time of the first row.
 	 */
-	public DoubleArrayDataGenerator(final int numberOfRows,
-			final int numberOfColumns, final double timeMultiplier,
+	public DoubleMatrixGenerator(final int numberOfRows,
+			final int numberOfColumns,final double timeMultiplier,
 			final double startTime) {
 		super();
 		this.numberOfRows = numberOfRows;
@@ -141,12 +145,30 @@ public class DoubleArrayDataGenerator {
 	}
 
 	/**
+	 * Generate a matrix with the first row having a given start time.
+	 * @param numberOfRows
+	 *            Rows in the matrix.
+	 * @param numberOfColumns
+	 *            Columns in the matrix.
+	 * @param timeGen
+	 *            Generator for the time column.
+	 */
+	public DoubleMatrixGenerator(final int numberOfRows,
+			final int numberOfColumns,final TimeGenerator timeGen) {
+		super();
+		this.numberOfRows = numberOfRows;
+		this.numberOfColumns = numberOfColumns;
+		this.time = timeGen;
+		this.rows = new DataRowGenerator(numberOfColumns);
+	}
+
+	/**
 	 * Generate the matrix.
 	 * @return matrix of doubles.
 	 */
 	public final double[][] generate() {
 		double[][] data = new double[numberOfRows][numberOfColumns];
-		for (int r = 0; r < numberOfRows; r++) {
+		for (int r = 0;r < numberOfRows;r++) {
 			data[r] = rows.genRecord(time);
 			time.increment();
 		}

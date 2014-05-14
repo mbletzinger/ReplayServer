@@ -53,6 +53,15 @@ public class TestDataset {
 	}
 
 	/**
+	 * Get an event at the index.
+	 * @param idx index of event.
+	 * @return the event.
+	 */
+	public final EventI getEvent(final int idx) {
+		return events.getEvent(idx);
+	}
+
+	/**
 	 * Transform event index bounds into events.
 	 * @param bounds
 	 *            the event index start and stop bounds.
@@ -74,8 +83,10 @@ public class TestDataset {
 	 * @return the data record.
 	 */
 	public final List<Double> getEventData(final int event) {
+		EventI e = events.getEvents().get(event);
+		double eventTime = e.getTime();
 		for (List<Double> row : data.toList()) {
-			if (Math.abs(row.get(0) - event) < timeTolerance) {
+			if (Math.abs(row.get(0) - eventTime) < timeTolerance) {
 				return row;
 			}
 		}
@@ -99,7 +110,6 @@ public class TestDataset {
 	public final List<EventI> getEventsSubset(final TimeBoundsI bounds) {
 		return events.slice(bounds);
 	}
-
 	/**
 	 * @return the source
 	 */

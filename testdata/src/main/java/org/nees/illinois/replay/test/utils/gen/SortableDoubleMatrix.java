@@ -101,6 +101,11 @@ public class SortableDoubleMatrix implements DoubleMatrixI {
 	}
 
 	@Override
+	public final double timeWindow() {
+		return dm.timeWindow();
+	}
+
+	@Override
 	public final List<List<Double>> toList() {
 		return dm.toList();
 	}

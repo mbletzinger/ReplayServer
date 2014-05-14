@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
-import org.nees.illinois.replay.test.utils.gen.DoubleArrayDataGenerator;
-import org.nees.illinois.replay.test.utils.gen.tricks.SubsetCarver;
-import org.nees.illinois.replay.test.utils.gen.tricks.SubsetSlicer;
+import org.nees.illinois.replay.test.utils.gen.DoubleMatrixGenerator;
+import org.nees.illinois.replay.test.utils.tricks.SubsetCarver;
+import org.nees.illinois.replay.test.utils.tricks.SubsetSlicer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
@@ -16,6 +16,7 @@ import org.testng.annotations.Test;
  * Test the matrix subset carver.
  * @author Michael Bletzinger
  */
+@Test(groups = { "carve" })
 public class TestSubsetCarver {
 	/**
 	 * Subset defined by a start and stop boundary for both rows and columns.
@@ -139,7 +140,7 @@ public class TestSubsetCarver {
 				}
 				if (rowStarted && rowEnded & columnStarted && columnEnded) {
 					bothCarveExpected[r - boundaries[0][0]][c
-							- boundaries[1][0]] = value;
+					                                        - boundaries[1][0]] = value;
 				}
 				if (columnSlice) {
 					slicedColumns.add(new Double(value));
@@ -171,24 +172,15 @@ public class TestSubsetCarver {
 	}
 
 	/**
-	 * Test row carving.
+	 * Imports the double matrix into a {@link DoubleMatrix} so that it can be
+	 * pretty-printed.
+	 * @param matrix
+	 *            the double matrix to convert.
+	 * @return the pretty-print string.
 	 */
-	@Test
-	public final void testRowCarve() {
-		SubsetCarver carve = new SubsetCarver(new DoubleMatrix(original));
-		carve.setStartRow(boundaries[0][0]);
-		DoubleMatrixI actual = carve.subset();
-		DoubleArrayDataGenerator.compareData(actual.getData(),
-				rowCarveExpectedLateStart);
-		carve.setStartRow(null);
-		carve.setStopRow(boundaries[0][1]);
-		actual = carve.subset();
-		DoubleArrayDataGenerator.compareData(actual.getData(),
-				rowCarveExpectedEarlyEnd);
-		carve.setStartRow(boundaries[0][0]);
-		actual = carve.subset();
-		DoubleArrayDataGenerator
-				.compareData(actual.getData(), rowCarveExpected);
+	private String dumpMatrix(final double[][] matrix) {
+		DoubleMatrix dm = new DoubleMatrix(matrix);
+		return dm.toString();
 	}
 
 	/**
@@ -199,16 +191,16 @@ public class TestSubsetCarver {
 		SubsetCarver carve = new SubsetCarver(new DoubleMatrix(original));
 		carve.setStartColumn(boundaries[1][0]);
 		DoubleMatrixI actual = carve.subset();
-		DoubleArrayDataGenerator.compareData(actual.getData(),
+		DoubleMatrixGenerator.compareData(actual.getData(),
 				columnCarveExpectedLateStart);
 		carve.setStartColumn(null);
 		carve.setStopColumn(boundaries[1][1]);
 		actual = carve.subset();
-		DoubleArrayDataGenerator.compareData(actual.getData(),
+		DoubleMatrixGenerator.compareData(actual.getData(),
 				columnCarveExpectedEarlyEnd);
 		carve.setStartColumn(boundaries[1][0]);
 		actual = carve.subset();
-		DoubleArrayDataGenerator.compareData(actual.getData(),
+		DoubleMatrixGenerator.compareData(actual.getData(),
 				columnCarveExpected);
 	}
 
@@ -223,20 +215,29 @@ public class TestSubsetCarver {
 		carve.setStartColumn(boundaries[1][0]);
 		carve.setStopColumn(boundaries[1][1]);
 		DoubleMatrixI actual = carve.subset();
-		DoubleArrayDataGenerator.compareData(actual.getData(),
+		DoubleMatrixGenerator.compareData(actual.getData(),
 				bothCarveExpected);
 	}
 
 	/**
-	 * Imports the double matrix into a {@link DoubleMatrix} so that it can be
-	 * pretty-printed.
-	 * @param matrix
-	 *            the double matrix to convert.
-	 * @return the pretty-print string.
+	 * Test row carving.
 	 */
-	private String dumpMatrix(final double[][] matrix) {
-		DoubleMatrix dm = new DoubleMatrix(matrix);
-		return dm.toString();
+	@Test
+	public final void testRowCarve() {
+		SubsetCarver carve = new SubsetCarver(new DoubleMatrix(original));
+		carve.setStartRow(boundaries[0][0]);
+		DoubleMatrixI actual = carve.subset();
+		DoubleMatrixGenerator.compareData(actual.getData(),
+				rowCarveExpectedLateStart);
+		carve.setStartRow(null);
+		carve.setStopRow(boundaries[0][1]);
+		actual = carve.subset();
+		DoubleMatrixGenerator.compareData(actual.getData(),
+				rowCarveExpectedEarlyEnd);
+		carve.setStartRow(boundaries[0][0]);
+		actual = carve.subset();
+		DoubleMatrixGenerator
+		.compareData(actual.getData(), rowCarveExpected);
 	}
 
 	/**
@@ -247,11 +248,11 @@ public class TestSubsetCarver {
 		SubsetSlicer slicer = new SubsetSlicer(new DoubleMatrix(original));
 		slicer.addSlices(slices);
 		DoubleMatrixI actual = slicer.slice();
-		DoubleArrayDataGenerator.compareData(actual.getData(),
+		DoubleMatrixGenerator.compareData(actual.getData(),
 				rowSliceExpected.getData());
 		slicer.setSliceColumn(true);
 		actual = slicer.slice();
-		DoubleArrayDataGenerator.compareData(actual.getData(),
+		DoubleMatrixGenerator.compareData(actual.getData(),
 				columnSliceExpected.getData());
 	}
 
