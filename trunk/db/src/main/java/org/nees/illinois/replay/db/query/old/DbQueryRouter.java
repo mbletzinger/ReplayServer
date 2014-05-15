@@ -1,4 +1,4 @@
-package org.nees.illinois.replay.db.query;
+package org.nees.illinois.replay.db.query.old;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrix;
-import org.nees.illinois.replay.data.MatrixFix;
 import org.nees.illinois.replay.data.MergeSet;
 import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.data.StepNumber;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
+import org.nees.illinois.replay.restlet.client.MatrixFix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -11,7 +11,7 @@ import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.test.utils.CompareLists;
-import org.nees.illinois.replay.test.utils.DoubleArrayDataGenerator;
+import org.nees.illinois.replay.test.utils.gen.DoubleMatrixGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -143,6 +143,6 @@ public class DbTableCheck {
 		}
 		dbSt.closeQuery(rs);
 		dbSt.close();
-		DoubleArrayDataGenerator.compareData(actual, expected.getData());
+		DoubleMatrixGenerator.compareData(actual, expected.getData());
 	}
 }

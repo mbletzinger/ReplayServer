@@ -65,7 +65,7 @@ public class StatementProcessor {
 	 */
 	public final boolean execute(final String statement) {
 		Statement stmt = null;
-		// log.debug("Executing " + statement);
+		log.debug("Executing " + statement);
 		try {
 			stmt = connection.createStatement();
 		} catch (SQLException e) {
@@ -108,7 +108,7 @@ public class StatementProcessor {
 	 *            The statement.
 	 */
 	public final void noComplaints(final String statement) {
-		// log.debug("Executing " + statement);
+		log.debug("Executing " + statement);
 		Statement stmt = null;
 		try {
 			stmt = connection.createStatement();

@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.nees.illinois.replay.db.query.DbQueries;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
-import org.nees.illinois.replay.events.EventCreator;
+import org.nees.illinois.replay.events.Event;
 import org.nees.illinois.replay.events.EventI;
 import org.nees.illinois.replay.events.EventList;
 import org.nees.illinois.replay.events.EventListI;
@@ -43,9 +43,20 @@ public class EventQueries {
 	 * @param eventTableName
 	 *            name of the events table.
 	 */
-	public EventQueries(final Connection connection, final String eventTableName) {
+	public EventQueries(final Connection connection,final String eventTableName) {
 		this.connection = connection;
 		this.eventTableName = eventTableName;
+	}
+
+	/**
+	 * Close the database connection.
+	 */
+	public final void close() {
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			log.error("Connectiion close failed because", e);
+		}
 	}
 
 	/**
@@ -119,8 +130,8 @@ public class EventQueries {
 		EventListI borderEL = getEvents(borders, source);
 		List<EventI> borderE = borderEL.getEvents();
 		final double borderMargin = 1.0;
-		return getEvents(borderE.get(0).getTime() - borderMargin, borderE.get(1).getTime() + borderMargin,
-				source);
+		return getEvents(borderE.get(0).getTime() - borderMargin, borderE
+				.get(1).getTime() + borderMargin, source);
 	}
 
 	/**
@@ -131,14 +142,13 @@ public class EventQueries {
 	 */
 	private List<EventI> resultSet2Events(final ResultSet rs) {
 		List<EventI> result = new ArrayList<EventI>();
-		String[] headers = { "TIME", "NAME", "TYPE", "SOURCE", "DESCRIPTION",
-				"STEPINDEX" };
-		boolean[] isDouble = { true, false, false, false, false, true };
+		String[] headers = { "TIME", "NAME", "DESCRIPTION", "SOURCE"};
+		boolean[] isDouble = { true, false, false, false };
 		try {
 			while (rs.next()) {
 				List<Double> numbers = new ArrayList<Double>();
 				List<String> strings = new ArrayList<String>();
-				for (int c = 0; c < headers.length; c++) {
+				for (int c = 0;c < headers.length;c++) {
 					if (isDouble[c]) {
 						Double n = rs.getDouble(c + 1);
 						numbers.add(n);
@@ -148,12 +158,10 @@ public class EventQueries {
 					}
 				}
 				EventI e = null;
-				final int descriptionC = 3;
+				final int descriptionC = 1;
 				final int sourceC = 2;
-				EventCreator ec = new EventCreator();
-				e = ec.createEvent(strings.get(1), numbers.get(0),
-						strings.get(0), strings.get(descriptionC),
-						strings.get(sourceC), numbers.get(1));
+				e = new Event(strings.get(0), numbers.get(0),
+						strings.get(descriptionC), strings.get(sourceC));
 				result.add(e);
 			}
 		} catch (SQLException e) {
@@ -161,16 +169,5 @@ public class EventQueries {
 			return null;
 		}
 		return result;
-	}
-
-	/**
-	 * Close the database connection.
-	 */
-	public final void close() {
-		try {
-			connection.close();
-		} catch (SQLException e) {
-			log.error("Connectiion close failed because", e);
-		}
 	}
 }
