@@ -64,6 +64,7 @@ public class PrepStatementProcessor {
 	 */
 	public final int[] execute() {
 		int[] result = null;
+		log.debug("Executed Prep \"" + prepInit + "\"");
 		try {
 			result = statement.executeBatch();
 		} catch (SQLException e) {

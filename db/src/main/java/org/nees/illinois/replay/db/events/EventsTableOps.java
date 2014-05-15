@@ -17,43 +17,24 @@ import org.slf4j.LoggerFactory;
  */
 public class EventsTableOps {
 	/**
-	 * @return the eventTableName
-	 */
-	public final String getEventTableName() {
-		return eventTableName;
-	}
-
-	/**
-	 * @return the experiment
-	 */
-	public final String getExperiment() {
-		return experiment;
-	}
-
-	/**
-	 * @return the pools
-	 */
-	public final DbPools getPools() {
-		return pools;
-	}
-
-	/**
 	 * Name of the events table.
 	 */
 	private final String eventTableName = "EXPERIMENT_EVENTS";
+
 	/**
 	 * Name of the experiment.
 	 */
 	private final String experiment;
+
 	/**
 	 * Logger.
 	 **/
 	private final Logger log = LoggerFactory.getLogger(EventsTableOps.class);
+
 	/**
 	 * Database connection pools.
 	 */
 	private final DbPools pools;
-
 	/**
 	 * @param pools
 	 *            Database connection pools.
@@ -64,7 +45,6 @@ public class EventsTableOps {
 		this.pools = pools;
 		this.experiment = experiment;
 	}
-
 	/**
 	 * Add an event to the event table.
 	 * @param event
@@ -76,7 +56,6 @@ public class EventsTableOps {
 		eis.add(event);
 		eis.getBuilder().execute();
 	}
-
 	/**
 	 * Create the event table.
 	 * @return true if successful.
@@ -84,9 +63,8 @@ public class EventsTableOps {
 	public final boolean create() {
 		final String createTable = "CREATE TABLE " + eventTableName + "("
 				+ "TIME DOUBLE NOT NULL," + " NAME VARCHAR(200) NOT NULL,"
-				+ " TYPE VARCHAR(50) NOT NULL,"
-				+ " SOURCE VARCHAR(200) NOT NULL,"
-				+ " DESCRIPTION VARCHAR(2000)," + " STEPINDEX DOUBLE)";
+				+ " DESCRIPTION VARCHAR(2000),"
+				+ " SOURCE VARCHAR(200) NOT NULL)";
 		StatementProcessor statement = pools
 				.createDbStatement(experiment, true);
 		boolean result = statement.execute(createTable);
@@ -132,6 +110,35 @@ public class EventsTableOps {
 	}
 
 	/**
+	 * @return the eventTableName
+	 */
+	public final String getEventTableName() {
+		return eventTableName;
+	}
+
+	/**
+	 * @return the experiment
+	 */
+	public final String getExperiment() {
+		return experiment;
+	}
+
+	/**
+	 * @return the pools
+	 */
+	public final DbPools getPools() {
+		return pools;
+	}
+
+	/**
+	 * @return a new instance of {@link EventQueries}.
+	 */
+	public final EventQueries getQueries() {
+		return new EventQueries(pools.fetchConnection(experiment, false),
+				eventTableName);
+	}
+
+	/**
 	 * Remove table.
 	 * @return True if successful.
 	 */
@@ -141,13 +148,5 @@ public class EventsTableOps {
 		boolean result = statement.execute("DROP TABLE " + eventTableName);
 		statement.close();
 		return result;
-	}
-
-	/**
-	 * @return a new instance of {@link EventQueries}.
-	 */
-	public final EventQueries getQueries() {
-		return new EventQueries(pools.fetchConnection(experiment, false),
-				eventTableName);
 	}
 }

@@ -15,8 +15,8 @@ import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTableCheck;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
 import org.nees.illinois.replay.test.db.utils.UpdateDataSets;
-import org.nees.illinois.replay.test.utils.TestDatasetType;
-import org.nees.illinois.replay.test.utils.TestDatasets;
+import org.nees.illinois.replay.test.utils.TestDatasetParameters;
+import org.nees.illinois.replay.test.utils.types.TestDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
@@ -34,6 +34,7 @@ import com.google.inject.Injector;
  * Test the creation and updates of data tables.
  * @author Michael Bletzinger
  */
+@Test(groups = { "db-updates" })
 public class TestDbUpdates {
 	/**
 	 * Map of database pools.
@@ -59,69 +60,11 @@ public class TestDbUpdates {
 	/**
 	 * Test data sets.
 	 */
-	private TestDatasets set;
+	private TestDatasetParameters set;
 	/**
 	 * Logger.
 	 **/
 	private final Logger log = LoggerFactory.getLogger(TestDbUpdates.class);
-
-	/**
-	 * Test Table creation.
-	 */
-	@Test
-	public final void testCreateTable() {
-		DbDataUpdates dbdu = new DbDataUpdates(pools);
-		DbTableCheck dbtc = new DbTableCheck(pools, experimentName);
-		ExperimentRegistries experiment = new ExperimentRegistries(
-				experimentName);
-		dbdu.setExperiment(experiment);
-		for (TestDatasetType t : set.getTableTypes()) {
-			String tname = dbdu.createTable(set.getTableName(t), set.getTt(t),
-					set.getChannels(t));
-			Assert.assertNotNull(tname);
-			List<String> dbnames = new ArrayList<String>();
-			dbnames.add("TIME");
-			dbnames.addAll(experiment.getCnr().names2Ids(set.getChannels(t)));
-			dbtc.checkTable(tname, dbnames);
-			Assert.assertTrue(dbdu.removeTable(set.getTableName(t)));
-		}
-
-	}
-
-	/**
-	 * Test the ability to add data to a table.
-	 */
-	@Test
-	public final void testUpdateTable() {
-		DbDataUpdates dbdu = new DbDataUpdates(pools);
-		DbTableCheck dbtc = new DbTableCheck(pools, experimentName);
-		ExperimentRegistries experiment = new ExperimentRegistries(
-				experimentName);
-		dbdu.setExperiment(experiment);
-		for (TestDatasetType t : set.getTableTypes()) {
-			log.debug("Checking table " + t.name());
-			String tname = dbdu.createTable(set.getTableName(t), set.getTt(t),
-					set.getChannels(t));
-			Assert.assertNotNull(tname);
-			UpdateDataSets uds = new UpdateDataSets(set);
-			DoubleMatrix expected = null;
-			for (int u = 0; u < uds.numberOfUpdates(); u++) {
-				DoubleMatrixI dm = uds.generate(t, u);
-				dbdu.update(set.getTableName(t), dm.getData());
-				if(expected == null ) {
-					expected = new DoubleMatrix(dm.getData());
-				} else {
-					for(List<Double> row : dm.toList()) {
-						expected.append(row);
-					}
-				}
-				log.debug("Checking update " + u);
-				dbtc.checkTableContents(set.getTableDefinition(t, experiment.getCnr(), new TableRegistry()), expected);
-			}
-
-			Assert.assertTrue(dbdu.removeTable(set.getTableName(t)));
-		}
-	}
 
 	/**
 	 * Set up the data for the tests.
@@ -142,7 +85,7 @@ public class TestDbUpdates {
 			ddbc.startDerby();
 		}
 		pools.getOps().createDatabase(experimentName);
-		set = new TestDatasets(false, experimentName);
+		set = new TestDatasetParameters(false, experimentName);
 	}
 
 	/**
@@ -171,6 +114,64 @@ public class TestDbUpdates {
 		}
 		if (ismysql == false) {
 			ddbc.stopDerby();
+		}
+	}
+
+	/**
+	 * Test Table creation.
+	 */
+	@Test
+	public final void testCreateTable() {
+		DbDataUpdates dbdu = new DbDataUpdates(pools);
+		DbTableCheck dbtc = new DbTableCheck(pools, experimentName);
+		ExperimentRegistries experiment = new ExperimentRegistries(
+				experimentName);
+		dbdu.setExperiment(experiment);
+		for (TestDataSource t : TestDataSource.values()) {
+			String tname = dbdu.createTable(set.getTableName(t), set.getTt(t),
+					set.getChannels(t));
+			Assert.assertNotNull(tname);
+			List<String> dbnames = new ArrayList<String>();
+			dbnames.add("TIME");
+			dbnames.addAll(experiment.getCnr().names2Ids(set.getChannels(t)));
+			dbtc.checkTable(tname, dbnames);
+			Assert.assertTrue(dbdu.removeTable(set.getTableName(t)));
+		}
+
+	}
+
+	/**
+	 * Test the ability to add data to a table.
+	 */
+	@Test
+	public final void testUpdateTable() {
+		DbDataUpdates dbdu = new DbDataUpdates(pools);
+		DbTableCheck dbtc = new DbTableCheck(pools, experimentName);
+		ExperimentRegistries experiment = new ExperimentRegistries(
+				experimentName);
+		dbdu.setExperiment(experiment);
+		for (TestDataSource t : TestDataSource.values()) {
+			log.debug("Checking table " + t.name());
+			String tname = dbdu.createTable(set.getTableName(t), set.getTt(t),
+					set.getChannels(t));
+			Assert.assertNotNull(tname);
+			UpdateDataSets uds = new UpdateDataSets(set);
+			DoubleMatrix expected = null;
+			for (int u = 0; u < uds.numberOfUpdates(); u++) {
+				DoubleMatrixI dm = uds.generate(t, u);
+				dbdu.update(set.getTableName(t), dm.getData());
+				if(expected == null ) {
+					expected = new DoubleMatrix(dm.getData());
+				} else {
+					for(List<Double> row : dm.toList()) {
+						expected.append(row);
+					}
+				}
+				log.debug("Checking update " + u);
+				dbtc.checkTableContents(set.getTableDefinition(t, experiment.getCnr(), new TableRegistry()), expected);
+			}
+
+			Assert.assertTrue(dbdu.removeTable(set.getTableName(t)));
 		}
 	}
 }

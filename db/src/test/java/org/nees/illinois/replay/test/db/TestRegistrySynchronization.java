@@ -9,9 +9,9 @@ import org.nees.illinois.replay.db.registry.synch.RegistrySynchI;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
-import org.nees.illinois.replay.test.utils.QuerySetsDirector;
-import org.nees.illinois.replay.test.utils.QuerySetsDirector.ExperimentNames;
-import org.nees.illinois.replay.test.utils.TestDatasets;
+import org.nees.illinois.replay.test.utils.DatasetsDirector;
+import org.nees.illinois.replay.test.utils.TestDatasetParameters;
+import org.nees.illinois.replay.test.utils.types.ExperimentNames;
 import org.testng.AssertJUnit;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -82,7 +82,7 @@ public class TestRegistrySynchronization {
 	 */
 	@Test
 	public final void testChannelNameRegistrySynch() {
-		TestDatasets lists = new TestDatasets(false, experiment);
+		TestDatasetParameters lists = new TestDatasetParameters(false, experiment);
 		ChannelNameRegistry cnr = new ChannelNameRegistry();
 		lists.fillCnr(cnr);
 		StatementProcessor dbSt = pools.createDbStatement(experiment, true);
@@ -95,13 +95,15 @@ public class TestRegistrySynchronization {
 		dbcs.load();
 		AssertJUnit.assertEquals(cnr.toString(), cnr1.toString());
 	}
-/**
- * Test the synchronization of the table registries.
- */
+	/**
+	 * Test the synchronization of the table registries.
+	 */
 	@Test
 	public final void testTableRegistrySynch() {
-		QuerySetsDirector dd = new QuerySetsDirector(ExperimentNames.HybridMasonry1);
-		TestDatasets set = dd.getSet();
+		final int numberOfRows = 40;
+		final int numberOfEvents = 10;
+		DatasetsDirector dd = new DatasetsDirector(ExperimentNames.HybridMasonry1, numberOfRows, numberOfEvents);
+		TestDatasetParameters set = dd.getSet();
 		TableRegistry tr = new TableRegistry();
 		set.fillTblr(tr);
 		StatementProcessor dbSt = pools.createDbStatement(experiment, true);

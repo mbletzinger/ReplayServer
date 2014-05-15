@@ -46,7 +46,7 @@ public class TestDbStatement {
 	/**
 	 * Data to use.
 	 */
-	private double[][] data = new double[numDataRows][numDataColumns];
+	private final double[][] data = new double[numDataRows][numDataColumns];
 	/**
 	 * Map of database pools.
 	 */
@@ -97,7 +97,7 @@ public class TestDbStatement {
 		}
 		pools.getOps().createDatabase(experiment);
 
-		for (int i = 0; i < numDataRows; i++) {
+		for (int i = 0;i < numDataRows;i++) {
 			data[i][0] = i * dataMultipliers[0] + tolerance;
 			data[i][1] = i * dataMultipliers[1] + tolerance;
 		}
@@ -132,34 +132,34 @@ public class TestDbStatement {
 	}
 
 	/**
+	 * Test table management.
+	 */
+	@Test
+	public final void testCreateAndDropTable() {
+		StatementProcessor dbSt = pools.createDbStatement(experiment, true);
+		boolean result = dbSt.execute("CREATE TABLE " + tblName
+				+ " (col1 double, col2 double)");
+		AssertJUnit.assertTrue(result);
+		result = dbSt.execute("DROP TABLE " + tblName);
+		AssertJUnit.assertTrue(result);
+		dbSt.close();
+	}
+
+	/**
 	 * Test a prepared statement.
 	 */
 	@Test
 	public final void testCreatePrepStatement() {
 		StatementProcessor dbSt = pools.createDbStatement(experiment, true);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
-		TestPrepStatement prep = new TestPrepStatement(tblName.replaceAll("\"", ""),
-				dbSt.getConnection());
-		for (int i = 0; i < numDataRows; i++) {
+		TestPrepStatement prep = new TestPrepStatement(tblName.replaceAll("\"",
+				""), dbSt.getConnection());
+		for (int i = 0;i < numDataRows;i++) {
 			prep.add(data[i][0], data[i][1]);
 		}
 		int[] result = prep.getBuilder().execute();
 		AssertJUnit.assertNotNull(result);
 		dbSt.execute("DROP TABLE " + tblName);
-		dbSt.close();
-	}
-
-	/**
-	 * Test table management.
-	 */
-	@Test
-	public final void testCreateAndDropTable() {
-		StatementProcessor dbSt = pools.createDbStatement(experiment, true);
-		boolean result = dbSt
-				.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
-		AssertJUnit.assertTrue(result);
-		result = dbSt.execute("DROP TABLE " + tblName);
-		AssertJUnit.assertTrue(result);
 		dbSt.close();
 	}
 
@@ -171,11 +171,22 @@ public class TestDbStatement {
 		StatementProcessor dbSt = pools.createDbStatement(experiment, false);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
 		double[][] result = new double[numDataRows][numDataColumns];
-		for (int i = 0; i < numDataRows; i++) {
-			TestPrepStatement prep = new TestPrepStatement(tblName.replaceAll("\"", ""),
-					dbSt.getConnection());
+		for (int i = 0;i < numDataRows;i++) {
+			TestPrepStatement prep = new TestPrepStatement(tblName.replaceAll(
+					"\"", ""), dbSt.getConnection());
 			prep.add(data[i][0], data[i][1]);
-			prep.getBuilder().execute();
+			int [] updated = prep.getBuilder().execute();
+//			try {
+//				if (dbSt.getConnection().isClosed()) {
+//					log.error("Whuuut?");
+//					Assert.fail();
+//				}
+//			} catch (SQLException e1) {
+//				log.error("WHUUUUUT?", e1);
+//				Assert.fail();
+//			}
+			dbSt = pools.createDbStatement(experiment, false);
+
 			ResultSet rs = dbSt.query("SELECT * FROM " + tblName);
 			int r = 0;
 			try {
@@ -190,14 +201,14 @@ public class TestDbStatement {
 			}
 			String rStr1 = "Result = [";
 			String rStr2 = "              [";
-			for (int k = 0; k < numDataRows; k++) {
+			for (int k = 0;k < numDataRows;k++) {
 				rStr1 += (k == 0 ? "" : ", ") + result[k][0];
 				rStr2 += (k == 0 ? "" : ", ") + result[k][1];
 			}
 			log.info(rStr1 + "]\n" + rStr2 + "]");
 			dbSt.closeQuery(rs);
 		}
-		for (int i = 0; i < numDataRows; i++) {
+		for (int i = 0;i < numDataRows;i++) {
 			AssertJUnit.assertEquals(data[i][0], result[i][0], tolerance);
 			AssertJUnit.assertEquals(data[i][1], result[i][1], tolerance);
 		}
@@ -212,12 +223,13 @@ public class TestDbStatement {
 	public final void testQuery2() {
 		StatementProcessor dbSt = pools.createDbStatement(experiment, false);
 		dbSt.execute("CREATE TABLE " + tblName + " (col1 double, col2 double)");
-		TestPrepStatement prep = new TestPrepStatement(tblName.replaceAll("\"", ""),
-				dbSt.getConnection());
-		for (int i = 0; i < numDataRows; i++) {
+		TestPrepStatement prep = new TestPrepStatement(tblName.replaceAll("\"",
+				""), dbSt.getConnection());
+		for (int i = 0;i < numDataRows;i++) {
 			prep.add(data[i][0], data[i][1]);
 		}
 		prep.getBuilder().execute();
+		dbSt = pools.createDbStatement(experiment, false);
 		ResultSet rs = dbSt.query("SELECT * FROM " + tblName);
 		double[][] result = new double[numDataRows][numDataColumns];
 		log.info("result size is [" + result.length + "][" + result[0].length
@@ -234,7 +246,7 @@ public class TestDbStatement {
 			AssertJUnit.fail();
 		}
 		dbSt.closeQuery(rs);
-		for (int i = 0; i < numDataRows; i++) {
+		for (int i = 0;i < numDataRows;i++) {
 			AssertJUnit.assertEquals(data[i][0], result[i][0], tolerance);
 			AssertJUnit.assertEquals(data[i][1], result[i][1], tolerance);
 		}

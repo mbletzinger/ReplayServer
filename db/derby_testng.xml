@@ -14,21 +14,24 @@
 					name="db-statement"
 					depends-on="db-pools.*" />
 				<group
-					name="restlet-errors-client-test"
-					depends-on="restlet-client-test.*" />
+					name="db-updates"
+					depends-on="db-statement.*" />
 				<group
-					name="http-test"
-					depends-on="resources-test.*" />
-			</dependencies>
+					name="db-events"
+					depends-on="db-updates.*" />
+				<group
+					name="db-qsimple"
+					depends-on="db-events.*" />
+									</dependencies>
 		</groups>
     <classes>
       <class name="org.nees.illinois.replay.test.db.TestDbControl"/>
       <class name="org.nees.illinois.replay.test.db.TestCreateRemoveDatabase"/>
       <class name="org.nees.illinois.replay.test.db.TestDbPools"/>
       <class name="org.nees.illinois.replay.test.db.TestRegistrySynchronization"/>
-      <class name="org.nees.illinois.replay.test.db.TestDataStatements"/>
-      <class name="org.nees.illinois.replay.test.db.TestTableUpdates"/>
-      <class name="org.nees.illinois.replay.test.db.TestDbQuery"/>
+      <class name="org.nees.illinois.replay.test.db.TestEventManagement"/>
+      <class name="org.nees.illinois.replay.test.db.TestDbUpdates"/>
+      <class name="org.nees.illinois.replay.test.db.TestSimpleDataQueries"/>
       <class name="org.nees.illinois.replay.test.db.TestDbStatement"/>
     </classes>
   </test> <!-- DerbyTest -->

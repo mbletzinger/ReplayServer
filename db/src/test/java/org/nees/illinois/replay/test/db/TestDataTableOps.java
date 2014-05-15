@@ -16,8 +16,8 @@ import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
 import org.nees.illinois.replay.test.utils.CompareLists;
-import org.nees.illinois.replay.test.utils.TestDatasetType;
-import org.nees.illinois.replay.test.utils.TestDatasets;
+import org.nees.illinois.replay.test.utils.TestDatasetParameters;
+import org.nees.illinois.replay.test.utils.types.TestDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
@@ -55,71 +55,6 @@ public class TestDataTableOps {
 	 * Logger.
 	 **/
 	private final Logger log = LoggerFactory.getLogger(TestDataTableOps.class);
-
-	/**
-	 * Stand up a database for testing.
-	 * @param db
-	 *            label of database to set up.
-	 * @throws Exception
-	 *             If something goes wrong with the database.
-	 */
-	@Parameters("db")
-	@BeforeClass
-	public final void setUp(@Optional("derby") final String db)
-			throws Exception {
-		DbTestsModule guiceMod = new DbTestsModule(db);
-		Injector injector = Guice.createInjector(guiceMod);
-		pools = injector.getInstance(DbPools.class);
-		ismysql = db.equals("mysql");
-		if (ismysql == false) {
-			ddbc.startDerby();
-		}
-	}
-
-	/**
-	 * Shut down the database and clean up everything.
-	 * @throws Exception
-	 *             If something goes wrong with the database.
-	 */
-	@AfterClass
-	public final void tearDown() throws Exception {
-		pools.getOps().removeDatabase(registries.getExperiment());
-		pools.close();
-		if (ismysql == false) {
-			ddbc.stopDerby();
-		}
-	}
-
-	/**
-	 * Tests the creation and removal of data tables in the database.
-	 */
-	@Test
-	public final void testDataTableOps() {
-		setExperiment("HybridMasonry1");
-		TestDatasets sets = new TestDatasets(false, registries.getExperiment());
-		for (TestDatasetType t : sets.getTableTypes()) {
-			TableDefiner defnr = registries.createTableDefiner();
-			StatementProcessor dbSt = pools.createDbStatement(
-					registries.getExperiment(), true);
-			TableDefinitionI td = defnr.define(sets.getTableName(t),
-					sets.getTt(t), sets.getChannels(t));
-			DataTableOps dto = new DataTableOps(td, dbSt);
-			Assert.assertTrue(dto.create());
-			check4Table(td.getTableId(), td.getColumns(true));
-			dbSt = pools.createDbStatement(registries.getExperiment(), false);
-			dto = new DataTableOps(td, dbSt);
-			Assert.assertTrue(dto.remove());
-		}
-	}
-
-	/**
-	 * Set the name of the experiment.
-	 * @param experiment
-	 *            name of the experiment.
-	 */
-	private void setExperiment(final String experiment) {
-		registries = new ExperimentRegistries(experiment);
-	}
 
 	/**
 	 * Verify that a table exists in the database.
@@ -180,5 +115,70 @@ public class TestDataTableOps {
 		}
 		CompareLists<String> comparor = new CompareLists<String>();
 		comparor.compare(tableCols, expected);
+	}
+
+	/**
+	 * Set the name of the experiment.
+	 * @param experiment
+	 *            name of the experiment.
+	 */
+	private void setExperiment(final String experiment) {
+		registries = new ExperimentRegistries(experiment);
+	}
+
+	/**
+	 * Stand up a database for testing.
+	 * @param db
+	 *            label of database to set up.
+	 * @throws Exception
+	 *             If something goes wrong with the database.
+	 */
+	@Parameters("db")
+	@BeforeClass
+	public final void setUp(@Optional("derby") final String db)
+			throws Exception {
+		DbTestsModule guiceMod = new DbTestsModule(db);
+		Injector injector = Guice.createInjector(guiceMod);
+		pools = injector.getInstance(DbPools.class);
+		ismysql = db.equals("mysql");
+		if (ismysql == false) {
+			ddbc.startDerby();
+		}
+	}
+
+	/**
+	 * Shut down the database and clean up everything.
+	 * @throws Exception
+	 *             If something goes wrong with the database.
+	 */
+	@AfterClass
+	public final void tearDown() throws Exception {
+		pools.getOps().removeDatabase(registries.getExperiment());
+		pools.close();
+		if (ismysql == false) {
+			ddbc.stopDerby();
+		}
+	}
+
+	/**
+	 * Tests the creation and removal of data tables in the database.
+	 */
+	@Test
+	public final void testDataTableOps() {
+		setExperiment("HybridMasonry1");
+		TestDatasetParameters sets = new TestDatasetParameters(false, registries.getExperiment());
+		for (TestDataSource t : TestDataSource.values()) {
+			TableDefiner defnr = registries.createTableDefiner();
+			StatementProcessor dbSt = pools.createDbStatement(
+					registries.getExperiment(), true);
+			TableDefinitionI td = defnr.define(sets.getTableName(t),
+					sets.getTt(t), sets.getChannels(t));
+			DataTableOps dto = new DataTableOps(td, dbSt);
+			Assert.assertTrue(dto.create());
+			check4Table(td.getTableId(), td.getColumns(true));
+			dbSt = pools.createDbStatement(registries.getExperiment(), false);
+			dto = new DataTableOps(td, dbSt);
+			Assert.assertTrue(dto.remove());
+		}
 	}
 }
