@@ -1,5 +1,7 @@
 package org.nees.illinois.replay.common.registries;
 
+import org.nees.illinois.replay.common.types.TableDefinitionI;
+
 /**
  * Registeries to manage the dataset of an experiment. The Replay server manages
  * a session that has experiment scope. The registries save data that needs to
@@ -70,6 +72,20 @@ public class ExperimentRegistries {
 	}
 
 	/**
+	 * @return A definer based on registry references.
+	 */
+	public final QueryDefiner createQueryDefiner() {
+		return new QueryDefiner(cnr, tableDefs, queries);
+	}
+
+	/**
+	 * @return A definer based on the registry references.
+	 */
+	public final TableDefiner createTableDefiner() {
+		return new TableDefiner(cnr, tableDefs);
+	}
+
+	/**
 	 * @return the channel name registry
 	 */
 	public final ChannelNameRegistry getCnr() {
@@ -89,18 +105,10 @@ public class ExperimentRegistries {
 	public final QueryRegistry getQueries() {
 		return queries;
 	}
-
 	/**
 	 * @return the table registry
 	 */
 	public final TableRegistry getTableDefs() {
 		return tableDefs;
-	}
-
-	/**
-	 * @return A definer based on the registry references.
-	 */
-	public final TableDefiner createTableDefiner() {
-		return new TableDefiner(cnr, tableDefs);
 	}
 }
