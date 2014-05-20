@@ -12,26 +12,6 @@ import org.nees.illinois.replay.data.DoubleMatrixI;
  */
 public interface DataQuerySubResourceI extends SubResourceI {
 	/**
-	 * Define a query.
-	 * @param name
-	 *            Name of the query.
-	 * @param channels
-	 *            Channels that are part of the query.
-	 * @return True on success.
-	 */
-	boolean setQuery(String name, List<String> channels);
-
-	/**
-	 * Perform a query using a lists of discrete times.
-	 * @param name
-	 *            Name of the query.
-	 * @param times
-	 *            List of timestamps from Jan 1 1901.
-	 * @return Channel data.
-	 */
-	DoubleMatrixI doQuery(String name, List<Double> times);
-
-	/**
 	 * Perform a query.
 	 * @param name
 	 *            Name of the query.
@@ -46,10 +26,30 @@ public interface DataQuerySubResourceI extends SubResourceI {
 	DoubleMatrixI doQuery(String name, double start, double stop);
 
 	/**
+	 * Perform a query using a lists of discrete times.
+	 * @param name
+	 *            Name of the query.
+	 * @param times
+	 *            List of timestamps from Jan 1 1901.
+	 * @return Channel data.
+	 */
+	DoubleMatrixI doQuery(String name, List<Double> times);
+
+	/**
 	 * Determines if the name identifies a stored query.
 	 * @param name
 	 *            Name of query.
 	 * @return True if the query exists.
 	 */
 	boolean isQuery(String name);
+
+	/**
+	 * Define a query.
+	 * @param name
+	 *            Name of the query.
+	 * @param channels
+	 *            Channels that are part of the query.
+	 * @return True on success.
+	 */
+	boolean setQuery(String name, List<String> channels);
 }
