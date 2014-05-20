@@ -6,7 +6,7 @@ import java.util.List;
  * Class which sets up select statements.
  * @author Michael Bletzinger
  */
-public class DbQueries {
+public class QuerySelectFactory {
 	/**
 	 * Creates query fragment for source filter.
 	 * @param source

@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * some time parameters.
  * @author Michael Bletzinger
  */
-public class SimpleQueryExecutor {
+public class OneTableQueryExecutor {
 	/**
 	 * Database connection.
 	 */
@@ -27,11 +27,11 @@ public class SimpleQueryExecutor {
 	 * Logger.
 	 **/
 	private final Logger log = LoggerFactory
-			.getLogger(SimpleQueryExecutor.class);
+			.getLogger(OneTableQueryExecutor.class);
 	/**
 	 * Query select statement builder.
 	 */
-	private final DbQueries queryStrings = new DbQueries();
+	private final QuerySelectFactory queryStrings = new QuerySelectFactory();
 	/**
 	 * Defines the table and its selected columns.
 	 */
@@ -43,7 +43,7 @@ public class SimpleQueryExecutor {
 	 * @param connection
 	 *            Database connection.
 	 */
-	public SimpleQueryExecutor(final TableDefinitionI table, final Connection connection) {
+	public OneTableQueryExecutor(final TableDefinitionI table, final Connection connection) {
 		this.table = table;
 		this.connection = connection;
 	}
