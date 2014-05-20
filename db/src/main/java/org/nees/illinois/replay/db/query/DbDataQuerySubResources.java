@@ -3,12 +3,10 @@ package org.nees.illinois.replay.db.query;
 import java.util.List;
 
 import org.nees.illinois.replay.common.registries.ExperimentRegistries;
+import org.nees.illinois.replay.common.registries.QueryDefiner;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
-import org.nees.illinois.replay.data.RateType;
 import org.nees.illinois.replay.db.DbPools;
-import org.nees.illinois.replay.db.query.old.SavedQueryWTablesList;
-import org.nees.illinois.replay.db.query.old.DbQueryRouter.QueryType;
 import org.nees.illinois.replay.subresource.DataQuerySubResourceI;
 
 import com.google.inject.Inject;
@@ -18,7 +16,7 @@ import com.google.inject.Inject;
  * various forms.
  * @author Michael Bletzinger
  */
-public class DbDataQuery implements DataQuerySubResourceI {
+public class DbDataQuerySubResources implements DataQuerySubResourceI {
 	/**
 	 * Database connections.
 	 */
@@ -33,7 +31,7 @@ public class DbDataQuery implements DataQuerySubResourceI {
 	 *            Database connections.
 	 */
 	@Inject
-	public DbDataQuery(final DbPools pools) {
+	public DbDataQuerySubResources(final DbPools pools) {
 		super();
 		this.pools = pools;
 	}
@@ -59,32 +57,15 @@ public class DbDataQuery implements DataQuerySubResourceI {
 	// }
 
 	@Override
-	public final DoubleMatrix doQuery(String name, final double start,
+	public final DoubleMatrix doQuery(final String name, final double start,
 			final double stop) {
 		return doQuery(QueryType.ContWithStop, name, start, stop);
 	}
 
 	@Override
-	public final boolean isQuery(final String name) {
-		return experiment.getQueries().getQuery(name) != null;
-	}
-
-	@Override
-	public final boolean setQuery(final String name, final List<String> channels) {
-		// DbTableSpecs is getting a clone because query tables are either added
-		// or removed; never changed.
-		DbTablesMap specs = (DbTablesMap) experiment.getChnlNamesMgmt().clone();
-		SavedQueryWTablesList dq = new SavedQueryWTablesList(channels, name,
-				specs, RateType.CONT);
-		experiment.getQueries().setQuery(name, dq);
-		dq = new SavedQueryWTablesList(channels, name, specs, RateType.STEP);
-		experiment.getQueries().setQuery(name, dq);
-		return true;
-	}
-
-	@Override
-	public final void setExperiment(final ExperimentRegistries experiment) {
-		this.experiment = experiment;
+	public final DoubleMatrixI doQuery(final String name, final List<Double> times) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -93,8 +74,19 @@ public class DbDataQuery implements DataQuerySubResourceI {
 	}
 
 	@Override
-	public final DoubleMatrixI doQuery(final String name, final List<Double> times) {
-		// TODO Auto-generated method stub
-		return null;
+	public final boolean isQuery(final String name) {
+		return experiment.getQueries().getQuery(name) != null;
+	}
+
+	@Override
+	public final void setExperiment(final ExperimentRegistries experiment) {
+		this.experiment = experiment;
+	}
+
+	@Override
+	public final boolean setQuery(final String name, final List<String> channels) {
+		QueryDefiner qd = experiment.createQueryDefiner();
+		qd.define(name, channels);
+		return true;
 	}
 }

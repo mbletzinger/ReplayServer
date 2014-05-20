@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nees.illinois.replay.db.query.DbQueries;
+import org.nees.illinois.replay.db.query.QuerySelectFactory;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.events.Event;
 import org.nees.illinois.replay.events.EventI;
@@ -35,7 +35,7 @@ public class EventQueries {
 	/**
 	 * Query strings.
 	 */
-	private final DbQueries queries = new DbQueries();
+	private final QuerySelectFactory queries = new QuerySelectFactory();
 
 	/**
 	 * @param connection
