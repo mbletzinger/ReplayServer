@@ -3,6 +3,7 @@ package org.nees.illinois.replay.test.utils.tricks;
 import java.util.List;
 
 import org.nees.illinois.replay.data.DoubleMatrixI;
+import org.nees.illinois.replay.data.SubsetSlicer;
 
 /**
  * Class which reorganizes the columns of a double matrix according to before
