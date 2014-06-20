@@ -4,7 +4,7 @@ package org.nees.illinois.replay.test.utils.types;
  * Query test types.
  * @author Michael Bletzinger
  */
-public enum QueryRowDataTypes {
+public enum TimeBoundaryTestType {
 	/**
 	 * Include a slice of continuous data from start to stop.
 	 */

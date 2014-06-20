@@ -1,16 +1,21 @@
 package org.nees.illinois.replay.test.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.nees.illinois.replay.common.types.TimeBoundsI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.events.EventListI;
+import org.nees.illinois.replay.test.utils.CompareLists;
 import org.nees.illinois.replay.test.utils.QueryDataRowsExtractor;
+import org.nees.illinois.replay.test.utils.QueryTimeBoundsExtractor;
 import org.nees.illinois.replay.test.utils.TestDataset;
 import org.nees.illinois.replay.test.utils.gen.DoubleMatrixGenerator;
 import org.nees.illinois.replay.test.utils.gen.EventsGenerator;
 import org.nees.illinois.replay.test.utils.gen.TimeGenerator;
-import org.nees.illinois.replay.test.utils.types.QueryRowDataTypes;
+import org.nees.illinois.replay.test.utils.types.TimeBoundaryTestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeClass;
@@ -73,18 +78,40 @@ public class TestDataRowExtraction {
 		final double[] bounds1 = { 201.4, 202.6 };
 		final double[] bounds2 = { 201.6, 202.8 };
 		final String[] bounds3 = { "Event Name 2", "Event Name 4" };
+		List<String> expectedList = new ArrayList<String>();
+		expectedList.add("Event Name 2");
+		expectedList.add("Event Name 3");
+		expectedList.add("Event Name 4");
 		QueryDataRowsExtractor qdre = new QueryDataRowsExtractor(set);
-		TimeBoundsI tb = qdre.getTimeBounds(false);
+		QueryTimeBoundsExtractor times = qdre.getTimes();
+		TimeBoundaryTestType qpt = TimeBoundaryTestType.ContWithStartStop;
+		TimeBoundsI tb = times.getTimeBounds(qpt);
+		log.debug("Time bounds for type " + qpt + " is " + tb);
 		Assert.assertEquals(bounds1[0], tb.getStart(), delta);
 		Assert.assertEquals(bounds1[1], tb.getStop(), delta);
-		log.debug("Time bounds for continuous is " + tb);
-		tb = qdre.getTimeBounds(true);
+		qpt = TimeBoundaryTestType.ContWithEventStartStop;
+		tb = times.getTimeBounds(qpt);
+		log.debug("Time bounds for type " + qpt + " is " + tb);
 		Assert.assertEquals(bounds2[0], tb.getStart(), delta);
 		Assert.assertEquals(bounds2[1], tb.getStop(), delta);
 		Assert.assertEquals(bounds3[0], tb.getStartName());
 		Assert.assertEquals(bounds3[1], tb.getStopName());
-		log.debug("Time bounds for events is " + tb);
+		qpt = TimeBoundaryTestType.ContWithTime;
+		tb = times.getTimeBounds(qpt);
+		log.debug("Time bounds for type " + qpt + " is " + tb);
+		Assert.assertEquals(bounds1[0], tb.getStart(), delta);
+		Assert.assertEquals(Double.NaN, tb.getStop(), delta);
 
+		CompareLists<String> cmp = new CompareLists<String>();
+
+		qpt = TimeBoundaryTestType.EventsWithStartStop;
+		tb = times.getTimeBounds(qpt);
+		log.debug("Time bounds for type " + qpt + " is " + tb);
+		cmp.compare(tb.getNames(), expectedList);
+		qpt = TimeBoundaryTestType.Event;
+		tb = times.getTimeBounds(qpt);
+		log.debug("Time bounds for type " + qpt + " is " + tb);
+		cmp.compare(tb.getNames(), expectedList.subList(0, 1));
 	}
 
 	/**
@@ -112,7 +139,7 @@ public class TestDataRowExtraction {
 		};
 		QueryDataRowsExtractor qdre = new QueryDataRowsExtractor(set);
 		DoubleMatrixI actual = qdre
-				.getExpected(QueryRowDataTypes.ContWithStartStop);
+				.getExpected(TimeBoundaryTestType.ContWithStartStop);
 		log.debug("Result " + actual);
 		DoubleMatrixGenerator.compareData(actual.getData(), expected);
 	}
@@ -126,7 +153,7 @@ public class TestDataRowExtraction {
 			0.082, -0.08800000000000001, 0.094, -0.1, 0.10600000000000001,
 			-0.11200000000000002, 0.11800000000000001, -0.124 } };
 		QueryDataRowsExtractor qdre = new QueryDataRowsExtractor(set);
-		DoubleMatrixI actual = qdre.getExpected(QueryRowDataTypes.ContWithTime);
+		DoubleMatrixI actual = qdre.getExpected(TimeBoundaryTestType.ContWithTime);
 		log.debug("Result " + actual);
 		DoubleMatrixGenerator.compareData(actual.getData(), expected);
 
@@ -141,7 +168,7 @@ public class TestDataRowExtraction {
 			0.08600000000000001, -0.089, 0.092, -0.095, 0.098, -0.101,
 			0.10400000000000001, -0.107 }, };
 		QueryDataRowsExtractor qdre = new QueryDataRowsExtractor(set);
-		DoubleMatrixI actual = qdre.getExpected(QueryRowDataTypes.Event);
+		DoubleMatrixI actual = qdre.getExpected(TimeBoundaryTestType.Event);
 		log.debug("Result " + actual);
 		DoubleMatrixGenerator.compareData(actual.getData(), expected);
 	}
@@ -160,7 +187,7 @@ public class TestDataRowExtraction {
 					0.164, -0.167 },
 		};
 		QueryDataRowsExtractor qdre = new QueryDataRowsExtractor(set);
-		DoubleMatrixI actual = qdre.getExpected(QueryRowDataTypes.EventsWithStartStop);
+		DoubleMatrixI actual = qdre.getExpected(TimeBoundaryTestType.EventsWithStartStop);
 		log.debug("Result " + actual);
 		DoubleMatrixGenerator.compareData(actual.getData(), expected);
 	}
@@ -180,7 +207,7 @@ public class TestDataRowExtraction {
 					-0.14800000000000002, 0.154, -0.16, 0.166,
 					-0.17200000000000001, 0.178, -0.184 },		};
 		QueryDataRowsExtractor qdre = new QueryDataRowsExtractor(set);
-		DoubleMatrixI actual = qdre.getExpected(QueryRowDataTypes.ContWithEventStartStop);
+		DoubleMatrixI actual = qdre.getExpected(TimeBoundaryTestType.ContWithEventStartStop);
 		log.debug("Result " + actual);
 		DoubleMatrixGenerator.compareData(actual.getData(), expected);
 	}

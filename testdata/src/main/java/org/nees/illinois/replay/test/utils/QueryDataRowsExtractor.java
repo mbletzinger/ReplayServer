@@ -3,7 +3,6 @@ package org.nees.illinois.replay.test.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nees.illinois.replay.common.types.TimeBounds;
 import org.nees.illinois.replay.common.types.TimeBoundsI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
@@ -11,7 +10,7 @@ import org.nees.illinois.replay.data.SubsetCarver;
 import org.nees.illinois.replay.events.EventI;
 import org.nees.illinois.replay.events.EventListI;
 import org.nees.illinois.replay.test.utils.tricks.Events2DataRows;
-import org.nees.illinois.replay.test.utils.types.QueryRowDataTypes;
+import org.nees.illinois.replay.test.utils.types.TimeBoundaryTestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,18 +28,11 @@ public class QueryDataRowsExtractor {
 	 **/
 	private final Logger log = LoggerFactory
 			.getLogger(QueryDataRowsExtractor.class);
+
 	/**
-	 * Query set size ratio compared to the originating dataset.
+	 * Time boundaries extractor.
 	 */
-	private final double qratio = 0.3;
-	/**
-	 * Index of the starting row or event.
-	 */
-	private int startIdx;
-	/**
-	 * Index of the last row or event.
-	 */
-	private int stopIdx;
+	private final QueryTimeBoundsExtractor times;
 
 	/**
 	 * @param data
@@ -48,44 +40,37 @@ public class QueryDataRowsExtractor {
 	 */
 	public QueryDataRowsExtractor(final TestDataset data) {
 		this.data = data;
-	}
-
-	/**
-	 * Calculate the index boundaries of a query.
-	 *@param useEvents  Use the event list if true.
-	 */
-	private void calculateBounds(final boolean useEvents) {
-		int size = getSize(useEvents);
-		int qsize = (int) Math.round(size * qratio);
-		int buffer = Math.round((size - qsize) / 2);
-		startIdx = buffer;
-		stopIdx = buffer + qsize;
-		log.debug("Indexes start " + startIdx + " and stop " + stopIdx);
+		this.times = new QueryTimeBoundsExtractor(data);
 	}
 
 	/**
 	 * Carve out a set of query records around the middle of the data set.
+	 * @param qpt
+	 *            time boundary type.
 	 * @return a double matrix subset.
 	 */
-	private DoubleMatrixI getContinuousRecordChunk() {
-		calculateBounds(false);
+	private DoubleMatrixI getContinuousRecordChunk(
+			final TimeBoundaryTestType qpt) {
+		times.getTimeBounds(qpt);
 		DoubleMatrixI dm = data.getData();
 		SubsetCarver carve = new SubsetCarver(dm);
-		carve.setStartRow(startIdx);
-		carve.setStopRow(stopIdx);
+		carve.setStartRow(times.getStartIdx());
+		carve.setStopRow(times.getStopIdx());
 		return carve.subset();
 	}
 
 	/**
 	 * Carve out a set of query records around the middle of the data set.
+	 * @param qpt
+	 *            time boundary type.
 	 * @return a double matrix subset.
 	 */
-	private DoubleMatrixI getEventRecordChunk() {
-		calculateBounds(true);
+	private DoubleMatrixI getEventRecordChunk(final TimeBoundaryTestType qpt) {
+		times.getTimeBounds(qpt);
 		DoubleMatrixI dm = data.getData();
 		SubsetCarver carve = new SubsetCarver(dm);
-		EventI startEvent = data.getEvent(startIdx);
-		EventI stopEvent = data.getEvent(stopIdx);
+		EventI startEvent = data.getEvent(times.getStartIdx());
+		EventI stopEvent = data.getEvent(times.getStopIdx());
 		int strt = data.getData().timeIndex(startEvent.getTime());
 		int stp = data.getData().timeIndex(stopEvent.getTime());
 		carve.setStartRow(strt);
@@ -97,40 +82,43 @@ public class QueryDataRowsExtractor {
 	/**
 	 * Return a matrix of data where each row corresponds to an event within the
 	 * event bounds.
+	 * @param qpt
+	 *            time boundary type.
 	 * @return matrix of data.
 	 */
-	private DoubleMatrixI getEventRecords() {
+	private DoubleMatrixI getEventRecords(final TimeBoundaryTestType qpt) {
 		EventListI events = data.getEvents();
 		DoubleMatrixI dm = data.getData();
-		TimeBoundsI boundaries = getTimeBounds(true);
+		TimeBoundsI boundaries = times.getTimeBounds(qpt);
+		log.debug("slicing events based on " + boundaries);
 		List<EventI> list = events.slice(boundaries);
 		Events2DataRows e2dr = new Events2DataRows(dm);
 		return e2dr.getData(list);
 	}
 
 	/**
-	 * Get expected query records based on the {@link QueryRowDataTypes}.
+	 * Get expected query records based on the {@link TimeBoundaryTestType}.
 	 * @param qpt
-	 *            query parameter type.
+	 *            time boundary type.
 	 * @return a double matrix that is expected from this query parameter type.
 	 */
-	public final DoubleMatrixI getExpected(final QueryRowDataTypes qpt) {
+	public final DoubleMatrixI getExpected(final TimeBoundaryTestType qpt) {
 		DoubleMatrixI result = null;
 		switch (qpt) {
 		case ContWithStartStop:
-			result = getContinuousRecordChunk();
+			result = getContinuousRecordChunk(qpt);
 			break;
 		case ContWithEventStartStop:
-			result = getEventRecordChunk();
+			result = getEventRecordChunk(qpt);
 			break;
 		case ContWithTime:
-			result = getSingleContinuousRecord();
+			result = getSingleContinuousRecord(qpt);
 			break;
 		case Event:
-			result = getSingleEventRecord();
+			result = getSingleEventRecord(qpt);
 			break;
 		case EventsWithStartStop:
-			result = getEventRecords();
+			result = getEventRecords(qpt);
 			break;
 		default:
 			log.error("Don't know about query parameter type " + qpt);
@@ -143,11 +131,14 @@ public class QueryDataRowsExtractor {
 
 	/**
 	 * Return a row of data corresponding to a timestamp.
+	 * @param qpt
+	 *            time boundary type.
 	 * @return A double matrix containing one row of data.
 	 */
-	private DoubleMatrixI getSingleContinuousRecord() {
-		calculateBounds(false);
-		List<Double> row = data.getData().toList().get(startIdx);
+	private DoubleMatrixI getSingleContinuousRecord(
+			final TimeBoundaryTestType qpt) {
+		times.getTimeBounds(qpt);
+		List<Double> row = data.getData().toList().get(times.getStartIdx());
 		List<List<Double>> result = new ArrayList<List<Double>>();
 		result.add(row);
 		return new DoubleMatrix(result);
@@ -155,53 +146,22 @@ public class QueryDataRowsExtractor {
 
 	/**
 	 * Return a data row corresponding to an event occurrence.
+	 * @param qpt
+	 *            time boundary type.
 	 * @return double matrix containing one row.
 	 */
-	private DoubleMatrixI getSingleEventRecord() {
-		calculateBounds(true);
-		List<Double> row = data.getEventData(startIdx);
+	private DoubleMatrixI getSingleEventRecord(final TimeBoundaryTestType qpt) {
+		times.getTimeBounds(qpt);
+		List<Double> row = data.getEventData(times.getStartIdx());
 		List<List<Double>> result = new ArrayList<List<Double>>();
 		result.add(row);
 		return new DoubleMatrix(result);
 	}
 
 	/**
-	 * Return the size of the dataset.
-	 * @param useEvents
-	 *            use the event list.
-	 * @return the size.
+	 * @return the times
 	 */
-	private int getSize(final boolean useEvents) {
-		if (useEvents) {
-			return data.getEvents().getEvents().size();
-		}
-		int[] sz = data.getData().sizes();
-		return sz[0];
-	}
-	/**
-	 * Calculate query time boundary parameters based on the size of the data
-	 * set.
-	 * @param useEvents
-	 *            True if the boundaries are for the event list.
-	 * @return boundaries of the query set.
-	 */
-	public final TimeBoundsI getTimeBounds(final boolean useEvents) {
-		double start;
-		double stop;
-		calculateBounds(useEvents);
-		if (useEvents) {
-			List<EventI> events = data.getEvents().getEvents();
-			String startName = events.get(startIdx).getName();
-			String stopName = events.get(stopIdx).getName();
-			start = events.get(startIdx).getTime();
-			stop = events.get(stopIdx).getTime();
-			return new TimeBounds(start, stop, startName, stopName);
-		} else {
-			DoubleMatrixI dm = data.getData();
-			start = dm.value(startIdx, 0);
-			stop = dm.value(stopIdx, 0);
-			log.debug("Timestamps start " + start + " and stop " + stop);
-			return new TimeBounds(start, stop);
-		}
+	public final QueryTimeBoundsExtractor getTimes() {
+		return times;
 	}
 }
