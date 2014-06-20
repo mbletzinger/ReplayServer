@@ -1,8 +1,8 @@
 package org.nees.illinois.replay.test.utils.types;
+
 /**
  * List of Query test cases.
  * @author Michael Bletzinger
- *
  */
 public enum QueryTestCases {
 	/**
@@ -18,6 +18,18 @@ public enum QueryTestCases {
 	 */
 	QueryDaq,
 	/**
+	 * Query with only DAQ2 channels.
+	 */
+	QueryDaq2,
+	/**
+	 * Query just krypton1 channels.
+	 */
+	QueryKrypton1,
+	/**
+	 * Query just krypton2 channels.
+	 */
+	QueryKrypton2,
+	/**
 	 * Query with the columns inserted in the middle of the set.
 	 */
 	QueryMiddle,
@@ -30,8 +42,11 @@ public enum QueryTestCases {
 	 */
 	QueryOm,
 	/**
+	 * Query from just the second Operations Manager.
+	 */
+	QueryOm2,
+	/**
 	 * Query from three sources.
 	 */
-	QueryTriple
-
+	QueryTriple,
 }

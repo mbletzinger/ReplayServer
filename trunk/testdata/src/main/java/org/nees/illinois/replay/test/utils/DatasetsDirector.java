@@ -9,15 +9,18 @@ import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
+import org.nees.illinois.replay.data.MergeSet;
 import org.nees.illinois.replay.events.EventListI;
 import org.nees.illinois.replay.test.utils.gen.DerivedTimeGenerator;
 import org.nees.illinois.replay.test.utils.gen.DoubleMatrixGenerator;
 import org.nees.illinois.replay.test.utils.gen.EventsGenerator;
+import org.nees.illinois.replay.test.utils.gen.TestCompositeQuery;
 import org.nees.illinois.replay.test.utils.gen.TimeGenerator;
 import org.nees.illinois.replay.test.utils.types.ExperimentNames;
 import org.nees.illinois.replay.test.utils.types.MatrixMixType;
-import org.nees.illinois.replay.test.utils.types.QueryRowDataTypes;
+import org.nees.illinois.replay.test.utils.types.TimeBoundaryTestType;
 import org.nees.illinois.replay.test.utils.types.TestDataSource;
+import org.nees.illinois.replay.test.utils.types.TestingParts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -167,13 +170,31 @@ public class DatasetsDirector {
 	 *            Test query.
 	 * @param data
 	 *            Data being checked.
+	 * @param part
+	 *            Which part of the composite query to check.
 	 */
 	public final void checkData(final ExperimentNames experiment,
-			final QueryRowDataTypes qt, final TestDataSource quy,
-			final DoubleMatrixI data) {
+			final TimeBoundaryTestType qt, final TestCompositeQuery quy,
+			final DoubleMatrixI data, final TestingParts part) {
 		log.debug("For " + qt + " and " + quy);
-		QueryDataRowsExtractor extract = extractQueryData(quy);
-		DoubleMatrixI expected = extract.getExpected(qt);
+		DoubleMatrixI expected = null;
+		switch (part) {
+		case All:
+			expected = getAllQueryData(quy, qt);
+			break;
+		case First:
+			QueryDataRowsExtractor extract = extractQueryData(quy.getExisting()
+					.getSource());
+			expected = extract.getExpected(qt);
+			break;
+		case Second:
+			extract = extractQueryData(quy.getSource());
+			expected = extract.getExpected(qt);
+			break;
+		default:
+			log.error(part + " not recognized");
+			Assert.fail();
+		}
 		log.debug("CHECKING  expected " + expected + "\nWITH actual " + data);
 		DoubleMatrixGenerator.compareData(data.getData(), expected.getData());
 	}
@@ -244,6 +265,27 @@ public class DatasetsDirector {
 		TestDataset data = dataSets.get(src);
 		QueryDataRowsExtractor result = new QueryDataRowsExtractor(data);
 		return result;
+	}
+
+	/**
+	 * Recursive function to get all of the expected data for a composite test
+	 * query. The recursion is based on how many nested TestCompositeQuery
+	 * objects there are.
+	 * @param quy
+	 *            composite query.
+	 * @param qt
+	 *            row order of data.
+	 * @return consolidated expected data.
+	 */
+	private DoubleMatrixI getAllQueryData(final TestCompositeQuery quy,
+			final TimeBoundaryTestType qt) {
+		DoubleMatrixI oldData = getAllQueryData(quy.getExisting(), qt);
+		QueryDataRowsExtractor extract = extractQueryData(quy.getSource());
+		DoubleMatrixI newData = extract.getExpected(qt);
+		MergeSet mrg = new MergeSet();
+		mrg.merge(oldData);
+		mrg.merge(newData);
+		return mrg.getResult();
 	}
 
 	/**

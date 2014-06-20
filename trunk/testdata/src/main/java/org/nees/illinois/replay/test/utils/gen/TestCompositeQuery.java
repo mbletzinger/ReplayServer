@@ -11,11 +11,11 @@ import org.nees.illinois.replay.test.utils.types.TestDataSource;
  * merging.
  * @author Michael Bletzinger
  */
-public class QueryChannelListsForMerging {
+public class TestCompositeQuery {
 	/**
 	 * First list of channels.
 	 */
-	private final QueryChannelListsForMerging existing;
+	private final TestCompositeQuery existing;
 	/**
 	 * How the two sets are mixed.
 	 */
@@ -31,7 +31,7 @@ public class QueryChannelListsForMerging {
 	/**
 	 * Dataset that the new channels come from.
 	 */
-	private final TestDataSource newTable;
+	private final TestDataSource source;
 
 	/**
 	 * @param mix
@@ -42,19 +42,19 @@ public class QueryChannelListsForMerging {
 	 *            Channels to be merged.
 	 * @param name
 	 *            Name of the test query.
-	 * @param newTable
+	 * @param source
 	 *            Table that the new channels come from.
 	 */
-	public QueryChannelListsForMerging(final MatrixMixType mix,
-			final QueryChannelListsForMerging existing,
+	public TestCompositeQuery(final MatrixMixType mix,
+			final TestCompositeQuery existing,
 			final List<String> newChannels,final String name,
-			final TestDataSource newTable) {
+			final TestDataSource source) {
 		super();
 		this.name = name;
 		this.mix = mix;
 		this.newChannels.addAll(newChannels);
 		this.existing = existing;
-		this.newTable = newTable;
+		this.source = source;
 	};
 
 	/**
@@ -128,7 +128,7 @@ public class QueryChannelListsForMerging {
 	/**
 	 * @return the existing channels
 	 */
-	public final QueryChannelListsForMerging getExisting() {
+	public final TestCompositeQuery getExisting() {
 		return existing;
 	}
 
@@ -170,8 +170,8 @@ public class QueryChannelListsForMerging {
 	/**
 	 * @return the newTable
 	 */
-	public final TestDataSource getNewTable() {
-		return newTable;
+	public final TestDataSource getSource() {
+		return source;
 	}
 
 	/*

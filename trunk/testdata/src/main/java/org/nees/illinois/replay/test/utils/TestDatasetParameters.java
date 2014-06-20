@@ -11,7 +11,7 @@ import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.common.registries.TableType;
 import org.nees.illinois.replay.common.types.TableDef;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
-import org.nees.illinois.replay.test.utils.gen.QueryChannelListsForMerging;
+import org.nees.illinois.replay.test.utils.gen.TestCompositeQuery;
 import org.nees.illinois.replay.test.utils.types.MatrixMixType;
 import org.nees.illinois.replay.test.utils.types.QueryTestCases;
 import org.nees.illinois.replay.test.utils.types.TestDataSource;
@@ -29,7 +29,7 @@ public class TestDatasetParameters {
 	/**
 	 * Map of mock merged channel lists for each channel list type.
 	 */
-	private final Map<QueryTestCases, QueryChannelListsForMerging> cl2q = new HashMap<QueryTestCases, QueryChannelListsForMerging>();
+	private final Map<QueryTestCases, TestCompositeQuery> cl2q = new HashMap<QueryTestCases, TestCompositeQuery>();
 	/**
 	 * Map of table types for each channel list type.
 	 */
@@ -42,6 +42,7 @@ public class TestDatasetParameters {
 	 * Flag to indicate that the alternate mock channel list set should be used.
 	 */
 	private final boolean second;
+
 	/**
 	 * Constructor.
 	 * @param second
@@ -50,7 +51,7 @@ public class TestDatasetParameters {
 	 * @param experiment
 	 *            Name of mock experiment.
 	 */
-	public TestDatasetParameters(final boolean second, final String experiment) {
+	public TestDatasetParameters(final boolean second,final String experiment) {
 		super();
 		this.second = second;
 		this.experiment = experiment;
@@ -113,9 +114,8 @@ public class TestDatasetParameters {
 	 *            Table Registry where the table is located.
 	 * @return A table definition based on a test type.
 	 */
-	public final TableDefinitionI getTableDefinition(
-			final TestDataSource type, final ChannelNameRegistry cnr,
-			final TableRegistry tr) {
+	public final TableDefinitionI getTableDefinition(final TestDataSource type,
+			final ChannelNameRegistry cnr, final TableRegistry tr) {
 		TableDefiner tdr = new TableDefiner(cnr, tr);
 		return tdr.define(getTableName(type), getTt(type), getChannels(type));
 	}
@@ -136,7 +136,8 @@ public class TestDatasetParameters {
 	 *            Type identifying the test query.
 	 * @return The test query.
 	 */
-	public final QueryChannelListsForMerging getTestQuery(final QueryTestCases typ) {
+	public final TestCompositeQuery getTestQuery(
+			final QueryTestCases typ) {
 		return cl2q.get(typ);
 	}
 
@@ -164,6 +165,11 @@ public class TestDatasetParameters {
 			omChnls.add("OM/CntrlSensor/D_North_Y_2");
 		}
 
+		List<String> om2Chnls = new ArrayList<String>();
+		om2Chnls.add("OM/Disp/LBCB2/Cartesian/D_LBCB2_RY_1");
+		om2Chnls.add("OM/CntrlSensor/D_West_X_3");
+		om2Chnls.add("OM/Cmd/LBCB2/Actuator/C_LBCB2_Z1_4");
+
 		List<String> daqChnls = new ArrayList<String>();
 		daqChnls.add("DAQ/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
 		daqChnls.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL06K_W7_SG_K13_2");
@@ -174,31 +180,6 @@ public class TestDatasetParameters {
 			daqChnls.add("DAQ/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL08K_W7_SG_K18_9");
 		}
 
-		QueryChannelListsForMerging qOmCtl = new QueryChannelListsForMerging(
-				MatrixMixType.AddAfter, null, omChnls, "OM", null);
-		cl2q.put(QueryTestCases.QueryOm, qOmCtl);
-
-		QueryChannelListsForMerging qDaqCtl = new QueryChannelListsForMerging(
-				MatrixMixType.AddAfter, null, daqChnls, "DAQ", null);
-		cl2q.put(QueryTestCases.QueryDaq, qDaqCtl);
-
-		QueryChannelListsForMerging query = new QueryChannelListsForMerging(
-				MatrixMixType.AddBefore, qOmCtl, daqChnls,
-				QueryTestCases.QueryBefore.toString(), null);
-		cl2q.put(QueryTestCases.QueryBefore, query);
-
-		query = new QueryChannelListsForMerging(MatrixMixType.AddAfter, qOmCtl, daqChnls,
-				QueryTestCases.QueryAfter.toString(), null);
-		cl2q.put(QueryTestCases.QueryAfter, query);
-
-		query = new QueryChannelListsForMerging(MatrixMixType.AddMiddle, qOmCtl,
-				daqChnls, QueryTestCases.QueryMiddle.toString(), null);
-		cl2q.put(QueryTestCases.QueryMiddle, query);
-
-		query = new QueryChannelListsForMerging(MatrixMixType.AddInterleaved, qOmCtl,
-				daqChnls, QueryTestCases.QueryMixed.toString(), null);
-		cl2q.put(QueryTestCases.QueryMixed, query);
-
 		List<String> daqChnls2 = new ArrayList<String>();
 		daqChnls2
 		.add("DAQ2/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
@@ -206,7 +187,63 @@ public class TestDatasetParameters {
 		.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL06K_W7_SG_K13_2");
 		daqChnls2
 		.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL07K_W7_SG_K14_7");
-		query = new QueryChannelListsForMerging(MatrixMixType.AddMiddle, query,
+
+		TestCompositeQuery qOmCtl = new TestCompositeQuery(
+				MatrixMixType.AddAfter, null, omChnls, "OM", null);
+		cl2q.put(QueryTestCases.QueryOm, qOmCtl);
+
+		TestCompositeQuery qOm2Ctl = new TestCompositeQuery(
+				MatrixMixType.AddAfter, null, om2Chnls, "OM2", null);
+		cl2q.put(QueryTestCases.QueryOm2, qOm2Ctl);
+
+		TestCompositeQuery qDaqCtl = new TestCompositeQuery(
+				MatrixMixType.AddAfter, null, daqChnls, "DAQ", null);
+		cl2q.put(QueryTestCases.QueryDaq, qDaqCtl);
+
+		TestCompositeQuery qDaq2Ctl = new TestCompositeQuery(
+				MatrixMixType.AddAfter, null, daqChnls2, "DAQ", null);
+		cl2q.put(QueryTestCases.QueryDaq2, qDaq2Ctl);
+		List<String>kChnls = new ArrayList<String>();
+		kChnls.add("4/X/4_1");
+		kChnls.add("4/X/4_4");
+		kChnls.add("4/X/4_5");
+		kChnls.add("4/Z/4_1");
+		kChnls.add("4/Z/4_5");
+		TestCompositeQuery qKCtl = new TestCompositeQuery(
+				MatrixMixType.AddAfter, null, kChnls, "Krypton1", null);
+		cl2q.put(QueryTestCases.QueryKrypton1, qKCtl);
+
+		List<String>k2Chnls = new ArrayList<String>();
+		k2Chnls.add("4/X/4_4");
+		k2Chnls.add("4/X/4_5");
+		k2Chnls.add("3/Y/3_1");
+		k2Chnls.add("4/Y/4_3");
+		k2Chnls.add("4/Y/4_4");
+		k2Chnls.add("4/Y/4_5");
+		k2Chnls.add("3/Z/3_1");
+		k2Chnls.add("3/Z/3_2");
+		TestCompositeQuery qK2Ctl = new TestCompositeQuery(
+				MatrixMixType.AddAfter, null, k2Chnls, "Krypton2", null);
+		cl2q.put(QueryTestCases.QueryKrypton2, qK2Ctl);
+
+		TestCompositeQuery query = new TestCompositeQuery(
+				MatrixMixType.AddBefore, qOmCtl, daqChnls,
+				QueryTestCases.QueryBefore.toString(), null);
+		cl2q.put(QueryTestCases.QueryBefore, query);
+
+		query = new TestCompositeQuery(MatrixMixType.AddAfter, qOmCtl,
+				daqChnls, QueryTestCases.QueryAfter.toString(), null);
+		cl2q.put(QueryTestCases.QueryAfter, query);
+
+		query = new TestCompositeQuery(MatrixMixType.AddMiddle,
+				qOmCtl, daqChnls, QueryTestCases.QueryMiddle.toString(), null);
+		cl2q.put(QueryTestCases.QueryMiddle, query);
+
+		query = new TestCompositeQuery(MatrixMixType.AddInterleaved,
+				qOmCtl, daqChnls, QueryTestCases.QueryMixed.toString(), null);
+		cl2q.put(QueryTestCases.QueryMixed, query);
+
+		query = new TestCompositeQuery(MatrixMixType.AddMiddle, query,
 				daqChnls2, QueryTestCases.QueryTriple.toString(), null);
 		cl2q.put(QueryTestCases.QueryTriple, query);
 	}

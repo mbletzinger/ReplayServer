@@ -13,7 +13,7 @@ import org.nees.illinois.replay.common.types.TableDef;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.test.utils.CompareLists;
 import org.nees.illinois.replay.test.utils.TestDatasetParameters;
-import org.nees.illinois.replay.test.utils.gen.QueryChannelListsForMerging;
+import org.nees.illinois.replay.test.utils.gen.TestCompositeQuery;
 import org.nees.illinois.replay.test.utils.types.QueryTestCases;
 import org.nees.illinois.replay.test.utils.types.TestDataSource;
 import org.slf4j.Logger;
@@ -96,7 +96,9 @@ public class TestRegistries {
 		TestDatasetParameters cltm = new TestDatasetParameters(false, experiment);
 		QueryRegistry qr = new QueryRegistry();
 		for (QueryTestCases t : QueryTestCases.values()) {
-			QueryChannelListsForMerging tquery = cltm.getTestQuery(t);
+			log.debug("Checking query " + t);
+			TestCompositeQuery tquery = cltm.getTestQuery(t);
+			Assert.assertNotNull(tquery);
 			CompositeQueryI query = new CompositeQuery(t.name(), tquery.combine());
 			qr.setQuery(t.name(), query);
 		}
@@ -104,7 +106,7 @@ public class TestRegistries {
 			log.debug("Checking query " + t);
 			CompositeQueryI query = qr.getQuery(t.name());
 			Assert.assertNotNull(query);
-			QueryChannelListsForMerging tquery = cltm.getTestQuery(t);
+			TestCompositeQuery tquery = cltm.getTestQuery(t);
 			compL.compare(query.getQueryList(), tquery.combine());
 		}
 	}
