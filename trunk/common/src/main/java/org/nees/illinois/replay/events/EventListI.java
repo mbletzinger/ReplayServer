@@ -49,6 +49,11 @@ public interface EventListI {
 	EventI getEvent(int idx);
 
 	/**
+	 * @return List of unique event names ordered by time.
+	 */
+	List<String> getEventNames();
+
+	/**
 	 * @return List of events ordered by time.
 	 */
 	List<EventI> getEvents();

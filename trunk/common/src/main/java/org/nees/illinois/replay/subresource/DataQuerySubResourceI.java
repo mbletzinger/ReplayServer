@@ -2,6 +2,7 @@ package org.nees.illinois.replay.subresource;
 
 import java.util.List;
 
+import org.nees.illinois.replay.common.types.TimeBoundsI;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 
 /**
@@ -11,29 +12,16 @@ import org.nees.illinois.replay.data.DoubleMatrixI;
  * @author Michael Bletzinger
  */
 public interface DataQuerySubResourceI extends SubResourceI {
+
 	/**
 	 * Perform a query.
 	 * @param name
 	 *            Name of the query.
-	 * @param start
-	 *            Timestamp in seconds from Jan 1 1901 that sets the start of
-	 *            the query.
-	 * @param stop
-	 *            Timestamp in seconds from Jan 1 1901 that sets the end of the
-	 *            query.
+	 * @param bounds
+	 *            Time constraints of the query.
 	 * @return Channel data.
 	 */
-	DoubleMatrixI doQuery(String name, double start, double stop);
-
-	/**
-	 * Perform a query using a lists of discrete times.
-	 * @param name
-	 *            Name of the query.
-	 * @param times
-	 *            List of timestamps from Jan 1 1901.
-	 * @return Channel data.
-	 */
-	DoubleMatrixI doQuery(String name, List<Double> times);
+	DoubleMatrixI doQuery(String name, TimeBoundsI bounds);
 
 	/**
 	 * Determines if the name identifies a stored query.

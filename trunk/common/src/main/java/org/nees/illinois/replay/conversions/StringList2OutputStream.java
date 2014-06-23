@@ -10,10 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class which converts a String array into a buffered output stream.
+ * Class which converts a text string array into a buffered output stream.
  * @author Michael Bletzinger
  */
-public class ChannelList2OutputStream {
+public class StringList2OutputStream {
 	/**
 	 * Buffer for output stream.
 	 */
@@ -22,7 +22,7 @@ public class ChannelList2OutputStream {
 	 * Logger.
 	 */
 	private final Logger log = LoggerFactory
-			.getLogger(ChannelList2OutputStream.class);
+			.getLogger(StringList2OutputStream.class);
 	/**
 	 * Output stream.
 	 */
@@ -30,13 +30,13 @@ public class ChannelList2OutputStream {
 
 	/**
 	 * Constructor.
-	 * @param channels
-	 *            String array of channel names.
+	 * @param strings
+	 *            Array of text strings.
 	 */
-	public ChannelList2OutputStream(final List<String> channels) {
+	public StringList2OutputStream(final List<String> strings) {
 		super();
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		writeChannels(channels, bout);
+		writeChannels(strings, bout);
 		buffer = bout.toByteArray();
 		this.out = bout;
 	}

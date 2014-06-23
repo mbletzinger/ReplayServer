@@ -2,16 +2,16 @@ package org.nees.illinois.replay.data;
 
 /**
  * enum type which selects either continuously sampled data or data that is
- * sampled per iteration step.
+ * sampled at discrete events.
  * @author Michael Bletzinger
  */
 public enum RateType {
 	/**
 	 * Data sampled continuously.
 	 */
-	TIME,
+	CONTINUOUS,
 	/**
-	 * Data sampled per iteration step.
+	 * Data sampled at discrete events.
 	 */
-	EVENT
+	DISCRETE
 }
