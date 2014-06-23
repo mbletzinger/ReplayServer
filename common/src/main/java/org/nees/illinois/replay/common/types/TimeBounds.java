@@ -1,5 +1,8 @@
 package org.nees.illinois.replay.common.types;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,26 +13,35 @@ import org.slf4j.LoggerFactory;
  */
 public class TimeBounds implements TimeBoundsI {
 	/**
+	 * Logger.
+	 **/
+	private final Logger log = LoggerFactory.getLogger(TimeBounds.class);
+	/**
+	 * list of event names referencing discrete times.
+	 */
+	private final List<String> nameList = new ArrayList<String>();
+	/**
 	 * start time.
 	 */
 	private final double start;
 	/**
-	 * stop time.
-	 */
-	private final double stop;
-	/**
 	 * Name of starting event.
 	 */
 	private final String startName;
+
+	/**
+	 * stop time.
+	 */
+	private final double stop;
+
 	/**
 	 * Name of the stopping event.
 	 */
 	private final String stopName;
-
 	/**
-	 * Logger.
-	 **/
-	private final Logger log = LoggerFactory.getLogger(TimeBounds.class);
+	 * How the time frame is defined.
+	 */
+	private final TimeBoundsType type;
 
 	/**
 	 * @param start
@@ -38,6 +50,7 @@ public class TimeBounds implements TimeBoundsI {
 	 *            stop time.
 	 */
 	public TimeBounds(final double start,final double stop) {
+		this.type = TimeBoundsType.StartStopTime;
 		this.start = start;
 		this.stop = stop;
 		this.startName = null;
@@ -47,18 +60,38 @@ public class TimeBounds implements TimeBoundsI {
 	/**
 	 * @param start
 	 *            start time.
-	 * @param stop
-	 *            stop time.
 	 * @param startName
 	 *            Name of starting event.
+	 * @param stop
+	 *            stop time.
 	 * @param stopName
 	 *            Name of the stopping event.
 	 */
-	public TimeBounds(final double start,final double stop,final String startName,final String stopName) {
+	public TimeBounds(final double start,final String startName,final double stop,final String stopName) {
+		if (startName == null) {
+			log.error("Start event name cannot be null");
+		}
+		if (stopName == null) {
+			log.error("Stop event name cannot be null");
+		}
+		this.type = TimeBoundsType.StartStopEvent;
 		this.start = start;
-		this.stop = stop;
 		this.startName = startName;
+		this.stop = stop;
 		this.stopName = stopName;
+	}
+
+	/**
+	 * @param names
+	 *            list of event names referencing discrete times.
+	 */
+	public TimeBounds(final List<String> names) {
+		this.nameList.addAll(names);
+		this.type = TimeBoundsType.EventList;
+		this.start = Double.NaN;
+		this.stop = Double.NaN;
+		this.startName = null;
+		this.stopName = null;
 	}
 
 	/**
@@ -74,10 +107,16 @@ public class TimeBounds implements TimeBoundsI {
 		if (stopName == null) {
 			log.error("Stop event name cannot be null");
 		}
+		this.type = TimeBoundsType.StartStopEvent;
 		this.startName = startName;
 		this.stopName = stopName;
 		this.start = Double.NaN;
 		this.stop = Double.NaN;
+	}
+
+	@Override
+	public final List<String> getNames() {
+		return nameList;
 	}
 
 	/*
@@ -116,7 +155,13 @@ public class TimeBounds implements TimeBoundsI {
 		return stopName;
 	}
 
-	/* (non-Javadoc)
+	@Override
+	public final TimeBoundsType getType() {
+		return type;
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -126,6 +171,15 @@ public class TimeBounds implements TimeBoundsI {
 		result += (Double.isNaN(stop) ? "" : "stop=" + stop + ", ");
 		result += (startName == null ? "" : "startName=" + startName + ", ");
 		result += (stopName == null ? "" : "stopName=" + stopName);
+		if(nameList.isEmpty() == false) {
+			result += "list={";
+			boolean first = true;
+			for(String n : nameList) {
+				result += (first ? "" : ",") + n;
+				first = false;
+			}
+			result += "}";
+		}
 		result += "]";
 		return result;
 	}

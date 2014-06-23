@@ -6,11 +6,12 @@ import java.util.Map;
 
 import org.nees.illinois.replay.common.registries.ExperimentRegistries;
 import org.nees.illinois.replay.common.registries.TableType;
-import org.nees.illinois.replay.conversions.Representation2ChannelList;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
+import org.nees.illinois.replay.conversions.Representation2StringList;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
-import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
+import org.nees.illinois.replay.restlet.AttributeExtraction.AttributeRules;
+import org.nees.illinois.replay.restlet.AttributeExtraction.AttributeTypes;
 import org.nees.illinois.replay.subresource.DataUpdateSubResourceI;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;
@@ -25,7 +26,7 @@ import com.google.inject.Provider;
  * @author Michael Bletzinger
  */
 public class DataTableServerResource extends ServerResource implements
-DataTableResource {
+DataTableResourceI {
 	// private final Logger log = LoggerFactory
 	// .getLogger(DataTableServerResource.class);
 
@@ -36,11 +37,11 @@ DataTableResource {
 	/**
 	 * List of required attributes for the Put request.
 	 */
-	private final List<RequiredAttrType> reqAttrs = new ArrayList<AttributeExtraction.RequiredAttrType>();
+	private final List<AttributeRules> reqAttrs = new ArrayList<AttributeRules>();
 	/**
 	 * List of required attributes for the Post request.
 	 */
-	private final List<RequiredAttrType> reqAttrsWithRate = new ArrayList<AttributeExtraction.RequiredAttrType>();
+	private final List<AttributeRules> reqAttrsWithRate = new ArrayList<AttributeRules>();
 	/**
 	 * Subresource that actually does all of the work. This is passed in as part
 	 * of the restlet context so that it can be configured with Google GUICE.
@@ -52,9 +53,9 @@ DataTableResource {
 	 */
 	public DataTableServerResource() {
 		super();
-		reqAttrs.add(RequiredAttrType.Table);
+		reqAttrs.add(AttributeRules.SourceRequired);
 		reqAttrsWithRate.addAll(reqAttrs);
-		reqAttrsWithRate.add(RequiredAttrType.Rate);
+		reqAttrsWithRate.add(AttributeRules.RateRequired);
 	}
 
 	/*
@@ -87,12 +88,12 @@ DataTableResource {
 	@Override
 	@Put
 	public final void set(final Representation channels) {
-		Representation2ChannelList rep2cl = new Representation2ChannelList(
+		Representation2StringList rep2cl = new Representation2StringList(
 				channels);
-		List<String> list = rep2cl.getIl2cl().getChannels();
+		List<String> list = rep2cl.getIl2cl().getStrings();
 		extract.extract(reqAttrs);
-		Map<RequiredAttrType, Object> attrs = extract.getAttrs();
-		TableType tbl = (TableType) attrs.get(RequiredAttrType.Table);
+		Map<AttributeTypes, Object> attrs = extract.getAttrs();
+		TableType tbl = (TableType) attrs.get(AttributeTypes.Source);
 		updates.createTable(null, tbl, list);
 
 	}
@@ -113,8 +114,8 @@ DataTableResource {
 		List<List<Double>> doubles = rep2dbl.getIn2dm().getNumbers();
 		DoubleMatrixI dm = new DoubleMatrix(doubles);
 		extract.extract(reqAttrsWithRate);
-		Map<RequiredAttrType, Object> attrs = extract.getAttrs();
-		String tbl = (String) attrs.get(RequiredAttrType.Table);
+		Map<AttributeTypes, Object> attrs = extract.getAttrs();
+		String tbl = (String) attrs.get(AttributeTypes.Source);
 		updates.update(tbl, dm.getData());
 	}
 

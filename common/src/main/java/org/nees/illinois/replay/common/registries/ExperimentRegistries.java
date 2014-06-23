@@ -1,6 +1,5 @@
 package org.nees.illinois.replay.common.registries;
 
-import org.nees.illinois.replay.common.types.TableDefinitionI;
 
 /**
  * Registeries to manage the dataset of an experiment. The Replay server manages
@@ -14,8 +13,7 @@ import org.nees.illinois.replay.common.types.TableDefinitionI;
  * <dd>Maps dataset table names to their database table {@link TableIdentityI
  * identities}.
  * <dt>Table Registry
- * <dd>Maps table {@link TableIdentityI identities} to their
- * {@link TableDefinitionI definitions}.
+ * <dd>Maps tables to their definitions.
  * <dt>Query Registry
  * <dd>Maps query names to their definitions.
  * <dt>Event ID generator.
@@ -64,7 +62,7 @@ public class ExperimentRegistries {
 	 *            Table {@link TableRegistry registry} for the experiment.
 	 */
 	public ExperimentRegistries(final String experiment,
-			final ChannelNameRegistry cnr, final TableRegistry tableDefs) {
+			final ChannelNameRegistry cnr,final TableRegistry tableDefs) {
 		this.experiment = experiment;
 		this.cnr = cnr;
 		this.tableDefs = tableDefs;
@@ -93,6 +91,13 @@ public class ExperimentRegistries {
 	}
 
 	/**
+	 * @return the name of the events table.
+	 */
+	public final String getEventTableName() {
+		return experiment + "_events";
+	}
+
+	/**
 	 * @return the experiment
 	 */
 	public final String getExperiment() {
@@ -105,6 +110,7 @@ public class ExperimentRegistries {
 	public final QueryRegistry getQueries() {
 		return queries;
 	}
+
 	/**
 	 * @return the table registry
 	 */

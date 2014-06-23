@@ -3,7 +3,6 @@ package org.nees.illinois.replay.restlet;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.restlet.resource.ResourceException;
 
 /**
  * Interface for the restlet resource used for data updates. The interface
@@ -11,7 +10,7 @@ import org.restlet.resource.ResourceException;
  * description and a timestamp.
  * @author Michael Bletzinger
  */
-public interface EventResource {
+public interface EventResourceI {
 	/**
 	 * Get a list of events that fall within the specified time frame.
 	 * @param start
@@ -38,7 +37,6 @@ public interface EventResource {
 	 * Define a table to be updated.
 	 * @param event
 	 *            Event description.
-	 * @throws ResourceException
 	 */
 	@Post
 	void update(Representation event);

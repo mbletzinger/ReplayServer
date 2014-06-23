@@ -14,17 +14,44 @@ import org.slf4j.LoggerFactory;
 /**
  * Class used to parse the attributes from incoming "cool URI's". The attributes
  * are of the form "/name/value" in the URI. The Restlet code scans the
- * attribute tokens in the URI and delivers these as a map of strings and objects. This
- * class checks the presence of required attributes and reports any problems
- * with their values.
+ * attribute tokens in the URI and delivers these as a map of strings and
+ * objects. This class checks the presence of required attributes and reports
+ * any problems with their values.
  * @author Michael Bletzinger
  */
 public class AttributeExtraction {
 	/**
+	 * Enumerates all of the attribute rules that can be checked.
+	 * @author Michael Bletzinger
+	 */
+	public enum AttributeRules {
+		/**
+		 * Request needs the name of the experiment.
+		 */
+		ExperimentNameRequired,
+		/**
+		 * Request needs the name of the query.
+		 */
+		QueryNameRequired,
+		/**
+		 * Request needs time boundaries.
+		 */
+		TimeBoundsRequired,
+		/**
+		 * Request needs the name of the source.
+		 */
+		SourceRequired,
+		/**
+		 * Request needs a rate for the data.
+		 */
+		RateRequired,
+	};
+
+	/**
 	 * List of possible attributes.
 	 * @author Michael Bletzinger
 	 */
-	public enum RequiredAttrType {
+	public enum AttributeTypes {
 		/**
 		 * Experiment name.
 		 */
@@ -34,27 +61,35 @@ public class AttributeExtraction {
 		 */
 		Query,
 		/**
-		 * Either TIME or EVENT.
+		 * Either CONTINUOUS or DISCRETE.
 		 */
 		Rate,
 		/**
-		 * Start time in seconds or step number.
+		 * Start event name.
 		 */
 		Start,
 		/**
-		 * Stop time in seconds or step number.
+		 * Stop event name.
 		 */
 		Stop,
 		/**
-		 * Table name.
+		 * Start of the query in seconds.
 		 */
-		Table
-	};
+		StartTime,
+		/**
+		 * End of the query in seconds.
+		 */
+		StopTime,
+		/**
+		 * Source name.
+		 */
+		Source
+	}
 
 	/**
 	 * Map of parsed attribute values.
 	 */
-	private final Map<RequiredAttrType, Object> attrs = new HashMap<RequiredAttrType, Object>();
+	private final Map<AttributeTypes, Object> attrs = new HashMap<AttributeTypes, Object>();
 	/**
 	 * Logger.
 	 */
@@ -77,84 +112,158 @@ public class AttributeExtraction {
 	}
 
 	/**
+	 * Throw exceptions if attribute rules fail.
+	 * @param rules
+	 *            to check.
+	 */
+	private void checkRules(final List<AttributeRules> rules) {
+		for (AttributeRules r : rules) {
+			switch (r) {
+			case ExperimentNameRequired:
+				if (attrs.get(AttributeTypes.Experiment) == null) {
+					throw new ResourceException(
+							Status.CLIENT_ERROR_BAD_REQUEST,
+							"Experiment name is required");
+				}
+				continue;
+			case QueryNameRequired:
+				if (attrs.get(AttributeTypes.Query) == null) {
+					throw new ResourceException(
+							Status.CLIENT_ERROR_BAD_REQUEST,
+							"Query name is required");
+				}
+				continue;
+			case SourceRequired:
+				if (attrs.get(AttributeTypes.Source) == null) {
+					throw new ResourceException(
+							Status.CLIENT_ERROR_BAD_REQUEST,
+							"Data source name is required");
+				}
+				continue;
+			case RateRequired:
+				if (attrs.get(AttributeTypes.Rate) == null) {
+					throw new ResourceException(
+							Status.CLIENT_ERROR_BAD_REQUEST,
+							"Data rate is required.  Rate needs to be either CONTINUOUS or DISCRETE");
+				}
+				continue;
+			case TimeBoundsRequired:
+				boolean oneStart = (attrs.get(AttributeTypes.Start) != null)
+				|| (attrs.get(AttributeTypes.StartTime) != null);
+				boolean doubleStart = (attrs.get(AttributeTypes.Start) != null)
+						&& (attrs.get(AttributeTypes.StartTime) != null);
+				boolean doubleStop = (attrs.get(AttributeTypes.Stop) != null)
+						&& (attrs.get(AttributeTypes.StopTime) != null);
+				boolean boundsMismatch = (attrs.get(AttributeTypes.Stop) != null)
+						&& (attrs.get(AttributeTypes.StartTime) != null);
+				boundsMismatch = boundsMismatch
+						|| ((attrs.get(AttributeTypes.StopTime) != null) && (attrs
+								.get(AttributeTypes.Start) != null));
+
+				if (oneStart) {
+					throw new ResourceException(
+							Status.CLIENT_ERROR_BAD_REQUEST,
+							"Start name or event is required");
+				}
+				if (doubleStart || doubleStop) {
+					throw new ResourceException(
+							Status.CLIENT_ERROR_BAD_REQUEST,
+							"Use only one start and one stop parameter");
+				}
+				if (boundsMismatch) {
+					throw new ResourceException(
+							Status.CLIENT_ERROR_BAD_REQUEST,
+							"Time boundaries need to both be either events or times");
+				}
+			default:
+				throw new ResourceException(
+						Status.SERVER_ERROR_NOT_IMPLEMENTED,
+						"Attribute rule not recognized.");
+			}
+		}
+	}
+
+	/**
 	 * Main function for parsing URIs. The function will throw a restlet
 	 * {@link ResourceException ResourceException} if any attributes are missing
 	 * or malformed.
-	 * @param required
-	 *            List of required attributes for the URI.
+	 * @param rules
+	 *            List of attributes rules for the URI.
 	 */
-	public final void extract(final List<RequiredAttrType> required) {
-		boolean isStepNumber = false;
-		for (RequiredAttrType aType : required) {
-			if (aType.equals(RequiredAttrType.Experiment)) {
+	public final void extract(final List<AttributeRules> rules) {
+		for (AttributeTypes aType : AttributeTypes.values()) {
+			switch (aType) {
+
+			case Experiment: {
 				String val = extractString("experiment");
 				if (val == null) {
 					throw new ResourceException(
 							Status.CLIENT_ERROR_BAD_REQUEST,
 							"Need an experiment name");
 				}
-				attrs.put(RequiredAttrType.Experiment, val);
-				continue;
+				attrs.put(AttributeTypes.Experiment, val);
 			}
-			if (aType.equals(RequiredAttrType.Table)) {
+			continue;
+
+			case Source: {
 				TableType val = extractTable();
-				if (val == null) {
-					throw new ResourceException(
-							Status.CLIENT_ERROR_BAD_REQUEST,
-							"Need an table name");
+				if (val != null) {
+					attrs.put(AttributeTypes.Source, val);
 				}
-				attrs.put(RequiredAttrType.Table, val);
-				continue;
 			}
-			if (aType.equals(RequiredAttrType.Rate)) {
+			continue;
+			case Rate: {
 				RateType val = extractRate();
-				if (val == null) {
-					throw new ResourceException(
-							Status.CLIENT_ERROR_BAD_REQUEST, "Need a rate");
+				if (val != null) {
+					attrs.put(AttributeTypes.Rate, val);
 				}
-				isStepNumber = val.equals(RateType.EVENT);
-				attrs.put(RequiredAttrType.Rate, val);
-				continue;
 			}
-			if (aType.equals(RequiredAttrType.Query)) {
+			continue;
+
+			case Query: {
 				String val = extractString("query");
-				if (val == null) {
-					throw new ResourceException(
-							Status.CLIENT_ERROR_BAD_REQUEST,
-							"Need an query name");
+				if (val != null) {
+					attrs.put(AttributeTypes.Query, val);
 				}
-				attrs.put(RequiredAttrType.Query, val);
-				continue;
 			}
-			if (aType.equals(RequiredAttrType.Start)) {
-				Object val = null;
-				if (isStepNumber) {
-					val = extractStepNumber("start");
-				} else {
-					val = extractDouble("start");
+			continue;
+
+			case Start: {
+				String val = null;
+				val = extractEvent("start");
+				if (val != null) {
+					attrs.put(AttributeTypes.Start, val);
 				}
-				if (val == null && !isStepNumber) { // Starting step number is
-													// optional
-					throw new ResourceException(
-							Status.CLIENT_ERROR_BAD_REQUEST,
-							"Need a start for the query");
-				}
-				attrs.put(RequiredAttrType.Start, val);
-				continue;
 			}
-			if (aType.equals(RequiredAttrType.Stop)) {
-				Object val = null;
-				if (isStepNumber) {
-					val = extractStepNumber("stop");
-				} else {
-					val = extractDouble("stop");
+			continue;
+			case Stop: {
+				String val = null;
+				val = extractEvent("stop");
+				if (val != null) {
+					attrs.put(AttributeTypes.Stop, val);
 				}
-				if (val != null) { // Stop attribute is optional
-					attrs.put(RequiredAttrType.Stop, val);
+			}
+			case StartTime: {
+				Double val = null;
+				val = extractDouble("starttime");
+				if (val != null) {
+					attrs.put(AttributeTypes.StartTime, val);
 				}
-				continue;
+			}
+			continue;
+			case StopTime: {
+				Double val = null;
+				val = extractDouble("stoptime");
+				if (val != null) {
+					attrs.put(AttributeTypes.StopTime, val);
+				}
+			}
+			default:
+				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+						"Attribute " + aType + " not recognized");
 			}
 		}
+		checkRules(rules);
 	}
 
 	/**
@@ -182,34 +291,12 @@ public class AttributeExtraction {
 	}
 
 	/**
-	 * Extract the rate type.
-	 * @return The rate type.
-	 */
-	private RateType extractRate() {
-		String str = (String) uriAttrs.get("rate");
-		if (str == null) {
-			return null;
-		}
-		if (str.equals("")) {
-			return null;
-		}
-		RateType rate;
-		try {
-			rate = RateType.valueOf(str);
-		} catch (IllegalArgumentException e) {
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "\""
-					+ str + " \" is not a RateType");
-		}
-		return rate;
-	}
-
-	/**
-	 * Extract a step number.
+	 * Extract an event.
 	 * @param label
 	 *            Name of attribute.
-	 * @return Step number value.
+	 * @return Event name.
 	 */
-	private String extractStepNumber(final String label) {
+	private String extractEvent(final String label) {
 		String str = (String) uriAttrs.get(label);
 		if (str == null) {
 			return null;
@@ -218,6 +305,28 @@ public class AttributeExtraction {
 			return null;
 		}
 		return str;
+	}
+
+	/**
+	 * Extract the rate type.
+	 * @return The rate type.
+	 */
+	private RateType extractRate() {
+		RateType rate = RateType.DISCRETE;
+		String str = (String) uriAttrs.get("rate");
+		if (str == null) {
+			return rate;
+		}
+		if (str.equals("")) {
+			return rate;
+		}
+		try {
+			rate = RateType.valueOf(str);
+		} catch (IllegalArgumentException e) {
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "\""
+					+ str + " \" is not a RateType");
+		}
+		return rate;
 	}
 
 	/**
@@ -256,7 +365,7 @@ public class AttributeExtraction {
 	/**
 	 * @return the parsed attributes.
 	 */
-	public final Map<RequiredAttrType, Object> getAttrs() {
+	public final Map<AttributeTypes, Object> getAttrs() {
 		return attrs;
 	}
 
@@ -267,5 +376,4 @@ public class AttributeExtraction {
 	public final String getExperiment() {
 		return extractString("experiment");
 	}
-
 }

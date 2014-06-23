@@ -6,13 +6,15 @@ import java.util.Map;
 
 import org.nees.illinois.replay.common.registries.ExperimentRegistries;
 import org.nees.illinois.replay.common.types.CompositeQueryI;
+import org.nees.illinois.replay.common.types.TimeBounds;
+import org.nees.illinois.replay.common.types.TimeBoundsI;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
-import org.nees.illinois.replay.conversions.Representation2ChannelList;
+import org.nees.illinois.replay.conversions.Representation2StringList;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.events.EventI;
 import org.nees.illinois.replay.events.EventListI;
-import org.nees.illinois.replay.restlet.AttributeExtraction.RequiredAttrType;
+import org.nees.illinois.replay.restlet.AttributeExtraction.AttributeRules;
+import org.nees.illinois.replay.restlet.AttributeExtraction.AttributeTypes;
 import org.nees.illinois.replay.subresource.DataQuerySubResourceI;
 import org.nees.illinois.replay.subresource.EventSubResourceI;
 import org.nees.illinois.replay.subresource.SubResourceI;
@@ -33,7 +35,7 @@ import com.google.inject.Provider;
  * @author Michael Bletzinger
  */
 public class DataQueryServerResource extends ServerResource implements
-DataQueryResource {
+DataQueryResourceI {
 	/**
 	 * Subresource that actually does all of the work. This is passed in as part
 	 * of the restlet context so that it can be configured with Google GUICE.
@@ -62,7 +64,7 @@ DataQueryResource {
 	/**
 	 * Map of URI attributes.
 	 */
-	private Map<RequiredAttrType, Object> attrs;
+	private Map<AttributeTypes, Object> attrs;
 	/**
 	 * Rate type specified in the request.
 	 */
@@ -103,8 +105,13 @@ DataQueryResource {
 
 	@Override
 	@Get("bin")
-	public final Representation getBin() {
-		DoubleMatrixI data = getDm();
+	public final Representation getBin(final Representation events) {
+		List<String> discrete = null;
+		if(events.isEmpty() == false) {
+			Representation2StringList r2sl = new Representation2StringList(events);
+			discrete = r2sl.getIl2cl().getStrings();
+		}
+		DoubleMatrixI data = getDm(discrete);
 		if (data == null) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
 					"Query \"" + query + "\" returned an empty dataset");
@@ -118,43 +125,47 @@ DataQueryResource {
 	 * Function that does all of the work for a query request. The function
 	 * determines the start, stop, and rate attributes and executes a query
 	 * using the {@link DataQuerySubResourceI dquery} subresource.
+	 * @param discrete list of time events.
 	 * @return the data in double matrix form.
 	 */
-	private DoubleMatrixI getDm() {
-		final List<RequiredAttrType> reqAttrs = new ArrayList<AttributeExtraction.RequiredAttrType>();
+	private DoubleMatrixI getDm(final List<String> discrete) {
+		final List<AttributeRules> arules = new ArrayList<AttributeRules>();
 
 		log.debug("Query Resource handling " + getRequest().getMethod()
 				+ " with " + getRequest());
-		reqAttrs.add(RequiredAttrType.Rate);
-		reqAttrs.add(RequiredAttrType.Query);
-		reqAttrs.add(RequiredAttrType.Start);
-		reqAttrs.add(RequiredAttrType.Stop);
-		extract.extract(reqAttrs);
+		arules.add(AttributeRules.ExperimentNameRequired);
+		arules.add(AttributeRules.QueryNameRequired);
+		if(discrete == null) {
+			arules.add(AttributeRules.TimeBoundsRequired);
+		}
+		extract.extract(arules);
 		attrs = extract.getAttrs();
-		rate = (RateType) attrs.get(RequiredAttrType.Rate);
-		query = (String) attrs.get(RequiredAttrType.Query);
+		rate = (RateType) attrs.get(AttributeTypes.Rate);
+		query = (String) attrs.get(AttributeTypes.Query);
 
 		CompositeQueryI spec = er.getQueries().getQuery(query);
 		if (spec == null) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
 					"Query \"" + query + "\" not recognized");
 		}
-
-		if (rate.equals(RateType.EVENT)) {
-			EventI strt = (EventI) attrs.get(RequiredAttrType.Start);
-			EventI stp = (EventI) attrs.get(RequiredAttrType.Stop);
-			DoubleMatrixI data;
-			EventListI events;
-			events = qevents.getEvents(strt.getName(), stp.getName(), null);
-			data = dquery.doQuery(query, events.getTimeline());
-			return data;
+		TimeBoundsI bounds = null;
+		if (attrs.get(AttributeTypes.StartTime) != null) {
+			Double strt = (Double) attrs.get(AttributeTypes.Start);
+			Double stp = (Double) attrs.get(AttributeTypes.Stop);
+			bounds = new TimeBounds(strt, stp);
+		} else if (attrs.get(AttributeTypes.Start) != null) {
+			String strt = (String) attrs.get(AttributeTypes.Start);
+			String stp = (String) attrs.get(AttributeTypes.Stop);
+			if(rate.equals(RateType.CONTINUOUS)) {
+				bounds = new TimeBounds(strt,stp);
+			} else {
+				EventListI events = qevents.getEvents(strt, stp, null);
+				bounds = new TimeBounds(events.getEventNames());
+			}
 		}
-		Double strt = (Double) attrs.get(RequiredAttrType.Start);
-		Double stp = (Double) attrs.get(RequiredAttrType.Stop);
 		DoubleMatrixI data;
-		data = dquery.doQuery(query, strt, stp);
+		data = dquery.doQuery(query, bounds);
 		return data;
-
 	}
 
 	/**
@@ -181,16 +192,17 @@ DataQueryResource {
 	@Override
 	@Put
 	public final void set(final Representation channels) {
-		final List<RequiredAttrType> reqAttrs = new ArrayList<AttributeExtraction.RequiredAttrType>();
+		final List<AttributeRules> arules = new ArrayList<AttributeRules>();
 
-		reqAttrs.add(RequiredAttrType.Query);
-		extract.extract(reqAttrs);
+		arules.add(AttributeRules.ExperimentNameRequired);
+		arules.add(AttributeRules.QueryNameRequired);
+		extract.extract(arules);
 		attrs = extract.getAttrs();
-		query = (String) attrs.get(RequiredAttrType.Query);
+		query = (String) attrs.get(AttributeTypes.Query);
 
-		Representation2ChannelList rep2cl = new Representation2ChannelList(
+		Representation2StringList rep2cl = new Representation2StringList(
 				channels);
-		List<String> list = rep2cl.getIl2cl().getChannels();
+		List<String> list = rep2cl.getIl2cl().getStrings();
 		this.dquery.setQuery(query, list);
 	}
 

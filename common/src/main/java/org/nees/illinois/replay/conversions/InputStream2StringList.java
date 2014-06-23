@@ -10,11 +10,11 @@ import java.util.List;
  * Converts an input stream into a string array of channel names.
  * @author Michael Bletzinger
  */
-public class InputStream2ChannelList {
+public class InputStream2StringList {
 	/**
-	 * Resulting array of channel names.
+	 * Resulting array of text strings.
 	 */
-	private List<String> channels = new ArrayList<String>();
+	private List<String> strings = new ArrayList<String>();
 
 	// private final Logger log = LoggerFactory
 	// .getLogger(InputStream2ChannelList.class);
@@ -23,7 +23,7 @@ public class InputStream2ChannelList {
 	 * @param in
 	 *            Input stream to be converted.
 	 */
-	public InputStream2ChannelList(final InputStream in) {
+	public InputStream2StringList(final InputStream in) {
 		super();
 		DataInputStream din = null;
 		din = new DataInputStream(in);
@@ -39,15 +39,15 @@ public class InputStream2ChannelList {
 			}
 			theString.append(c);
 		}
-		channels = Str2CL.str2cl(theString.toString());
+		strings = Str2CL.str2cl(theString.toString());
 
 	}
 
 	/**
 	 * @return the channel name list.
 	 */
-	public final List<String> getChannels() {
-		return channels;
+	public final List<String> getStrings() {
+		return strings;
 	}
 
 	// /**

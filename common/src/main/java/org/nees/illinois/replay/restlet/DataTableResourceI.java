@@ -10,7 +10,7 @@ import org.restlet.resource.Put;
  * {@link TableType type}, a {@link RateType rate}, and a list of channels.
  * @author Michael Bletzinger
  */
-public interface DataTableResource {
+public interface DataTableResourceI {
 	/**
 	 * Define a table to be updated.
 	 * @param channels

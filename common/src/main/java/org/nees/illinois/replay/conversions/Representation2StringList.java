@@ -11,27 +11,27 @@ import org.slf4j.LoggerFactory;
  * names.
  * @author Michael Bletzinger
  */
-public class Representation2ChannelList {
+public class Representation2StringList {
 	/**
 	 * Converter.
 	 */
-	private final InputStream2ChannelList il2cl;
+	private final InputStream2StringList il2cl;
 	/**
 	 * Logger.
 	 */
 	private final Logger log = LoggerFactory
-			.getLogger(Representation2ChannelList.class);
+			.getLogger(Representation2StringList.class);
 
 	/**
 	 * Constructor which also does the conversion.
 	 * @param rep
 	 *            Representation to be converted.
 	 */
-	public Representation2ChannelList(final Representation rep) {
+	public Representation2StringList(final Representation rep) {
 		super();
-		InputStream2ChannelList i2c = null;
+		InputStream2StringList i2c = null;
 		try {
-			i2c = new InputStream2ChannelList(rep.getStream());
+			i2c = new InputStream2StringList(rep.getStream());
 		} catch (IOException e1) {
 			try {
 				log.error("Could not read representation \"" + rep.getText()
@@ -48,7 +48,7 @@ public class Representation2ChannelList {
 	/**
 	 * @return the stream converter. You can get the channel list from this.
 	 */
-	public final InputStream2ChannelList getIl2cl() {
+	public final InputStream2StringList getIl2cl() {
 		return il2cl;
 	}
 }
