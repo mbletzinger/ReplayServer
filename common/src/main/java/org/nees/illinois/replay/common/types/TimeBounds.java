@@ -42,6 +42,10 @@ public class TimeBounds implements TimeBoundsI {
 	 * How the time frame is defined.
 	 */
 	private final TimeBoundsType type;
+	/**
+	 * List of discrete times.
+	 */
+	private final double [] times;
 
 	/**
 	 * @param start
@@ -55,6 +59,7 @@ public class TimeBounds implements TimeBoundsI {
 		this.stop = stop;
 		this.startName = null;
 		this.stopName = null;
+		this.times = null;
 	}
 
 	/**
@@ -79,6 +84,20 @@ public class TimeBounds implements TimeBoundsI {
 		this.startName = startName;
 		this.stop = stop;
 		this.stopName = stopName;
+		this.times = null;
+	}
+
+	/**
+	 *@param times
+	 * List of discrete times.
+	 */
+	public TimeBounds(final double[] times) {
+		this.times = times;
+		this.type = TimeBoundsType.TimesList;
+		this.start = Double.NaN;
+		this.stop = Double.NaN;
+		this.startName = null;
+		this.stopName = null;
 	}
 
 	/**
@@ -92,6 +111,7 @@ public class TimeBounds implements TimeBoundsI {
 		this.stop = Double.NaN;
 		this.startName = null;
 		this.stopName = null;
+		this.times = null;
 	}
 
 	/**
@@ -112,6 +132,7 @@ public class TimeBounds implements TimeBoundsI {
 		this.stopName = stopName;
 		this.start = Double.NaN;
 		this.stop = Double.NaN;
+		this.times = null;
 	}
 
 	@Override
@@ -153,6 +174,14 @@ public class TimeBounds implements TimeBoundsI {
 	@Override
 	public final String getStopName() {
 		return stopName;
+	}
+
+	/**
+	 * @return the times
+	 */
+	@Override
+	public final double[] getTimes() {
+		return times;
 	}
 
 	@Override

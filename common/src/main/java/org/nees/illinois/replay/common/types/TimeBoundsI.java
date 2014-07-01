@@ -40,6 +40,12 @@ public interface TimeBoundsI {
 	String getStopName();
 
 	/**
+	 * A query boundary based on a list of discrete times.
+	 *@return the list of times.
+	 */
+	double []  getTimes();
+
+	/**
 	 * @return the way the time bounds are defined.
 	 */
 	TimeBoundsType getType();

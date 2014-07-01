@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Class which maintains an experiment scope registry of all data channel names.
  * Each name is mapped to a database format friendly name. The class performs
@@ -19,6 +22,12 @@ public class ChannelNameRegistry implements Cloneable {
 	 * Next index to use for a database friendly channel name.
 	 */
 	private long afterLastChannel = 1;
+
+	/**
+	 * Logger.
+	 **/
+	private final Logger log = LoggerFactory
+			.getLogger(ChannelNameRegistry.class);
 
 	/**
 	 * Map of data channel names to their database friendly counterparts. The
@@ -36,7 +45,7 @@ public class ChannelNameRegistry implements Cloneable {
 	 * @return Database friendly version of the name.
 	 */
 	public final String addChannel(final TableType table, final String channel) {
-		String result = getId(channel);
+		String result = namesMap.get(channel);
 		if (result == null) {
 			result = newChannel(table.name());
 			namesMap.put(channel, result);
@@ -69,7 +78,11 @@ public class ChannelNameRegistry implements Cloneable {
 	 * @return Database friendly version.
 	 */
 	public final String getId(final String channel) {
-		return namesMap.get(channel);
+		String result = namesMap.get(channel);
+		if (result == null) {
+			log.error("Channel \"" + channel + "\" not registered.");
+		}
+		return result;
 	}
 
 	/**
@@ -98,7 +111,8 @@ public class ChannelNameRegistry implements Cloneable {
 	}
 
 	/**
-	 * @return the names map. Don't use this unless you are needing the entire map.
+	 * @return the names map. Don't use this unless you are needing the entire
+	 *         map.
 	 */
 	public final Map<String, String> getNamesMap() {
 		return namesMap;

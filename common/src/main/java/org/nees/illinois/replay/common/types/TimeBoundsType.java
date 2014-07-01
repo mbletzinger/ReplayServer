@@ -17,4 +17,8 @@ public enum TimeBoundsType {
 	 * Time frame defined by start and stop times.
 	 */
 	StartStopTime,
+	/**
+	 * List of times.
+	 */
+	TimesList
 }

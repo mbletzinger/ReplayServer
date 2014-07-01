@@ -65,7 +65,7 @@ public class QueryDefiner {
 		for (String s : dbnames) {
 			updateQueryTables(s);
 		}
-		qr.setQuery(null, def);
+		qr.setQuery(def);
 		return def;
 	}
 	/**

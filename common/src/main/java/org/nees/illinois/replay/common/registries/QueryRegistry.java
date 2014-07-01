@@ -37,14 +37,13 @@ public class QueryRegistry {
 
 	/**
 	 * Set a query mapped to the name.
-	 * @param name
-	 *            Query name
 	 * @param cq
 	 *            The {@link CompositeQueryI query}.
 	 * @return Return true if the query replaced an older version.
 	 */
-	public final boolean setQuery(final String name, final CompositeQueryI cq) {
+	public final boolean setQuery(final CompositeQueryI cq) {
 		boolean result = false;
+		String name = cq.getName();
 		if (queries.containsKey(name)) {
 			log.info("Replacing Query \"" + name + "\"");
 			result = true;
