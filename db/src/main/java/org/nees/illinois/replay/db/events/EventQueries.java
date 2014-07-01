@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nees.illinois.replay.common.registries.ExperimentRegistries;
+import org.nees.illinois.replay.common.registries.TableRegistry;
+import org.nees.illinois.replay.common.types.TableDefinitionI;
 import org.nees.illinois.replay.db.query.QuerySelectFactory;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.events.Event;
@@ -25,9 +28,9 @@ public class EventQueries {
 	 */
 	private final Connection connection;
 	/**
-	 * name of the events table.
+	 * Experiment scoped registries.
 	 */
-	private final String eventTableName;
+	private final ExperimentRegistries er;
 	/**
 	 * Logger.
 	 **/
@@ -40,12 +43,13 @@ public class EventQueries {
 	/**
 	 * @param connection
 	 *            Database connection.
-	 * @param eventTableName
-	 *            name of the events table.
+	 * @param er
+	 *            Experiment scoped registries.
 	 */
-	public EventQueries(final Connection connection,final String eventTableName) {
+	public EventQueries(final Connection connection,
+			final ExperimentRegistries er) {
 		this.connection = connection;
-		this.eventTableName = eventTableName;
+		this.er = er;
 	}
 
 	/**
@@ -57,6 +61,13 @@ public class EventQueries {
 		} catch (SQLException e) {
 			log.error("Connectiion close failed because", e);
 		}
+	}
+
+	/**
+	 * @return the connection
+	 */
+	public final Connection getConnection() {
+		return connection;
 	}
 
 	/**
@@ -72,13 +83,14 @@ public class EventQueries {
 	 */
 	public final EventListI getEvents(final double start, final double stop,
 			final String source) {
+		String eventTableName = er.getEventTableName();
 		StatementProcessor dbSt = new StatementProcessor(connection);
 		String selectS;
 		if (source == null) {
 			selectS = queries.selectTimeRange(eventTableName, start, stop);
 		} else {
 			selectS = queries.selectTimeRange(eventTableName, start, stop,
-					source);
+					source2TableId(source));
 		}
 		ResultSet rs = dbSt.query(selectS);
 		List<EventI> events = resultSet2Events(rs);
@@ -99,11 +111,41 @@ public class EventQueries {
 			final String source) {
 		StatementProcessor dbSt = new StatementProcessor(connection);
 		String selectS;
+		String eventTableName = er.getEventTableName();
 		if (source == null) {
 			selectS = queries.selectDiscreteNames(eventTableName, names);
 		} else {
-			selectS = queries
-					.selectDiscreteNames(eventTableName, names, source);
+			selectS = queries.selectDiscreteNames(eventTableName, names,
+					source2TableId(source));
+		}
+		ResultSet rs = dbSt.query(selectS);
+		List<EventI> events = resultSet2Events(rs);
+		dbSt.closeQuery(rs);
+		EventListI result = new EventList(events);
+		log.debug("Results: " + result);
+		return result;
+	}
+
+	/**
+	 * Get an event using the name or source. Get the event from all sources if
+	 * source is null.
+	 * @param name
+	 *            of the event.
+	 * @param source
+	 *            of the event or null.
+	 * @return list of events.
+	 */
+	public final EventListI getEvents(final String name, final String source) {
+		String eventTableName = er.getEventTableName();
+		StatementProcessor dbSt = new StatementProcessor(connection);
+		String selectS;
+		List<String> list = new ArrayList<String>();
+		list.add(name);
+		if (source == null) {
+			selectS = queries.selectDiscreteNames(eventTableName, list);
+		} else {
+			selectS = queries.selectDiscreteNames(eventTableName, list,
+					source2TableId(source));
 		}
 		ResultSet rs = dbSt.query(selectS);
 		List<EventI> events = resultSet2Events(rs);
@@ -142,7 +184,7 @@ public class EventQueries {
 	 */
 	private List<EventI> resultSet2Events(final ResultSet rs) {
 		List<EventI> result = new ArrayList<EventI>();
-		String[] headers = { "TIME", "NAME", "DESCRIPTION", "SOURCE"};
+		String[] headers = { "TIME", "NAME", "DESCRIPTION", "SOURCE" };
 		boolean[] isDouble = { true, false, false, false };
 		try {
 			while (rs.next()) {
@@ -160,8 +202,11 @@ public class EventQueries {
 				EventI e = null;
 				final int descriptionC = 1;
 				final int sourceC = 2;
+				String tableid = strings.get(sourceC);
+				TableRegistry tr = er.getTableDefs();
+				String source = tr.id2Name(tableid);
 				e = new Event(strings.get(0), numbers.get(0),
-						strings.get(descriptionC), strings.get(sourceC));
+						strings.get(descriptionC), source);
 				result.add(e);
 			}
 		} catch (SQLException e) {
@@ -169,5 +214,21 @@ public class EventQueries {
 			return null;
 		}
 		return result;
+	}
+
+	/**
+	 * Map source name to a table id.
+	 * @param source
+	 *            name.
+	 * @return table id.
+	 */
+	private String source2TableId(final String source) {
+		TableRegistry tr = er.getTableDefs();
+		TableDefinitionI tbl = tr.getTable(source);
+		if(tbl == null) {
+			log.error("Source " + source + " is not in the table registry");
+			return null;
+		}
+		return tbl.getTableId();
 	}
 }

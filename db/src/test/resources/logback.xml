@@ -33,7 +33,10 @@
 	<logger
 		name="org.nees.illinois.replay.test.db.derby.process.FileWithContentDelete"
 		level="WARN" />
-
+	<logger
+		name="org.nees.illinois.replay.test.utils.gen.DoubleMatrixGenerator"
+		level="WARN" />
+			
 	<root level="DEBUG">
 		<appender-ref ref="A1" />
 	</root>

@@ -88,7 +88,7 @@ public class DbTableDefinitionsSynch implements RegistrySynchI {
 				String channelStr = rs.getString("channels");
 				TableDefinitionI tbldef;
 				try {
-					tbldef = new TableDef(encoder.parse(channelStr), id);
+					tbldef = new TableDef(encoder.parse(channelStr), id, name);
 				} catch (IllegalParameterException e) {
 					log.error("Could not parse [" + channelStr + "] because", e);
 					return null;

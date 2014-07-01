@@ -31,8 +31,7 @@ public class TableRegistry {
 	 * Find the table that *owns* a channel.
 	 * @param dbchannel
 	 *            Channel to find.
-	 * @return Identity of the table that owns the
-	 *         channel.
+	 * @return Identity of the table that owns the channel.
 	 */
 	public final String findTable(final String dbchannel) {
 		for (TableDefinitionI t : definitions.values()) {
@@ -41,6 +40,13 @@ public class TableRegistry {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @return the definitions. Used only for synchronization.
+	 */
+	public final Map<String, TableDefinitionI> getDefinitions() {
+		return definitions;
 	}
 
 	/**
@@ -62,6 +68,22 @@ public class TableRegistry {
 	public final TableDefinitionI getTable(final String name) {
 		return definitions.get(name);
 	}
+
+	/**
+	 * @param id
+	 *            Table identity from database.
+	 * @return table definition.
+	 */
+	public final String id2Name(final String id) {
+		for (String n : definitions.keySet()) {
+			TableDefinitionI t = definitions.get(n);
+			if (t.getTableId().equals(id)) {
+				return n;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Initialization function used to synchronize with the database. For
 	 * internal use only.
@@ -72,6 +94,7 @@ public class TableRegistry {
 		this.definitions.clear();
 		this.definitions.putAll(definitions);
 	}
+
 	/**
 	 * Set the table definition associated with the name.
 	 * @param name
@@ -87,13 +110,4 @@ public class TableRegistry {
 		}
 		definitions.put(name, table);
 	}
-
-	/**
-	 * @return the definitions.  Used only for synchronization.
-	 */
-	public final Map<String, TableDefinitionI> getDefinitions() {
-		return definitions;
-	}
-
-
 }

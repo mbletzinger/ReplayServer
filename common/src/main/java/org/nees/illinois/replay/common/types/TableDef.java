@@ -20,6 +20,11 @@ public class TableDef implements TableDefinitionI {
 	 * Table name info.
 	 */
 	private final String tableId;
+
+	/**
+	 * Source name.
+	 */
+	private final String source;
 	/**
 	 * List of time column names.
 	 */
@@ -33,12 +38,26 @@ public class TableDef implements TableDefinitionI {
 	 *            List of data column names.
 	 * @param tableId
 	 *            Table name info.
+	 * @param source
+	 *            Source name.
 	 */
-	public TableDef(final List<String> dataColumns,
-			final String tableId) {
+	public TableDef(final List<String> dataColumns,final String tableId,
+			final String source) {
 		super();
 		this.dataColumns = dataColumns;
 		this.tableId = tableId;
+		this.source = source;
+	}
+
+	@Override
+	public final void addDataColumn(final String channel) {
+		dataColumns.add(channel);
+	}
+
+	@Override
+	public final void appendColumns(final MatrixSpecI other) {
+		TableDefinitionI otherTC = (TableDefinitionI) other;
+		dataColumns.addAll(otherTC.getColumns(false));
 	}
 
 	/*
@@ -70,6 +89,11 @@ public class TableDef implements TableDefinitionI {
 		return result;
 	}
 
+	@Override
+	public String getSource() {
+		return source;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.nees.illinois.replay.common.types.TableColumnsI#getTableId()
@@ -79,6 +103,11 @@ public class TableDef implements TableDefinitionI {
 		return tableId;
 	}
 
+	@Override
+	public final int numberOfTimeColumns() {
+		return timeColumns.size();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -86,23 +115,7 @@ public class TableDef implements TableDefinitionI {
 	@Override
 	public final String toString() {
 		return "TableColumns [dataColumns=" + dataColumns + ", timeColumns="
-				+ timeColumns + ", tableId=" + tableId + "]";
-	}
-
-	@Override
-	public final void addDataColumn(final String channel) {
-		dataColumns.add(channel);
-	}
-
-	@Override
-	public final int numberOfTimeColumns() {
-		return timeColumns.size();
-	}
-
-
-	@Override
-	public final void appendColumns(final MatrixSpecI other) {
-		TableDefinitionI otherTC = (TableDefinitionI) other;
-		dataColumns.addAll(otherTC.getColumns(false));
+				+ timeColumns + ", tableId=" + tableId + ", source=" + source
+				+ "]";
 	}
 }

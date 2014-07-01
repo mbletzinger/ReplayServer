@@ -98,9 +98,10 @@ public class QueryDefiner {
 	private void updateQueryTables(final String dbchannel) {
 		Map<String, TableDefinitionI> tmap = def.getTableQueries();
 		String ti = tr.findTable(dbchannel);
+		String source = tr.id2Name(ti);
 		TableDefinitionI c = tmap.get(ti);
 		if (c == null) {
-			c = new TableDef(new ArrayList<String>(), ti);
+			c = new TableDef(new ArrayList<String>(), ti, source);
 			tmap.put(ti, c);
 		}
 		c.addDataColumn(dbchannel);

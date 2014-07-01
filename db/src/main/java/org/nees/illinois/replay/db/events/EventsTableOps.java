@@ -4,6 +4,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.nees.illinois.replay.common.registries.ExperimentRegistries;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.statement.EventInsertStatement;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
@@ -17,14 +18,9 @@ import org.slf4j.LoggerFactory;
  */
 public class EventsTableOps {
 	/**
-	 * Name of the events table.
+	 * Experiment scoped registries.
 	 */
-	private final String eventTableName = "EXPERIMENT_EVENTS";
-
-	/**
-	 * Name of the experiment.
-	 */
-	private final String experiment;
+	private ExperimentRegistries er;
 
 	/**
 	 * Logger.
@@ -38,12 +34,13 @@ public class EventsTableOps {
 	/**
 	 * @param pools
 	 *            Database connection pools.
-	 * @param experiment
+	 * @param er
 	 *            Name of the experiment.
 	 */
-	public EventsTableOps(final DbPools pools, final String experiment) {
+	public EventsTableOps(final DbPools pools, final ExperimentRegistries er) {
 		this.pools = pools;
-		this.experiment = experiment;
+		this.er = er;
+
 	}
 	/**
 	 * Add an event to the event table.
@@ -52,7 +49,7 @@ public class EventsTableOps {
 	 */
 	public final void add(final EventI event) {
 		EventInsertStatement eis = new EventInsertStatement(
-				pools.fetchConnection(experiment, false), eventTableName);
+				pools.fetchConnection(er.getExperiment(), false), er.getEventTableName());
 		eis.add(event);
 		eis.getBuilder().execute();
 	}
@@ -61,12 +58,12 @@ public class EventsTableOps {
 	 * @return true if successful.
 	 */
 	public final boolean create() {
-		final String createTable = "CREATE TABLE " + eventTableName + "("
+		final String createTable = "CREATE TABLE " + er.getEventTableName() + "("
 				+ "TIME DOUBLE NOT NULL," + " NAME VARCHAR(200) NOT NULL,"
 				+ " DESCRIPTION VARCHAR(2000),"
 				+ " SOURCE VARCHAR(200) NOT NULL)";
 		StatementProcessor statement = pools
-				.createDbStatement(experiment, true);
+				.createDbStatement(er.getExperiment(), true);
 		boolean result = statement.execute(createTable);
 		statement.close();
 		return result;
@@ -79,7 +76,7 @@ public class EventsTableOps {
 	public final boolean exists() {
 		DatabaseMetaData databaseMetaData = null;
 		try {
-			databaseMetaData = pools.fetchConnection(experiment, false)
+			databaseMetaData = pools.fetchConnection(er.getExperiment(), false)
 					.getMetaData();
 		} catch (SQLException e1) {
 			log.error("Metadata query failed ", e1);
@@ -98,7 +95,7 @@ public class EventsTableOps {
 				final int nameColumn = 3;
 				String tableName = result.getString(nameColumn);
 				log.debug("Checking table name " + tableName);
-				if (tableName.equals(eventTableName)) {
+				if (tableName.equals(er.getEventTableName())) {
 					found = true;
 				}
 			}
@@ -110,17 +107,10 @@ public class EventsTableOps {
 	}
 
 	/**
-	 * @return the eventTableName
+	 * @return the er
 	 */
-	public final String getEventTableName() {
-		return eventTableName;
-	}
-
-	/**
-	 * @return the experiment
-	 */
-	public final String getExperiment() {
-		return experiment;
+	public final ExperimentRegistries getEr() {
+		return er;
 	}
 
 	/**
@@ -134,19 +124,24 @@ public class EventsTableOps {
 	 * @return a new instance of {@link EventQueries}.
 	 */
 	public final EventQueries getQueries() {
-		return new EventQueries(pools.fetchConnection(experiment, false),
-				eventTableName);
+		return new EventQueries(pools.fetchConnection(er.getExperiment(), false),
+				er);
 	}
-
 	/**
 	 * Remove table.
 	 * @return True if successful.
 	 */
 	public final boolean remove() {
 		StatementProcessor statement = pools
-				.createDbStatement(experiment, true);
-		boolean result = statement.execute("DROP TABLE " + eventTableName);
+				.createDbStatement(er.getExperiment(), true);
+		boolean result = statement.execute("DROP TABLE " + er.getEventTableName());
 		statement.close();
 		return result;
+	}
+	/**
+	 * @param er the er to set
+	 */
+	public final void setEr(final ExperimentRegistries er) {
+		this.er = er;
 	}
 }

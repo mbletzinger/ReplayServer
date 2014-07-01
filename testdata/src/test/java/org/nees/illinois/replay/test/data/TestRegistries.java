@@ -121,13 +121,13 @@ public class TestRegistries {
 		TestDatasetParameters cltm = new TestDatasetParameters(false, experiment);
 		TableRegistry tr = new TableRegistry();
 		for (TestDataSource t : TestDataSource.values()) {
-			TableDefinitionI table = new TableDef(cltm.getChannels(t), cltm.getTableName(t));
-			tr.setTable(table.getTableId(), table);
+			TableDefinitionI table = new TableDef(cltm.getChannels(t), cltm.getTableName(t), t.toString());
+			tr.setTable(table.getSource(), table);
 		}
 		for (TestDataSource t : TestDataSource.values()) {
 			String name = cltm.getTableName(t);
 			log.debug("Checking dataet " + t + " with name " + name);
-			TableDefinitionI table = tr.getTable(name);
+			TableDefinitionI table = tr.getTable(t.toString());
 			Assert.assertNotNull(table);
 			compL.compare(table.getColumns(false), cltm.getChannels(t));
 		}

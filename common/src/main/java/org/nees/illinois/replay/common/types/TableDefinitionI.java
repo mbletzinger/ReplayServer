@@ -11,11 +11,11 @@ import org.nees.illinois.replay.data.MatrixSpecI;
  */
 public interface TableDefinitionI extends MatrixSpecI {
 	/**
-	 * @param withTime
-	 *            include the time columns
-	 * @return number of columns
+	 * Add a data column to the definition.
+	 * @param channel
+	 *            name of data column
 	 */
-	int getNumberOfColumns(boolean withTime);
+	void addDataColumn(String channel);
 
 	/**
 	 * @param withTime
@@ -25,15 +25,21 @@ public interface TableDefinitionI extends MatrixSpecI {
 	List<String> getColumns(boolean withTime);
 
 	/**
-	 * @return The TableIdentityI instance which identifies the database table
+	 * @param withTime
+	 *            include the time columns
+	 * @return number of columns
 	 */
-	String getTableId();
+	@Override
+	int getNumberOfColumns(boolean withTime);
 
 	/**
-	 * Add a data column to the definition.
-	 * @param channel
-	 *            name of data column
+	 * @return The source name that produced the data.
 	 */
-	void addDataColumn(String channel);
+	String getSource();
+
+	/**
+	 * @return The name which identifies the database table
+	 */
+	String getTableId();
 
 }

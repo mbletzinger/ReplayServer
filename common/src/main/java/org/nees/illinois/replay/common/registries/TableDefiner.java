@@ -37,6 +37,25 @@ public class TableDefiner {
 	}
 
 	/**
+	 * Establish a table.
+	 * @param source
+	 *            name of the source where the data came from.
+	 * @param type
+	 *            Table {@link TableType type}.
+	 * @param channels
+	 *            List of channels.
+	 * @return New table {@link TableDefinitionI definition}.
+	 */
+	public final TableDefinitionI define(final String source,
+			final TableType type, final List<String> channels) {
+		String tableid = lookupTableId(source, type);
+		List<String> dataColumns = lookupChannels(type, channels);
+		TableDefinitionI result = new TableDef(dataColumns, tableid, source);
+		tr.setTable(source, result);
+		return result;
+	}
+
+	/**
 	 * Lookup database friendly names for all of the channels.
 	 * @param type
 	 *            Database friendly table name.
@@ -64,24 +83,5 @@ public class TableDefiner {
 	 */
 	private String lookupTableId(final String name, final TableType type) {
 		return type.name() + "_" + name;
-	}
-
-	/**
-	 * Establish a table.
-	 * @param name
-	 *            Table name
-	 * @param type
-	 *            Table {@link TableType type}.
-	 * @param channels
-	 *            List of channels.
-	 * @return New table {@link TableDefinitionI definition}.
-	 */
-	public final TableDefinitionI define(final String name,
-			final TableType type, final List<String> channels) {
-		String tableid = lookupTableId(name, type);
-		List<String> dataColumns = lookupChannels(type, channels);
-		TableDefinitionI result = new TableDef(dataColumns, tableid);
-		tr.setTable(name, result);
-		return result;
 	}
 }
