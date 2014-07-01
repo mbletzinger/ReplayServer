@@ -94,7 +94,7 @@ public class ExperimentRegistries {
 	 * @return the name of the events table.
 	 */
 	public final String getEventTableName() {
-		return experiment + "_events";
+		return experiment.toUpperCase() + "_EVENTS";
 	}
 
 	/**

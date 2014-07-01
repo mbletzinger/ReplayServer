@@ -104,15 +104,15 @@ public class SubsetCarver {
 		List<List<Double>> data = original.toList();
 		int[] sizes = original.sizes();
 		int startR = (startRow == null ? 0 : startRow.intValue());
-		int stopR = (stopRow == null ? sizes[0] : stopRow.intValue());
+		int stopR = (stopRow == null ? sizes[0] - 1 : stopRow.intValue());
 
 		int startC = (startColumn == null ? 0 : startColumn.intValue());
-		int stopC = (stopColumn == null ? sizes[1] : stopColumn.intValue());
+		int stopC = (stopColumn == null ? sizes[1] - 1 : stopColumn.intValue());
 		List<List<Double>> result = new ArrayList<List<Double>>();
-		for (int r = startR; r < stopR; r++) {
+		for (int r = startR; r <= stopR; r++) {
 			List<Double> orow = data.get(r);
 			List<Double> row = new ArrayList<Double>();
-			for (int c = startC; c < stopC; c++) {
+			for (int c = startC; c <= stopC; c++) {
 				row.add(orow.get(c));
 			}
 			result.add(row);
