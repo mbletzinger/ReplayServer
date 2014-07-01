@@ -1,5 +1,6 @@
 package org.nees.illinois.replay.test.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,9 +8,11 @@ import java.util.Map;
 import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.common.registries.TableRegistry;
 import org.nees.illinois.replay.common.types.TableDefinitionI;
+import org.nees.illinois.replay.common.types.TimeBoundsI;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.data.MergeSet;
+import org.nees.illinois.replay.data.SubsetSlicer;
 import org.nees.illinois.replay.events.EventListI;
 import org.nees.illinois.replay.test.utils.gen.DerivedTimeGenerator;
 import org.nees.illinois.replay.test.utils.gen.DoubleMatrixGenerator;
@@ -18,9 +21,10 @@ import org.nees.illinois.replay.test.utils.gen.TestCompositeQuery;
 import org.nees.illinois.replay.test.utils.gen.TimeGenerator;
 import org.nees.illinois.replay.test.utils.types.ExperimentNames;
 import org.nees.illinois.replay.test.utils.types.MatrixMixType;
-import org.nees.illinois.replay.test.utils.types.TimeBoundaryTestType;
+import org.nees.illinois.replay.test.utils.types.SimpleTestQueryResults;
 import org.nees.illinois.replay.test.utils.types.TestDataSource;
 import org.nees.illinois.replay.test.utils.types.TestingParts;
+import org.nees.illinois.replay.test.utils.types.TimeBoundaryTestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -40,7 +44,7 @@ public class DatasetsDirector {
 	 * {@link TestDatasetParameters} provides the channel lists used for query
 	 * testing..
 	 */
-	private final TestDatasetParameters set;
+	private final TestDatasetParameters parameters;
 	/**
 	 * The {@link ChannelNameRegistry} that is supposed to exist after testing.
 	 */
@@ -84,6 +88,10 @@ public class DatasetsDirector {
 	 * Number of records per generated event.
 	 */
 	private final int eInterval;
+	/**
+	 * Extract rows expected for a test query from the test dataset.
+	 */
+	private QueryDataRowsExtractor extract;
 
 	/**
 	 * @param experiment
@@ -97,11 +105,11 @@ public class DatasetsDirector {
 			final int numberOfRows,final int numberOfEvents) {
 		super();
 		this.experiment = experiment;
-		this.set = new TestDatasetParameters(
+		this.parameters = new TestDatasetParameters(
 				experiment.equals(ExperimentNames.HybridMasonry2),
 				experiment.name());
-		this.set.fillCnr(expectedCnr);
-		this.set.fillTblr(expectedTblr);
+		this.parameters.fillCnr(expectedCnr);
+		this.parameters.fillTblr(expectedTblr);
 		this.numberOfRows = numberOfRows;
 		double interval = numberOfRows * timeMultiplier;
 		eInterval = numberOfRows / numberOfEvents;
@@ -157,7 +165,7 @@ public class DatasetsDirector {
 	 */
 	public final void checkChannels(final TestDataSource typ,
 			final List<String> channels) {
-		checkChannels(set.getChannels(typ), channels);
+		checkChannels(parameters.getChannels(typ), channels);
 	}
 
 	/**
@@ -176,20 +184,28 @@ public class DatasetsDirector {
 	public final void checkData(final ExperimentNames experiment,
 			final TimeBoundaryTestType qt, final TestCompositeQuery quy,
 			final DoubleMatrixI data, final TestingParts part) {
-		log.debug("For " + qt + " and " + quy);
+		log.debug("For " + qt + " , " + part + " and, " + quy);
 		DoubleMatrixI expected = null;
+		TestDataSource src1 = null;
+		if (quy.getExisting() != null) {
+			src1 = quy.getExisting().getSource();
+		}
+		TestDataSource src2 = quy.getSource();
 		switch (part) {
 		case All:
-			expected = getAllQueryData(quy, qt);
+			SimpleTestQueryResults result = getAllQueryData(quy, qt);
+			expected = sortResults(result.getData(), quy.combine(),
+					result.getChannels());
 			break;
 		case First:
-			QueryDataRowsExtractor extract = extractQueryData(quy.getExisting()
-					.getSource());
-			expected = extract.getExpected(qt);
+			extract = extractQueryData(src1);
+			expected = sortResults(extract.getExpected(qt),
+					quy.getExistingList(), src1);
 			break;
 		case Second:
-			extract = extractQueryData(quy.getSource());
-			expected = extract.getExpected(qt);
+			extract = extractQueryData(src2);
+			expected = sortResults(extract.getExpected(qt),
+					quy.getNewChannels(), src2);
 			break;
 		default:
 			log.error(part + " not recognized");
@@ -244,7 +260,7 @@ public class DatasetsDirector {
 	 * @return matrix of data.
 	 */
 	private TestDataset createDataset(final TestDataSource quy) {
-		List<String> channels = set.getChannels(quy);
+		List<String> channels = parameters.getChannels(quy);
 		DoubleMatrixGenerator dmg = new DoubleMatrixGenerator(numberOfRows,
 				channels.size(), getTimesGen(quy));
 		double[][] cdat = dmg.generate();
@@ -263,6 +279,10 @@ public class DatasetsDirector {
 	public final QueryDataRowsExtractor extractQueryData(
 			final TestDataSource src) {
 		TestDataset data = dataSets.get(src);
+		if (data == null) {
+			log.error("Data for source " + src + " does not exist");
+			return null;
+		}
 		QueryDataRowsExtractor result = new QueryDataRowsExtractor(data);
 		return result;
 	}
@@ -277,15 +297,18 @@ public class DatasetsDirector {
 	 *            row order of data.
 	 * @return consolidated expected data.
 	 */
-	private DoubleMatrixI getAllQueryData(final TestCompositeQuery quy,
-			final TimeBoundaryTestType qt) {
-		DoubleMatrixI oldData = getAllQueryData(quy.getExisting(), qt);
-		QueryDataRowsExtractor extract = extractQueryData(quy.getSource());
+	private SimpleTestQueryResults getAllQueryData(
+			final TestCompositeQuery quy, final TimeBoundaryTestType qt) {
+		SimpleTestQueryResults oldData = getAllQueryData(quy.getExisting(), qt);
+		extract = extractQueryData(quy.getSource());
 		DoubleMatrixI newData = extract.getExpected(qt);
+		List<String> channels = oldData.getChannels();
+		channels.addAll(parameters.getChannels(quy.getSource()));
 		MergeSet mrg = new MergeSet();
-		mrg.merge(oldData);
+		mrg.merge(oldData.getData());
 		mrg.merge(newData);
-		return mrg.getResult();
+		return new SimpleTestQueryResults(quy.getSource(), channels,
+				mrg.getResult());
 	}
 
 	/**
@@ -313,10 +336,53 @@ public class DatasetsDirector {
 	}
 
 	/**
-	 * @return the cltm
+	 * @return the test parameters.
 	 */
-	public final TestDatasetParameters getSet() {
-		return set;
+	public final TestDatasetParameters getParameters() {
+		return parameters;
+	}
+
+	/**
+	 * Return the time boundaries for the current dataset based on the query
+	 * time boundary type.
+	 * @param qpt
+	 *            test time boundary type.
+	 * @param quy
+	 *            test query.
+	 * @param part
+	 *            part of the query that needs time bounds.
+	 * @return time boundaries.
+	 */
+	public final TimeBoundsI getTimeBounds(final TimeBoundaryTestType qpt,
+			final TestCompositeQuery quy, final TestingParts part) {
+
+		TestDataSource src1 = null;
+		if (quy.getExisting() != null) {
+			src1 = quy.getExisting().getSource();
+		}
+		TestDataSource src2 = quy.getSource();
+		switch (part) {
+		case First:
+			if (src1 == null) {
+				log.error("First source for " + quy + "is not defined.");
+				return null;
+			}
+			extract = extractQueryData(src1);
+			break;
+		case All:
+		case Second:
+			if (src2 == null) {
+				log.error("Second source for " + quy + "is not defined.");
+				return null;
+			}
+			extract = extractQueryData(quy.getSource());
+			break;
+		default:
+			log.error(part + " not recognized");
+			Assert.fail();
+		}
+		QueryTimeBoundsExtractor times = extract.getTimes();
+		return times.getTimeBounds(qpt);
 	}
 
 	/**
@@ -327,5 +393,45 @@ public class DatasetsDirector {
 	 */
 	public final TimeGenerator getTimesGen(final TestDataSource typ) {
 		return cl2Times.get(typ);
+	}
+
+	/**
+	 * Sort the result columns in the order specified by the composite query.
+	 * @param data
+	 *            to sort.
+	 * @param qorder
+	 *            query order of the columns
+	 * @param dorder
+	 *            data order of the columns
+	 * @return the sorted results.
+	 */
+	private DoubleMatrixI sortResults(final DoubleMatrixI data,
+			final List<String> qorder, final List<String> dorder) {
+		List<Integer> slices = new ArrayList<Integer>();
+		slices.add(0);
+		for (String c : qorder) {
+			int k = dorder.indexOf(c);
+			slices.add(k + 1);
+		}
+		SubsetSlicer slicer = new SubsetSlicer(data);
+		slicer.setSliceColumn(true);
+		slicer.addSlices(slices);
+		return slicer.slice();
+	}
+
+	/**
+	 * Sort the result columns in the order specified by the composite query.
+	 * @param data
+	 *            to sort.
+	 * @param qorder
+	 *            query order of the columns
+	 * @param src
+	 *            of the data
+	 * @return the sorted results.
+	 */
+	private DoubleMatrixI sortResults(final DoubleMatrixI data,
+			final List<String> qorder, final TestDataSource src) {
+		List<String> dorder = parameters.getChannels(src);
+		return sortResults(data, qorder, dorder);
 	}
 }

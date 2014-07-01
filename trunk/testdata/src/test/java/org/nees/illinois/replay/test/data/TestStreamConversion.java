@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.nees.illinois.replay.common.registries.ChannelNameRegistry;
 import org.nees.illinois.replay.common.registries.TableType;
-import org.nees.illinois.replay.conversions.ChannelList2Representation;
+import org.nees.illinois.replay.conversions.StringList2Representation;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
-import org.nees.illinois.replay.conversions.Representation2ChannelList;
+import org.nees.illinois.replay.conversions.Representation2StringList;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
@@ -45,13 +45,13 @@ public class TestStreamConversion {
 			cnr.addChannel(tname, c);
 			expectedCnr.addChannel(tname, c);
 		}
-		ChannelList2Representation cl2rep = new ChannelList2Representation(
+		StringList2Representation cl2rep = new StringList2Representation(
 				cnr.getNames());
 
-		Representation2ChannelList rep2cl = new Representation2ChannelList(
+		Representation2StringList rep2cl = new Representation2StringList(
 				cl2rep.getRep());
 		ChannelNameRegistry actualCnr = new ChannelNameRegistry();
-		for (String c : rep2cl.getIl2cl().getChannels()) {
+		for (String c : rep2cl.getIl2cl().getStrings()) {
 			actualCnr.addChannel(tname, c);
 		}
 		log.debug("expected CNR " + expectedCnr);

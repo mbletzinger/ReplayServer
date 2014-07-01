@@ -97,16 +97,27 @@ public class QueryTimeBoundsExtractor {
 	}
 
 	/**
-	 * @param isSingle
-	 *            Sets only the start time to indicate a single event if true.
+	 * @return time boundaries based on a single time.
+	 */
+	private TimeBoundsI createSingleTime() {
+		DoubleMatrixI dm = data.getData();
+		double start = dm.value(startIdx, 0);
+		double [] list = { start };
+		return new TimeBounds(list);
+	}
+
+	/**
+	 * @param noStopTime
+	 *            Sets only the start time to indicate a continuous block to the end.
 	 * @return time boundaries based on start and stop times.
 	 */
-	private TimeBoundsI createTimeBounds(final boolean isSingle) {
+	private TimeBoundsI createTimeBounds(final boolean noStopTime) {
 		DoubleMatrixI dm = data.getData();
 		double start = dm.value(startIdx, 0);
 		double stop = dm.value(stopIdx, 0);
-		if (isSingle) {
+		if (noStopTime) {
 			stop = Double.NaN;
+			stopIdx = dm.sizes()[0] - 1;
 		}
 		log.debug("Timestamps start " + start + " and stop " + stop);
 		return new TimeBounds(start, stop);
@@ -154,7 +165,7 @@ public class QueryTimeBoundsExtractor {
 			return createTimeBounds(false);
 		case ContWithTime:
 			calculateBounds(false);
-			return createTimeBounds(true);
+			return createSingleTime();
 		case EventsWithStartStop:
 			calculateBounds(true);
 			return createEventList();
@@ -164,6 +175,9 @@ public class QueryTimeBoundsExtractor {
 		case ContWithEventStartStop:
 			calculateBounds(true);
 			return createEventBounds();
+		case ContWithStart2End:
+			calculateBounds(false);
+			return createTimeBounds(true);
 		default:
 			log.error(qrt + " not recognized");
 			return null;

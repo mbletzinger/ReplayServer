@@ -14,6 +14,10 @@ public enum TimeBoundaryTestType {
 	 */
 	ContWithTime,
 	/**
+	 * Continuous with a start to the end of the dataset.
+	 */
+	ContWithStart2End,
+	/**
 	 * Include a single data set based on the event.
 	 */
 	Event,

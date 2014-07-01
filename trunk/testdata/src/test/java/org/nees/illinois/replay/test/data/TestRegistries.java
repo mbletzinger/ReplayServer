@@ -100,7 +100,7 @@ public class TestRegistries {
 			TestCompositeQuery tquery = cltm.getTestQuery(t);
 			Assert.assertNotNull(tquery);
 			CompositeQueryI query = new CompositeQuery(t.name(), tquery.combine());
-			qr.setQuery(t.name(), query);
+			qr.setQuery(query);
 		}
 		for (QueryTestCases t : QueryTestCases.values()) {
 			log.debug("Checking query " + t);
