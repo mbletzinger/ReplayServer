@@ -3,11 +3,11 @@ package org.nees.illinois.replay.restlet.client;
 import java.util.List;
 
 import org.nees.illinois.replay.common.registries.TableType;
-import org.nees.illinois.replay.conversions.ChannelList2Representation;
+import org.nees.illinois.replay.conversions.StringList2Representation;
 import org.nees.illinois.replay.conversions.DoubleMatrix2Representation;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.data.RateType;
-import org.nees.illinois.replay.restlet.DataTableResource;
+import org.nees.illinois.replay.restlet.DataTableResourceI;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
@@ -31,8 +31,8 @@ public class DataTableClient {
 				data.getData());
 		String uri = buildUri(table, rate);
 		log.debug("URI = Update " + uri);
-		DataTableResource cr = ClientResource.create(uri,
-				DataTableResource.class);
+		DataTableResourceI cr = ClientResource.create(uri,
+				DataTableResourceI.class);
 		cr.update(dm2rep.getRep());
 	}
 
@@ -48,12 +48,12 @@ public class DataTableClient {
 
 	public void createTable(TableType table, List<String> channels)
 			throws ResourceException {
-		ChannelList2Representation cl2rep = new ChannelList2Representation(
+		StringList2Representation cl2rep = new StringList2Representation(
 				channels);
 		String uri = buildUri(table, null);
 		log.debug("URI = Set " + uri);
-		DataTableResource cr = ClientResource.create(uri,
-				DataTableResource.class);
+		DataTableResourceI cr = ClientResource.create(uri,
+				DataTableResourceI.class);
 		cr.set(cl2rep.getRep());
 	}
 
