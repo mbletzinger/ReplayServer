@@ -2,11 +2,11 @@ package org.nees.illinois.replay.restlet.client;
 
 import java.util.List;
 
-import org.nees.illinois.replay.conversions.ChannelList2Representation;
+import org.nees.illinois.replay.conversions.StringList2Representation;
 import org.nees.illinois.replay.conversions.Representation2DoubleMatrix;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.events.EventI;
-import org.nees.illinois.replay.restlet.DataQueryResource;
+import org.nees.illinois.replay.restlet.DataQueryResourceI;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -74,9 +74,9 @@ public class DataQueryClient {
 			throws ResourceException {
 		String uri = buildUri(name, start, stop);
 		log.debug("URI = getBin " + uri);
-		DataQueryResource cr = ClientResource.create(uri,
-				DataQueryResource.class);
-		Representation rep = cr.getBin();
+		DataQueryResourceI cr = ClientResource.create(uri,
+				DataQueryResourceI.class);
+		Representation rep = cr.getBin(null);
 		if (rep == null) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "\""
 					+ name + "\" returned no data");
@@ -95,9 +95,9 @@ public class DataQueryClient {
 			throws ResourceException {
 		String uri = buildUri(name, start, stop);
 		log.debug("URI = getBin " + uri);
-		DataQueryResource cr = ClientResource.create(uri,
-				DataQueryResource.class);
-		Representation rep = cr.getBin();
+		DataQueryResourceI cr = ClientResource.create(uri,
+				DataQueryResourceI.class);
+		Representation rep = cr.getBin(null);
 		if (rep == null) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "\""
 					+ name + "\" returned no data");
@@ -123,12 +123,12 @@ public class DataQueryClient {
 
 	public void setQuery(final String name, final List<String> channels)
 			throws ResourceException {
-		ChannelList2Representation cl2rep = new ChannelList2Representation(
+		StringList2Representation cl2rep = new StringList2Representation(
 				channels);
 		String uri = buildUri(name);
 		log.debug("URI = set " + uri);
-		DataQueryResource cr = ClientResource.create(uri,
-				DataQueryResource.class);
+		DataQueryResourceI cr = ClientResource.create(uri,
+				DataQueryResourceI.class);
 		cr.set(cl2rep.getRep());
 	}
 }
