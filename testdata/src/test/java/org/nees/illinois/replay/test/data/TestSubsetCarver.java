@@ -26,7 +26,7 @@ public class TestSubsetCarver {
 	 * Defined boundaries array. Each row has the start, end, and size
 	 * boundaries. The first row is for rows. The second row is for columns.
 	 */
-	private final int[][] boundaries = { { 3, 6, 8 }, { 2, 7, 9 } };
+	private final int[][] boundaries = { { 3, 6, 9 }, { 2, 7, 10 } };
 	/**
 	 * Interval for column portion of the matrix element value.
 	 */
@@ -85,17 +85,17 @@ public class TestSubsetCarver {
 	 */
 	public TestSubsetCarver() {
 		original = new double[boundaries[0][2]][boundaries[1][2]];
-		rowCarveExpected = new double[boundaries[0][1] - boundaries[0][0]][boundaries[1][2]];
+		rowCarveExpected = new double[boundaries[0][1] + 1 - boundaries[0][0]][boundaries[1][2]];
 		rowCarveExpectedLateStart = new double[boundaries[0][2]
 				- boundaries[0][0]][boundaries[1][2]];
-		rowCarveExpectedEarlyEnd = new double[boundaries[0][1]][boundaries[1][2]];
-		columnCarveExpected = new double[boundaries[0][2]][boundaries[1][1]
-				- boundaries[1][0]];
+		rowCarveExpectedEarlyEnd = new double[boundaries[0][1] + 1][boundaries[1][2]];
+		columnCarveExpected = new double[boundaries[0][2]][boundaries[1][1] + 1
+		                                                   - boundaries[1][0]];
 		columnCarveExpectedLateStart = new double[boundaries[0][2]][boundaries[1][2]
 				- boundaries[1][0]];
-		columnCarveExpectedEarlyEnd = new double[boundaries[0][2]][boundaries[1][1]];
-		bothCarveExpected = new double[boundaries[0][1] - boundaries[0][0]][boundaries[1][1]
-				- boundaries[1][0]];
+		columnCarveExpectedEarlyEnd = new double[boundaries[0][2]][boundaries[1][1] + 1];
+		bothCarveExpected = new double[boundaries[0][1] + 1 - boundaries[0][0]][boundaries[1][1] + 1
+		                                                                        - boundaries[1][0]];
 		List<Integer> sliceList = new ArrayList<Integer>();
 		for (int s : slices) {
 			sliceList.add(new Integer(s));
@@ -109,9 +109,9 @@ public class TestSubsetCarver {
 				double value = r * rowInterval + c * colInterval;
 				original[r][c] = value;
 				boolean rowStarted = r >= boundaries[0][0];
-				boolean rowEnded = r < boundaries[0][1];
+				boolean rowNotEnded = r <= boundaries[0][1];
 				boolean columnStarted = c >= boundaries[1][0];
-				boolean columnEnded = c < boundaries[1][1];
+				boolean columnNotEnded = c <= boundaries[1][1];
 				boolean columnSlice = sliceList.contains(new Integer(c));
 //				log.debug("r " + r + " c " + c + " start r "
 //						+ (r - boundaries[0][0]) + " c start "
@@ -123,22 +123,22 @@ public class TestSubsetCarver {
 				if (rowStarted) {
 					rowCarveExpectedLateStart[r - boundaries[0][0]][c] = value;
 				}
-				if (rowEnded) {
+				if (rowNotEnded) {
 					rowCarveExpectedEarlyEnd[r][c] = value;
 				}
-				if (rowStarted && rowEnded) {
+				if (rowStarted && rowNotEnded) {
 					rowCarveExpected[r - boundaries[0][0]][c] = value;
 				}
 				if (columnStarted) {
 					columnCarveExpectedLateStart[r][c - boundaries[1][0]] = value;
 				}
-				if (columnEnded) {
+				if (columnNotEnded) {
 					columnCarveExpectedEarlyEnd[r][c] = value;
 				}
-				if (columnStarted && columnEnded) {
+				if (columnStarted && columnNotEnded) {
 					columnCarveExpected[r][c - boundaries[1][0]] = value;
 				}
-				if (rowStarted && rowEnded & columnStarted && columnEnded) {
+				if (rowStarted && rowNotEnded & columnStarted && columnNotEnded) {
 					bothCarveExpected[r - boundaries[0][0]][c
 					                                        - boundaries[1][0]] = value;
 				}

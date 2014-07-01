@@ -106,6 +106,7 @@ public class QueryDataRowsExtractor {
 		DoubleMatrixI result = null;
 		switch (qpt) {
 		case ContWithStartStop:
+		case ContWithStart2End:
 			result = getContinuousRecordChunk(qpt);
 			break;
 		case ContWithEventStartStop:

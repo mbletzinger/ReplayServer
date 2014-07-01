@@ -166,9 +166,9 @@ public class TestDatasetParameters {
 		}
 
 		List<String> om2Chnls = new ArrayList<String>();
-		om2Chnls.add("OM/Disp/LBCB2/Cartesian/D_LBCB2_RY_1");
-		om2Chnls.add("OM/CntrlSensor/D_West_X_3");
-		om2Chnls.add("OM/Cmd/LBCB2/Actuator/C_LBCB2_Z1_4");
+		om2Chnls.add("OM2/Disp/LBCB2/Cartesian/D_LBCB2_RY_1");
+		om2Chnls.add("OM2/CntrlSensor/D_West_X_3");
+		om2Chnls.add("OM2/Cmd/LBCB2/Actuator/C_LBCB2_Z1_4");
 
 		List<String> daqChnls = new ArrayList<String>();
 		daqChnls.add("DAQ/StrainGauge/Steel/WestFlange/FirstFloor/SGWFF1WL03B_W7_SG_B3_3");
@@ -189,62 +189,62 @@ public class TestDatasetParameters {
 		.add("DAQ2/StrainGauge/Steel/Web/ThirdFloor/SGWWF2WL07K_W7_SG_K14_7");
 
 		TestCompositeQuery qOmCtl = new TestCompositeQuery(
-				MatrixMixType.AddAfter, null, omChnls, "OM", null);
+				MatrixMixType.AddAfter, null, omChnls, "OM", TestDataSource.OM);
 		cl2q.put(QueryTestCases.QueryOm, qOmCtl);
 
 		TestCompositeQuery qOm2Ctl = new TestCompositeQuery(
-				MatrixMixType.AddAfter, null, om2Chnls, "OM2", null);
+				MatrixMixType.AddAfter, null, om2Chnls, "OM2", TestDataSource.OM2);
 		cl2q.put(QueryTestCases.QueryOm2, qOm2Ctl);
 
 		TestCompositeQuery qDaqCtl = new TestCompositeQuery(
-				MatrixMixType.AddAfter, null, daqChnls, "DAQ", null);
+				MatrixMixType.AddAfter, null, daqChnls, "DAQ", TestDataSource.DAQ);
 		cl2q.put(QueryTestCases.QueryDaq, qDaqCtl);
 
 		TestCompositeQuery qDaq2Ctl = new TestCompositeQuery(
-				MatrixMixType.AddAfter, null, daqChnls2, "DAQ", null);
+				MatrixMixType.AddAfter, null, daqChnls2, "DAQ", TestDataSource.DAQ2);
 		cl2q.put(QueryTestCases.QueryDaq2, qDaq2Ctl);
 		List<String>kChnls = new ArrayList<String>();
-		kChnls.add("4/X/4_1");
-		kChnls.add("4/X/4_4");
-		kChnls.add("4/X/4_5");
-		kChnls.add("4/Z/4_1");
-		kChnls.add("4/Z/4_5");
+		kChnls.add("Krypton1/4/X/4_1");
+		kChnls.add("Krypton1/4/X/4_4");
+		kChnls.add("Krypton1/4/X/4_5");
+		kChnls.add("Krypton1/4/Z/4_1");
+		kChnls.add("Krypton1/4/Z/4_5");
 		TestCompositeQuery qKCtl = new TestCompositeQuery(
-				MatrixMixType.AddAfter, null, kChnls, "Krypton1", null);
+				MatrixMixType.AddAfter, null, kChnls, "Krypton1", TestDataSource.Krypton1);
 		cl2q.put(QueryTestCases.QueryKrypton1, qKCtl);
 
 		List<String>k2Chnls = new ArrayList<String>();
-		k2Chnls.add("4/X/4_4");
-		k2Chnls.add("4/X/4_5");
-		k2Chnls.add("3/Y/3_1");
-		k2Chnls.add("4/Y/4_3");
-		k2Chnls.add("4/Y/4_4");
-		k2Chnls.add("4/Y/4_5");
-		k2Chnls.add("3/Z/3_1");
-		k2Chnls.add("3/Z/3_2");
+		k2Chnls.add("Krypton2/4/X/4_4");
+		k2Chnls.add("Krypton2/4/X/4_5");
+		k2Chnls.add("Krypton2/3/Y/3_1");
+		k2Chnls.add("Krypton2/4/Y/4_3");
+		k2Chnls.add("Krypton2/4/Y/4_4");
+		k2Chnls.add("Krypton2/4/Y/4_5");
+		k2Chnls.add("Krypton2/3/Z/3_1");
+		k2Chnls.add("Krypton2/3/Z/3_2");
 		TestCompositeQuery qK2Ctl = new TestCompositeQuery(
-				MatrixMixType.AddAfter, null, k2Chnls, "Krypton2", null);
+				MatrixMixType.AddAfter, null, k2Chnls, "Krypton2", TestDataSource.Krypton2);
 		cl2q.put(QueryTestCases.QueryKrypton2, qK2Ctl);
 
 		TestCompositeQuery query = new TestCompositeQuery(
 				MatrixMixType.AddBefore, qOmCtl, daqChnls,
-				QueryTestCases.QueryBefore.toString(), null);
+				QueryTestCases.QueryBefore.toString(), TestDataSource.DAQ);
 		cl2q.put(QueryTestCases.QueryBefore, query);
 
 		query = new TestCompositeQuery(MatrixMixType.AddAfter, qOmCtl,
-				daqChnls, QueryTestCases.QueryAfter.toString(), null);
+				daqChnls, QueryTestCases.QueryAfter.toString(), TestDataSource.DAQ);
 		cl2q.put(QueryTestCases.QueryAfter, query);
 
 		query = new TestCompositeQuery(MatrixMixType.AddMiddle,
-				qOmCtl, daqChnls, QueryTestCases.QueryMiddle.toString(), null);
+				qOmCtl, daqChnls, QueryTestCases.QueryMiddle.toString(), TestDataSource.DAQ);
 		cl2q.put(QueryTestCases.QueryMiddle, query);
 
 		query = new TestCompositeQuery(MatrixMixType.AddInterleaved,
-				qOmCtl, daqChnls, QueryTestCases.QueryMixed.toString(), null);
+				qOmCtl, daqChnls, QueryTestCases.QueryMixed.toString(), TestDataSource.DAQ);
 		cl2q.put(QueryTestCases.QueryMixed, query);
 
 		query = new TestCompositeQuery(MatrixMixType.AddMiddle, query,
-				daqChnls2, QueryTestCases.QueryTriple.toString(), null);
+				daqChnls2, QueryTestCases.QueryTriple.toString(), TestDataSource.DAQ2);
 		cl2q.put(QueryTestCases.QueryTriple, query);
 	}
 
@@ -268,12 +268,12 @@ public class TestDatasetParameters {
 		cl2tt.put(TestDataSource.OM, TableType.Control);
 
 		chnls = new ArrayList<String>();
-		chnls.add("OM/Cmd/LBCB2/Actuator/C_LBCB2_X1_0");
-		chnls.add("OM/Disp/LBCB2/Cartesian/D_LBCB2_RY_1");
-		chnls.add("OM/Load/LBCB2/Actuator/L_LBCB2_Z1_2");
-		chnls.add("OM/CntrlSensor/D_West_X_3");
-		chnls.add("OM/Cmd/LBCB2/Actuator/C_LBCB2_Z1_4");
-		chnls.add("OM/Disp/LBCB2/Cartesian/D_LBCB2_RZ_5");
+		chnls.add("OM2/Cmd/LBCB2/Actuator/C_LBCB2_X1_0");
+		chnls.add("OM2/Disp/LBCB2/Cartesian/D_LBCB2_RY_1");
+		chnls.add("OM2/Load/LBCB2/Actuator/L_LBCB2_Z1_2");
+		chnls.add("OM2/CntrlSensor/D_West_X_3");
+		chnls.add("OM2/Cmd/LBCB2/Actuator/C_LBCB2_Z1_4");
+		chnls.add("OM2/Disp/LBCB2/Cartesian/D_LBCB2_RZ_5");
 		cl2Channels.put(TestDataSource.OM2, chnls);
 		cl2tt.put(TestDataSource.OM2, TableType.Control);
 
@@ -301,40 +301,40 @@ public class TestDatasetParameters {
 		cl2tt.put(TestDataSource.DAQ2, TableType.DAQ);
 
 		chnls = new ArrayList<String>();
-		chnls.add("4/X/4_1");
-		chnls.add("4/X/4_2");
-		chnls.add("4/X/4_3");
-		chnls.add("4/X/4_4");
-		chnls.add("4/X/4_5");
-		chnls.add("4/Y/4_1");
-		chnls.add("4/Y/4_2");
-		chnls.add("4/Y/4_3");
-		chnls.add("4/Y/4_4");
-		chnls.add("4/Y/4_5");
-		chnls.add("4/Z/4_1");
-		chnls.add("4/Z/4_2");
-		chnls.add("4/Z/4_3");
-		chnls.add("4/Z/4_4");
-		chnls.add("4/Z/4_5");
+		chnls.add("Krypton1/4/X/4_1");
+		chnls.add("Krypton1/4/X/4_2");
+		chnls.add("Krypton1/4/X/4_3");
+		chnls.add("Krypton1/4/X/4_4");
+		chnls.add("Krypton1/4/X/4_5");
+		chnls.add("Krypton1/4/Y/4_1");
+		chnls.add("Krypton1/4/Y/4_2");
+		chnls.add("Krypton1/4/Y/4_3");
+		chnls.add("Krypton1/4/Y/4_4");
+		chnls.add("Krypton1/4/Y/4_5");
+		chnls.add("Krypton1/4/Z/4_1");
+		chnls.add("Krypton1/4/Z/4_2");
+		chnls.add("Krypton1/4/Z/4_3");
+		chnls.add("Krypton1/4/Z/4_4");
+		chnls.add("Krypton1/4/Z/4_5");
 		cl2Channels.put(TestDataSource.Krypton1, chnls);
 		cl2tt.put(TestDataSource.Krypton1, TableType.Krypton);
 
 		chnls = new ArrayList<String>();
-		chnls.add("3/X/3_1");
-		chnls.add("3/X/3_2");
-		chnls.add("4/X/4_3");
-		chnls.add("4/X/4_4");
-		chnls.add("4/X/4_5");
-		chnls.add("3/Y/3_1");
-		chnls.add("3/Y/3_2");
-		chnls.add("4/Y/4_3");
-		chnls.add("4/Y/4_4");
-		chnls.add("4/Y/4_5");
-		chnls.add("3/Z/3_1");
-		chnls.add("3/Z/3_2");
-		chnls.add("4/Z/4_3");
-		chnls.add("4/Z/4_4");
-		chnls.add("4/Z/4_5");
+		chnls.add("Krypton2/3/X/3_1");
+		chnls.add("Krypton2/3/X/3_2");
+		chnls.add("Krypton2/4/X/4_3");
+		chnls.add("Krypton2/4/X/4_4");
+		chnls.add("Krypton2/4/X/4_5");
+		chnls.add("Krypton2/3/Y/3_1");
+		chnls.add("Krypton2/3/Y/3_2");
+		chnls.add("Krypton2/4/Y/4_3");
+		chnls.add("Krypton2/4/Y/4_4");
+		chnls.add("Krypton2/4/Y/4_5");
+		chnls.add("Krypton2/3/Z/3_1");
+		chnls.add("Krypton2/3/Z/3_2");
+		chnls.add("Krypton2/4/Z/4_3");
+		chnls.add("Krypton2/4/Z/4_4");
+		chnls.add("Krypton2/4/Z/4_5");
 		cl2Channels.put(TestDataSource.Krypton2, chnls);
 		cl2tt.put(TestDataSource.Krypton2, TableType.Krypton);
 

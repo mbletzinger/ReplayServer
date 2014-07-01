@@ -99,7 +99,8 @@ public class TestDataRowExtraction {
 		qpt = TimeBoundaryTestType.ContWithTime;
 		tb = times.getTimeBounds(qpt);
 		log.debug("Time bounds for type " + qpt + " is " + tb);
-		Assert.assertEquals(bounds1[0], tb.getStart(), delta);
+		Assert.assertEquals(bounds1[0], tb.getTimes()[0], delta);
+		Assert.assertEquals(Double.NaN, tb.getStart(), delta);
 		Assert.assertEquals(Double.NaN, tb.getStop(), delta);
 
 		CompareLists<String> cmp = new CompareLists<String>();
@@ -135,6 +136,9 @@ public class TestDataRowExtraction {
 									0.14600000000000002, -0.152, 0.158, -0.164 },
 									{ 202.4, 0.12, -0.123, 0.126, -0.129, 0.132, -0.135, 0.138,
 										-0.141, 0.144, -0.147 },
+										{ 202.6, 0.13, -0.136, 0.14200000000000002,
+											-0.14800000000000002, 0.154, -0.16, 0.166,
+											-0.17200000000000001, 0.178, -0.184 },
 
 		};
 		QueryDataRowsExtractor qdre = new QueryDataRowsExtractor(set);
@@ -153,7 +157,8 @@ public class TestDataRowExtraction {
 			0.082, -0.08800000000000001, 0.094, -0.1, 0.10600000000000001,
 			-0.11200000000000002, 0.11800000000000001, -0.124 } };
 		QueryDataRowsExtractor qdre = new QueryDataRowsExtractor(set);
-		DoubleMatrixI actual = qdre.getExpected(TimeBoundaryTestType.ContWithTime);
+		DoubleMatrixI actual = qdre
+				.getExpected(TimeBoundaryTestType.ContWithTime);
 		log.debug("Result " + actual);
 		DoubleMatrixGenerator.compareData(actual.getData(), expected);
 
@@ -179,15 +184,17 @@ public class TestDataRowExtraction {
 	@Test
 	public final void test05EventsWithStartStop() {
 		final double[][] expected = {
-				{201.6, 0.08, -0.083, 0.08600000000000001, -0.089, 0.092, -0.095, 0.098, -0.101, 0.10400000000000001, -0.107},
-				{202.2, 0.11, -0.116, 0.122, -0.128, 0.134, -0.14, 0.14600000000000002, -0.152, 0.158, -0.164},
-				{ 202.8, 0.14, -0.14300000000000002, 0.14600000000000002,
-					-0.14900000000000002, 0.15200000000000002,
-					-0.15500000000000003, 0.15800000000000003, -0.161,
-					0.164, -0.167 },
-		};
+				{ 201.6, 0.08, -0.083, 0.08600000000000001, -0.089, 0.092,
+					-0.095, 0.098, -0.101, 0.10400000000000001, -0.107 },
+					{ 202.2, 0.11, -0.116, 0.122, -0.128, 0.134, -0.14,
+						0.14600000000000002, -0.152, 0.158, -0.164 },
+						{ 202.8, 0.14, -0.14300000000000002, 0.14600000000000002,
+							-0.14900000000000002, 0.15200000000000002,
+							-0.15500000000000003, 0.15800000000000003, -0.161,
+							0.164, -0.167 }, };
 		QueryDataRowsExtractor qdre = new QueryDataRowsExtractor(set);
-		DoubleMatrixI actual = qdre.getExpected(TimeBoundaryTestType.EventsWithStartStop);
+		DoubleMatrixI actual = qdre
+				.getExpected(TimeBoundaryTestType.EventsWithStartStop);
 		log.debug("Result " + actual);
 		DoubleMatrixGenerator.compareData(actual.getData(), expected);
 	}
@@ -198,16 +205,28 @@ public class TestDataRowExtraction {
 	@Test
 	public final void test06ContWithEventStartStop() {
 		final double[][] expected = {
-				{201.6, 0.08, -0.083, 0.08600000000000001, -0.089, 0.092, -0.095, 0.098, -0.101, 0.10400000000000001, -0.107},
-				{201.8, 0.09, -0.096, 0.102, -0.108, 0.11399999999999999, -0.12, 0.126, -0.132, 0.138, -0.144},
-				{202.0, 0.1, -0.10300000000000001, 0.10600000000000001, -0.10900000000000001, 0.112, -0.115, 0.11800000000000001, -0.12100000000000001, 0.124, -0.127},
-				{202.2, 0.11, -0.116, 0.122, -0.128, 0.134, -0.14, 0.14600000000000002, -0.152, 0.158, -0.164},
-				{202.4, 0.12, -0.123, 0.126, -0.129, 0.132, -0.135, 0.138, -0.141, 0.144, -0.147},
-				{ 202.6, 0.13, -0.136, 0.14200000000000002,
-					-0.14800000000000002, 0.154, -0.16, 0.166,
-					-0.17200000000000001, 0.178, -0.184 },		};
+				{ 201.6, 0.08, -0.083, 0.08600000000000001, -0.089, 0.092,
+					-0.095, 0.098, -0.101, 0.10400000000000001, -0.107 },
+					{ 201.8, 0.09, -0.096, 0.102, -0.108, 0.11399999999999999,
+						-0.12, 0.126, -0.132, 0.138, -0.144 },
+						{ 202.0, 0.1, -0.10300000000000001, 0.10600000000000001,
+							-0.10900000000000001, 0.112, -0.115,
+							0.11800000000000001, -0.12100000000000001, 0.124,
+							-0.127 },
+							{ 202.2, 0.11, -0.116, 0.122, -0.128, 0.134, -0.14,
+								0.14600000000000002, -0.152, 0.158, -0.164 },
+								{ 202.4, 0.12, -0.123, 0.126, -0.129, 0.132, -0.135, 0.138,
+									-0.141, 0.144, -0.147 },
+									{ 202.6, 0.13, -0.136, 0.14200000000000002,
+										-0.14800000000000002, 0.154, -0.16, 0.166,
+										-0.17200000000000001, 0.178, -0.184 },
+										{ 202.8, 0.14, -0.14300000000000002, 0.14600000000000002,
+											-0.14900000000000002, 0.15200000000000002,
+											-0.15500000000000003, 0.15800000000000003, -0.161,
+											0.164, -0.167 }, };
 		QueryDataRowsExtractor qdre = new QueryDataRowsExtractor(set);
-		DoubleMatrixI actual = qdre.getExpected(TimeBoundaryTestType.ContWithEventStartStop);
+		DoubleMatrixI actual = qdre
+				.getExpected(TimeBoundaryTestType.ContWithEventStartStop);
 		log.debug("Result " + actual);
 		DoubleMatrixGenerator.compareData(actual.getData(), expected);
 	}

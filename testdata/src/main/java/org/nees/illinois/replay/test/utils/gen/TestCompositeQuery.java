@@ -46,9 +46,8 @@ public class TestCompositeQuery {
 	 *            Table that the new channels come from.
 	 */
 	public TestCompositeQuery(final MatrixMixType mix,
-			final TestCompositeQuery existing,
-			final List<String> newChannels,final String name,
-			final TestDataSource source) {
+			final TestCompositeQuery existing,final List<String> newChannels,
+			final String name,final TestDataSource source) {
 		super();
 		this.name = name;
 		this.mix = mix;
@@ -180,9 +179,13 @@ public class TestCompositeQuery {
 	 */
 	@Override
 	public final String toString() {
-		String result = "/name=" + name + "/existing="
-				+ (existing == null ? "none" : existing) + "/mix=" + mix
-				+ "/new=" + newChannels;
+		String result = "/name=" + name + "\n\t/existing="
+				+ (existing == null ? "none" : existing) + "\n\t/mix=" + mix
+				+ "/source=" + source + "/new=";
+		boolean first = true;
+		for (String c : newChannels) {
+			result += (first ? "" : ",") + "\n\t" + c;
+		}
 		return result;
 	}
 
