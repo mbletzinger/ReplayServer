@@ -83,10 +83,10 @@ public class QuerySelectFactory {
 	 */
 	public final String selectDiscreteTimes(final String tableName,
 			final List<Double> times, final List<String> columns) {
-		String result = "SELECT ";
+		String result = "SELECT";
 		boolean first = true;
 		for( String h : columns) {
-			result += (first ? "" : ", ") + h;
+			result += (first ? " " : ", ") + h;
 			first = false;
 		}
 		result += " FROM \"" + tableName + "\" WHERE TIME IN (";
@@ -144,7 +144,7 @@ public class QuerySelectFactory {
 		String result = "SELECT";
 		boolean first = true;
 		for( String h : columns) {
-			result += (first ? "" : ", ") + h;
+			result += (first ? " " : ", ") + h;
 			first = false;
 		}
 		result += " FROM \"" + tableName + "\" WHERE (TIME >= " + start
@@ -179,8 +179,8 @@ public class QuerySelectFactory {
 	 */
 	public final String selectTimeRange(final String tableName,
 			final double start, final double stop) {
-		return "SELECT * FROM \"" + tableName + "\" WHERE ( TIME BETWEEN "
-				+ start + " AND " + stop + ")";
+		return "SELECT * FROM \"" + tableName + "\" WHERE ( TIME >= "
+				+ start + " AND TIME <= " + stop + ")";
 	}
 
 	/**
@@ -199,11 +199,11 @@ public class QuerySelectFactory {
 		String result = "SELECT";
 		boolean first = true;
 		for( String h : columns) {
-			result += (first ? "" : ", ") + h;
+			result += (first ? " " : ", ") + h;
 			first = false;
 		}
-		result += " FROM \"" + tableName + "\" WHERE ( TIME BETWEEN "
-				+ start + " AND " + stop + ")";
+		result += " FROM \"" + tableName + "\" WHERE ( TIME >= "
+				+ start + " AND TIME <= " + stop + ")";
 		return result;
 	}
 

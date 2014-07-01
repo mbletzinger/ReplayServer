@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  * some time parameters.
  * @author Michael Bletzinger
  */
-public class OneTableQueryExecutor {
+public class TimeBoundsQueryExecutor {
 	/**
 	 * Database connection.
 	 */
@@ -27,7 +27,7 @@ public class OneTableQueryExecutor {
 	 * Logger.
 	 **/
 	private final Logger log = LoggerFactory
-			.getLogger(OneTableQueryExecutor.class);
+			.getLogger(TimeBoundsQueryExecutor.class);
 	/**
 	 * Query select statement builder.
 	 */
@@ -43,7 +43,8 @@ public class OneTableQueryExecutor {
 	 * @param connection
 	 *            Database connection.
 	 */
-	public OneTableQueryExecutor(final TableDefinitionI table, final Connection connection) {
+	public TimeBoundsQueryExecutor(final TableDefinitionI table,
+			final Connection connection) {
 		this.table = table;
 		this.connection = connection;
 	}
@@ -66,7 +67,7 @@ public class OneTableQueryExecutor {
 		try {
 			while (rs.next()) {
 				List<Double> row = new ArrayList<Double>();
-				for (int c = 0; c < columns; c++) {
+				for (int c = 0;c < columns;c++) {
 					double value = rs.getDouble(c + 1);
 					row.add(new Double(value));
 				}
@@ -80,6 +81,27 @@ public class OneTableQueryExecutor {
 	}
 
 	/**
+	 * @return the connection
+	 */
+	public final Connection getConnection() {
+		return connection;
+	}
+
+	/**
+	 * @return the queryStrings
+	 */
+	public final QuerySelectFactory getQueryStrings() {
+		return queryStrings;
+	}
+
+	/**
+	 * @return the table
+	 */
+	public final TableDefinitionI getTable() {
+		return table;
+	}
+
+	/**
 	 * Query for a range of times.
 	 * @param start
 	 *            Start time.
@@ -88,8 +110,13 @@ public class OneTableQueryExecutor {
 	 * @return double matrix of values.
 	 */
 	public final DoubleMatrixI query(final double start, final double stop) {
-		String select = queryStrings.selectTimeRange(table.getTableId(), start,
-				stop, table.getColumns(true));
+		String select;
+		if (Double.isNaN(stop)) {
+			select = queryStrings.selectTime2End(table.getTableId(), start, table.getColumns(true));
+		} else {
+			select = queryStrings.selectTimeRange(table.getTableId(), start,
+					stop, table.getColumns(true));
+		}
 		return execute(select);
 	}
 

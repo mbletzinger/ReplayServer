@@ -103,7 +103,7 @@ public class TestRegistrySynchronization {
 		final int numberOfRows = 40;
 		final int numberOfEvents = 10;
 		DatasetsDirector dd = new DatasetsDirector(ExperimentNames.HybridMasonry1, numberOfRows, numberOfEvents);
-		TestDatasetParameters set = dd.getSet();
+		TestDatasetParameters set = dd.getParameters();
 		TableRegistry tr = new TableRegistry();
 		set.fillTblr(tr);
 		StatementProcessor dbSt = pools.createDbStatement(experiment, true);

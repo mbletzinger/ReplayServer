@@ -81,7 +81,7 @@ public class TestDatasetParameters {
 	public final void fillTblr(final TableRegistry tblr) {
 		for (TestDataSource type : TestDataSource.values()) {
 			List<String> channels = cl2Channels.get(type);
-			TableDefinitionI tc = new TableDef(channels, getTableName(type));
+			TableDefinitionI tc = new TableDef(channels, getTableName(type), type.toString());
 			tblr.setTable(getTableName(type), tc);
 		}
 	}

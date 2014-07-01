@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nees.illinois.replay.common.types.TableDefinitionI;
-import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.statement.StatementProcessor;
 import org.nees.illinois.replay.test.utils.CompareLists;
@@ -116,15 +116,15 @@ public class DbTableCheck {
 	 * Checks the contents of the database table.
 	 * @param def
 	 *            table parameters.
-	 * @param expected
+	 * @param doubleMatrixI
 	 *            expected values.
 	 */
 	public final void checkTableContents(final TableDefinitionI def,
-			final DoubleMatrix expected) {
+			final DoubleMatrixI doubleMatrixI) {
 		String tblName = def.getTableId();
 		StatementProcessor dbSt = pools.createDbStatement(experiment, false);
 		ResultSet rs = dbSt.query("SELECT * FROM \"" + tblName + "\"");
-		double[][] actual = new double[expected.toList().size()][def.getColumns(true).size()];
+		double[][] actual = new double[doubleMatrixI.toList().size()][def.getColumns(true).size()];
 		log.info("Results allocated size is [" + actual.length + "]["
 				+ actual[0].length + "]");
 		int r = 0;
@@ -143,6 +143,6 @@ public class DbTableCheck {
 		}
 		dbSt.closeQuery(rs);
 		dbSt.close();
-		DoubleMatrixGenerator.compareData(actual, expected.getData());
+		DoubleMatrixGenerator.compareData(actual, doubleMatrixI.getData());
 	}
 }

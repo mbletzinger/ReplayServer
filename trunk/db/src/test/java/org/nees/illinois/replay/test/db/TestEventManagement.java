@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nees.illinois.replay.common.registries.ExperimentRegistries;
+import org.nees.illinois.replay.common.registries.TableDefiner;
 import org.nees.illinois.replay.db.DbPools;
 import org.nees.illinois.replay.db.events.DbEvents;
 import org.nees.illinois.replay.db.events.EventQueries;
@@ -16,6 +17,7 @@ import org.nees.illinois.replay.test.db.derby.process.DerbyDbControl;
 import org.nees.illinois.replay.test.db.utils.DbTestsModule;
 import org.nees.illinois.replay.test.utils.CompareLists;
 import org.nees.illinois.replay.test.utils.DatasetsDirector;
+import org.nees.illinois.replay.test.utils.TestDatasetParameters;
 import org.nees.illinois.replay.test.utils.types.ExperimentNames;
 import org.nees.illinois.replay.test.utils.types.TestDataSource;
 import org.slf4j.Logger;
@@ -68,6 +70,10 @@ public class TestEventManagement {
 	 * Event and data generators.
 	 */
 	private DatasetsDirector dd;
+	/**
+	 * Set of registries for the experiment.
+	 */
+	private ExperimentRegistries er;
 
 	/**
 	 * Set up the data for the tests.
@@ -90,7 +96,13 @@ public class TestEventManagement {
 		final int numberOfRows = 50;
 		final int numberOfEvents = 10;
 		pools.getOps().createDatabase(experimentName.toString());
+		er = new ExperimentRegistries(experimentName.toString());
 		dd = new DatasetsDirector(experimentName, numberOfRows, numberOfEvents);
+		TableDefiner td = er.createTableDefiner();
+		TestDatasetParameters tdp = dd.getParameters();
+		for(TestDataSource tds : TestDataSource.values()) {
+			td.define(tds.toString(), tdp.getTt(tds), tdp.getChannels(tds));
+		}
 	}
 
 	/**
@@ -100,8 +112,9 @@ public class TestEventManagement {
 	 */
 	@BeforeMethod
 	public final void setup1() throws Exception {
-		EventsTableOps eto = new EventsTableOps(pools, experimentName.toString());
+		EventsTableOps eto = new EventsTableOps(pools, er);
 		Assert.assertTrue(eto.create());
+		Assert.assertTrue(eto.exists());
 	}
 
 	/**
@@ -111,7 +124,7 @@ public class TestEventManagement {
 	 */
 	@AfterMethod
 	public final void tearDown() throws Exception {
-		EventsTableOps eto = new EventsTableOps(pools, experimentName.toString());
+		EventsTableOps eto = new EventsTableOps(pools, er);
 		eto.remove();
 	}
 
@@ -136,7 +149,6 @@ public class TestEventManagement {
 	 */
 	@Test
 	public final void test01EventStorage() {
-		ExperimentRegistries er = new ExperimentRegistries(experimentName.toString());
 		DbEvents dbEvents = new DbEvents(pools, er);
 		for (TestDataSource t : TestDataSource.values()) {
 			EventListI list = dd.getDataset(t).getEvents();
@@ -154,7 +166,7 @@ public class TestEventManagement {
 	 */
 	@Test
 	public final void test02EventQueries() {
-		ExperimentRegistries er = new ExperimentRegistries(experimentName.toString());
+
 		DbEvents dbEvents = new DbEvents(pools, er);
 		Map<TestDataSource, EventListI> expected = new HashMap<TestDataSource, EventListI>();
 		for (TestDataSource t : TestDataSource.values()) {
@@ -165,7 +177,7 @@ public class TestEventManagement {
 			}
 			expected.put(t, list);
 		}
-		EventsTableOps eto = new EventsTableOps(pools, experimentName.toString());
+		EventsTableOps eto = new EventsTableOps(pools, er);
 		EventQueries evQueries = eto.getQueries();
 		for (TestDataSource t : TestDataSource.values()) {
 			EventListI elist = expected.get(t);

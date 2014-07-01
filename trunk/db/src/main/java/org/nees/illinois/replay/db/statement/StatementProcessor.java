@@ -89,7 +89,7 @@ public class StatementProcessor {
 				}
 			}
 		}
-		log.debug("Executed \"" + statement + "\"");
+		log.debug("Statement done");
 		return true;
 
 	}

@@ -1,12 +1,15 @@
 package org.nees.illinois.replay.db.query;
 
+import java.sql.Connection;
 import java.util.List;
 
 import org.nees.illinois.replay.common.registries.ExperimentRegistries;
 import org.nees.illinois.replay.common.registries.QueryDefiner;
-import org.nees.illinois.replay.data.DoubleMatrix;
+import org.nees.illinois.replay.common.types.CompositeQueryI;
+import org.nees.illinois.replay.common.types.TimeBoundsI;
 import org.nees.illinois.replay.data.DoubleMatrixI;
 import org.nees.illinois.replay.db.DbPools;
+import org.nees.illinois.replay.db.events.EventQueries;
 import org.nees.illinois.replay.subresource.DataQuerySubResourceI;
 
 import com.google.inject.Inject;
@@ -36,36 +39,13 @@ public class DbDataQuerySubResources implements DataQuerySubResourceI {
 		this.pools = pools;
 	}
 
-	// private DoubleMatrix doQuery(QueryType qtype, String name, double start,
-	// double stop) {
-	// StatementProcessor dbSt =
-	// pools.createDbStatement(experiment.getExperiment(),false);
-	// SavedQueryWTablesList dbSpec;
-	// dbSpec = (SavedQueryWTablesList) experiment.getQueries().getQuery(name);
-	// DbQueryRouter dbQuerySt = new DbQueryRouter(dbSt, dbSpec);
-	// return dbQuerySt.getData(qtype, start, stop);
-	// }
-	//
-	// private DoubleMatrix doQuery(QueryType qtype, String name,
-	// StepNumber start, StepNumber stop) {
-	// StatementProcessor dbSt =
-	// pools.createDbStatement(experiment.getExperiment(),false);
-	// SavedQueryWTablesList dbSpec;
-	// dbSpec = (SavedQueryWTablesList) experiment.getQueries().getQuery(name);
-	// DbQueryRouter dbQuerySt = new DbQueryRouter(dbSt, dbSpec);
-	// return dbQuerySt.getData(qtype, start, stop);
-	// }
-
 	@Override
-	public final DoubleMatrix doQuery(final String name, final double start,
-			final double stop) {
-		return doQuery(QueryType.ContWithStop, name, start, stop);
-	}
-
-	@Override
-	public final DoubleMatrixI doQuery(final String name, final List<Double> times) {
-		// TODO Auto-generated method stub
-		return null;
+	public final DoubleMatrixI doQuery(final String name, final TimeBoundsI tb) {
+		CompositeQueryI query = experiment.getQueries().getQuery(name);
+		Connection connection = pools.fetchConnection(experiment.getExperiment(), false);
+		EventQueries equery = new EventQueries(connection, experiment);
+		CompositeQueryExecutor exec = new CompositeQueryExecutor(query, connection, equery);
+		return exec.execute(tb);
 	}
 
 	@Override
